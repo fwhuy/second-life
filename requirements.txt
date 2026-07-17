@@ -1,0 +1,18 @@
+# Install via scripts/setup_env.sh — it installs these, smoke-tests the GPU,
+# and freezes the exact resolved versions to requirements.lock.txt (commit that file).
+# torch/torchvision are intentionally unpinned here: the CUDA build must be
+# resolved on the actual training machine (see setup_env.sh).
+torch
+torchvision
+timm>=1.0.11
+scikit-learn>=1.4
+pandas>=2.0
+matplotlib>=3.8
+pyyaml>=6.0
+imagehash>=4.3
+cleanlab>=2.6
+grad-cam>=1.5
+gradio>=4.44
+kagglehub>=0.3
+tqdm>=4.66
+pytest>=8.0

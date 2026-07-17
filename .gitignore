@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+data/raw/
+data/leaked/
+checkpoints/
+*.pth
+*.pt
+.DS_Store
+.ipynb_checkpoints/
+gradio_cached_examples/
+# splits ARE committed (data/splits/), reports ARE committed
