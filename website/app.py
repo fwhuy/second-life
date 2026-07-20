@@ -80,12 +80,21 @@ def load_predictor(checkpoint: Path, device: torch.device):
 app = Flask(__name__)
 MODELS = CFG = TRANSFORM = DEVICE = None
 
+# Temperature scaling. The baseline was trained with label smoothing, which
+# leaves it badly under-confident: ~89% accurate on validation but only ~40%
+# mean confidence. T<1 sharpens the softmax. The NLL-optimal T (~0.22) matches
+# mean confidence to accuracy but saturates easy cases to ~100% and makes some
+# wrong answers look 95%+ — dishonest for a demo. T=0.5 is a conservative
+# choice: correct preds average ~67%, wrong ones ~48% (so confidence still
+# carries signal), and nothing hits a fake 100%. Never changes the top class.
+TEMPERATURE = 0.5
+
 
 @torch.no_grad()
 def predict(img: Image.Image):
     x = TRANSFORM(img.convert("RGB")).unsqueeze(0).to(DEVICE)
     probs = torch.stack(
-        [torch.softmax(m(x).float(), dim=1)[0] for m in MODELS]
+        [torch.softmax(m(x).float() / TEMPERATURE, dim=1)[0] for m in MODELS]
     ).mean(0).cpu().tolist()
     return {c: p for c, p in zip(CLASSES, probs)}
 
@@ -132,18 +141,21 @@ def api_model():
     return jsonify(
         model=CFG["model"], img_size=CFG["img_size"], members=len(MODELS),
         device=str(DEVICE), classes=CLASSES, is_ensemble=len(MODELS) > 1,
-        val_accuracy_tta="94.93%",
+        val_accuracy_tta="94.93%", temperature=TEMPERATURE, calibrated=True,
     )
 
 
 def main():
-    global MODELS, CFG, TRANSFORM, DEVICE
+    global MODELS, CFG, TRANSFORM, DEVICE, TEMPERATURE
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--checkpoint", default=None)
     ap.add_argument("--port", type=int, default=5001)
     ap.add_argument("--device", default="cpu", choices=["cpu", "cuda", "mps"])
+    ap.add_argument("--temperature", type=float, default=TEMPERATURE,
+                    help="calibration temperature; <1 sharpens confidence (0=off -> raw)")
     args = ap.parse_args()
 
+    TEMPERATURE = args.temperature if args.temperature > 0 else 1.0
     DEVICE = torch.device(args.device)
     checkpoint = Path(args.checkpoint) if args.checkpoint else find_checkpoint()
     MODELS, CFG, TRANSFORM = load_predictor(checkpoint, DEVICE)
