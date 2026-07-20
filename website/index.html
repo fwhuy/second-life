@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Offline first: React is served from ./vendor, so the runtime never calls unpkg.com.
+     Setting __resources also stops the runtime re-fetching itself over the network. -->
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
+<script>window.__resources = {};</script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #FAF7EF; }
+  a { color: #3E7C4F; } a:hover { color: #D97B29; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes beltmove { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+  @keyframes drop { 0% { transform: translateY(-46px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+  @keyframes shake { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+  @keyframes sparkle { 0%,100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
+  @keyframes flicker { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+  @keyframes sink { from { transform: translateY(0); opacity: 1; } to { transform: translateY(14px); opacity: 0.25; } }
+</style>
+</helmet>
+<div style="min-height: 100vh; font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; color: #23372B; background: #FAF7EF; display: flex; flex-direction: column;">
+
+  <nav style="display: flex; align-items: center; gap: 28px; padding: 18px 48px; background: rgba(250,247,239,0.95); border-bottom: 1px solid #E5DCC8; position: sticky; top: 0; z-index: 10;">
+    <div onClick="{{ goHome }}" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+      <svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="#3E7C4F"></circle><path d="M17 8 C 23 8 26 13 25 18 C 20 17 15 14 17 8 Z" fill="#DCE7D3"></path><path d="M11 24 A 8 8 0 0 1 24 22" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path><path d="M24 22 l 2 -3 M24 22 l -3.4 -0.6" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
+      <div>
+        <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 18px; line-height: 1;">{{ t.brand }}</div>
+        <div style="font-size: 11px; letter-spacing: 2px; color: #7C8A73; margin-top: 3px;">SECOND LIFE AI</div>
+      </div>
+    </div>
+    <div style="flex: 1;"></div>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <sc-for list="{{ navItems }}" as="nv" hint-placeholder-count="4">
+        <div onClick="{{ nv.go }}" style="padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 15px; font-weight: {{ nv.weight }}; color: {{ nv.color }}; background: {{ nv.bg }};" style-hover="background: #EFE8D6;">{{ nv.label }}</div>
+      </sc-for>
+      <div onClick="{{ toggleLang }}" title="{{ t.langTitle }}" style="margin-left: 10px; padding: 7px 15px; border-radius: 18px; border: 1.5px solid #C9BD9F; color: #4A5A4B; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px;" style-hover="border-color: #3E7C4F; color: #3E7C4F; background: #EFE8D6;">{{ t.langLabel }}</div>
+      <div onClick="{{ goIdentify }}" style="margin-left: 6px; padding: 10px 22px; border-radius: 24px; background: #D97B29; color: #FFF8ED; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: #C06A1E;">{{ t.ctaStart }}</div>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HOME ═══════════ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div style="flex: 1;">
+
+      <sc-if value="{{ homeStory }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding: 72px 72px 48px; max-width: 1280px; margin: 0 auto; box-sizing: border-box;">
+          <div style="animation: fadeUp 0.7s ease both;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 16px; background: #DCE7D3; color: #2F5A3C; font-size: 13px; font-weight: 500;">{{ t.badge }}</div>
+            <h1 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 56px; line-height: 1.22; margin: 22px 0 10px;">{{ t.heroA }}<br>{{ t.heroB }}</h1>
+            <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 16px; letter-spacing: 1px; color: #7C8A73; font-style: italic;">Every object deserves a second life.</div></sc-if>
+            <p style="font-size: 17px; line-height: 1.9; color: #4A5A4B; margin: 22px 0 30px; max-width: 520px; text-wrap: pretty;">{{ t.heroBody }}</p>
+            <div style="display: flex; gap: 14px; align-items: center;">
+              <div onClick="{{ goIdentify }}" style="padding: 15px 36px; border-radius: 30px; background: #3E7C4F; color: #FAF7EF; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px rgba(62,124,79,0.3);" style-hover="background: #2F6640;">{{ t.ctaExplore }}</div>
+              <div onClick="{{ goExplore }}" style="padding: 15px 28px; border-radius: 30px; border: 1.5px solid #C9BD9F; color: #4A5A4B; font-size: 16px; cursor: pointer;" style-hover="border-color: #3E7C4F; color: #3E7C4F;">{{ t.ctaBrowse }}</div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center;">
+            <svg width="360" height="360" viewBox="0 0 360 360" style="animation: floaty 5s ease-in-out infinite;">
+              <circle cx="180" cy="180" r="150" fill="#EFE8D6"></circle>
+              <g style="transform-origin: 180px 180px; animation: spin 24s linear infinite;">
+                <path d="M180 40 A 140 140 0 0 1 320 180" stroke="#3E7C4F" stroke-width="5" fill="none" stroke-linecap="round"></path>
+                <path d="M320 180 l -14 -12 M320 180 l -18 6" stroke="#3E7C4F" stroke-width="5" fill="none" stroke-linecap="round"></path>
+                <path d="M180 320 A 140 140 0 0 1 40 180" stroke="#D97B29" stroke-width="5" fill="none" stroke-linecap="round"></path>
+                <path d="M40 180 l 14 12 M40 180 l 18 -6" stroke="#D97B29" stroke-width="5" fill="none" stroke-linecap="round"></path>
+              </g>
+              <g>
+                <rect x="158" y="120" width="44" height="110" rx="14" fill="#7FB0C9"></rect>
+                <rect x="166" y="102" width="28" height="24" rx="6" fill="#7FB0C9"></rect>
+                <rect x="164" y="96" width="32" height="10" rx="4" fill="#2B6CB0"></rect>
+                <rect x="158" y="152" width="44" height="34" fill="#FFF8ED"></rect>
+                <text x="180" y="174" text-anchor="middle" font-size="12" fill="#2B6CB0" font-weight="bold">PET</text>
+              </g>
+              <path d="M236 236 C 262 232 268 212 264 196 C 246 200 230 212 236 236 Z" fill="#3E7C4F"></path>
+              <circle cx="110" cy="120" r="5" fill="#D97B29" style="animation: sparkle 2.4s ease-in-out infinite;"></circle>
+              <circle cx="264" cy="110" r="4" fill="#3E7C4F" style="animation: sparkle 3s ease-in-out 0.6s infinite;"></circle>
+              <circle cx="96" cy="240" r="4" fill="#D97B29" style="animation: sparkle 2.8s ease-in-out 1.2s infinite;"></circle>
+            </svg>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ homeSplit }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: 460px 1fr; min-height: 560px;">
+          <div style="background: #1E3A2B; color: #FAF7EF; padding: 64px 48px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 12px; letter-spacing: 4px; color: #9DB8A0;">SECOND LIFE AI</div>
+              <h1 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 62px; line-height: 1.25; margin: 20px 0;">{{ t.brandA }}<br>{{ t.brandB }}<br>{{ t.brandC }}</h1>
+              <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 15px; color: #9DB8A0; font-style: italic;">Every object deserves a second life.</div></sc-if>
+            </div>
+            <div onClick="{{ goIdentify }}" style="padding: 16px 0; text-align: center; border-radius: 30px; background: #D97B29; color: #FFF8ED; font-size: 18px; font-weight: 700; cursor: pointer;" style-hover="background: #E88C3C;">{{ t.ctaExplore }}</div>
+          </div>
+          <div style="padding: 64px 56px; display: flex; flex-direction: column; gap: 20px; justify-content: center;">
+            <p style="font-size: 17px; line-height: 1.9; color: #4A5A4B; margin: 0; max-width: 560px; text-wrap: pretty;">{{ t.heroBodyShort }}</p>
+            <sc-for list="{{ modules }}" as="m" hint-placeholder-count="3">
+              <div onClick="{{ m.go }}" style="display: flex; gap: 18px; align-items: center; padding: 18px 22px; border-radius: 16px; background: #FFFDF6; border: 1px solid #E5DCC8; cursor: pointer;" style-hover="border-color: #3E7C4F; transform: translateX(4px);">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: {{ m.tint }}; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 20px; color: #FAF7EF;">{{ m.num }}</div>
+                <div style="flex: 1;"><div style="font-weight: 700; font-size: 17px;">{{ m.title }}</div><div style="font-size: 14px; color: #7C8A73; margin-top: 2px;">{{ m.sub }}</div></div>
+                <div style="color: #C9BD9F; font-size: 20px;">→</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ homeMinimal }}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 96px 24px 56px; text-align: center;">
+          <div style="font-size: 13px; letter-spacing: 5px; color: #7C8A73;">{{ t.kickerMinimal }}</div>
+          <h1 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 84px; line-height: 1.2; margin: 28px auto 14px; max-width: 900px;">{{ t.heroA }}<br>{{ t.heroB }}</h1>
+          <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 17px; color: #7C8A73; font-style: italic;">Every object deserves a second life.</div></sc-if>
+          <div onClick="{{ goIdentify }}" style="display: inline-block; margin: 40px auto 56px; padding: 17px 52px; border-radius: 34px; background: #3E7C4F; color: #FAF7EF; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 22px rgba(62,124,79,0.28);" style-hover="background: #2F6640;">{{ t.ctaExplore }}</div>
+          <div style="overflow: hidden; border-top: 1px solid #E5DCC8; border-bottom: 1px solid #E5DCC8; padding: 14px 0;">
+            <div style="display: flex; gap: 40px; white-space: nowrap; animation: marquee 26s linear infinite; width: max-content;">
+              <sc-for list="{{ marqueeItems }}" as="mi" hint-placeholder-count="8"><span style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-size: 20px; color: #A9A183;">{{ mi.zh }} <span style="font-size: 13px; color: #C9BD9F;">{{ mi.en }}</span></span></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ homeStory }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1136px; margin: 0 auto; padding: 12px 72px 24px; box-sizing: border-box;">
+          <sc-for list="{{ modules }}" as="m" hint-placeholder-count="3">
+            <div onClick="{{ m.go }}" style="padding: 26px 24px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8; cursor: pointer; transition: transform 0.2s;" style-hover="transform: translateY(-4px); border-color: #3E7C4F; box-shadow: 0 10px 24px rgba(35,55,43,0.08);">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: {{ m.tint }}; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 20px; color: #FAF7EF;">{{ m.num }}</div>
+              <div style="font-weight: 700; font-size: 18px; margin: 14px 0 6px;">{{ m.title }}</div>
+              <div style="font-size: 14px; color: #7C8A73; line-height: 1.7;">{{ m.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- Honest About strip, shared by all home variants -->
+      <div style="max-width: 1136px; margin: 24px auto 64px; padding: 0 72px; box-sizing: border-box;">
+        <div style="border-radius: 20px; background: #EFE8D6; padding: 32px 36px;">
+          <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+            <div style="min-width: 200px;">
+              <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 42px; color: #2F5A3C;">94.93%</div>
+              <div style="font-size: 13px; color: #7C8A73;">{{ t.accCaption }}</div>
+            </div>
+            <div style="flex: 1; min-width: 380px;">
+              <div style="font-weight: 700; margin-bottom: 10px;">{{ t.mapTitle }}</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <sc-for list="{{ mappingChips }}" as="mc" hint-placeholder-count="6">
+                  <div style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 14px; background: #FFFDF6; border: 1px solid #E5DCC8; font-size: 13px;"><span>{{ mc.cls }}</span><span style="color: #C9BD9F;">→</span><span style="color: {{ mc.color }}; font-weight: 700;">{{ mc.bin }}</span></div>
+                </sc-for>
+              </div>
+              <p style="font-size: 13px; color: #7C8A73; line-height: 1.8; margin: 12px 0 0;">{{ t.honest }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══════════ IDENTIFY ═══════════ -->
+  <sc-if value="{{ isIdentify }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 56px 40px; box-sizing: border-box; width: 100%;">
+      <div style="text-align: center; margin-bottom: 40px; animation: fadeUp 0.5s ease both;">
+        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; margin: 0 0 8px;">{{ t.identTitle }}</h2>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Recognition Center — meet the object before choosing its future.</div></sc-if>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div style="position: relative; overflow: hidden; border: 2px dashed #C9BD9F; border-radius: 20px; padding: 48px 32px; text-align: center; cursor: pointer; background: #FFFDF6;" style-hover="border-color: #3E7C4F; background: #F4F1E4;">
+          <input type="file" accept="image/*" onChange="{{ onFile }}" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;">
+          <sc-if value="{{ analyzing }}" hint-placeholder-val="{{ false }}">
+            <svg width="52" height="52" viewBox="0 0 52 52" style="animation: spin 1s linear infinite;"><circle cx="26" cy="26" r="20" stroke="#DCE7D3" stroke-width="6" fill="none"></circle><path d="M26 6 A 20 20 0 0 1 46 26" stroke="#3E7C4F" stroke-width="6" fill="none" stroke-linecap="round"></path></svg>
+            <div style="font-weight: 700; font-size: 18px; margin-top: 16px;">{{ t.analyzing }}</div>
+            <div style="font-size: 13px; color: #7C8A73; margin-top: 6px;">{{ t.analyzingSub }}</div>
+          </sc-if>
+          <sc-if value="{{ notAnalyzing }}" hint-placeholder-val="{{ true }}">
+            <svg width="52" height="52" viewBox="0 0 52 52"><rect x="6" y="12" width="40" height="32" rx="6" fill="none" stroke="#3E7C4F" stroke-width="2.5"></rect><circle cx="20" cy="24" r="4" fill="#D97B29"></circle><path d="M10 40 l 12 -12 8 8 6 -6 10 10" stroke="#3E7C4F" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <div style="font-weight: 700; font-size: 18px; margin-top: 16px;">{{ t.uploadTitle }}</div>
+            <div style="font-size: 13px; color: #7C8A73; margin-top: 6px; line-height: 1.7;">{{ t.uploadSub }}</div>
+          </sc-if>
+        </div>
+        <div style="border: 1px solid #E5DCC8; border-radius: 20px; padding: 32px; background: #FFFDF6;">
+          <div style="font-weight: 700; font-size: 17px; margin-bottom: 12px;">{{ t.orType }}</div>
+          <input value="{{ query }}" onChange="{{ onQuery }}" onKeyDown="{{ onQueryKey }}" placeholder="{{ t.searchPlaceholder }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 12px; border: 1.5px solid #C9BD9F; background: #FAF7EF; font-size: 15px; font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; outline: none; color: #23372B;">
+          <div style="font-size: 13px; color: #7C8A73; margin: 16px 0 10px;">{{ t.libCovers }}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ chips }}" as="c" hint-placeholder-count="10">
+              <div onClick="{{ c.pick }}" style="padding: 7px 14px; border-radius: 16px; background: #EFE8D6; font-size: 14px; cursor: pointer; color: #4A5A4B;" style-hover="background: #DCE7D3; color: #2F5A3C;">{{ c.zh }}</div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ queryMiss }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 14px; padding: 12px 16px; border-radius: 12px; background: #F6E8D8; color: #8C5A22; font-size: 13px; line-height: 1.7;">{{ t.missPre }}{{ query }}{{ t.missPost }}</div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══════════ RESULT ═══════════ -->
+  <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; max-width: 1080px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
+      <div style="display: flex; gap: 28px; align-items: center; padding: 28px 32px; border-radius: 20px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+        <div style="width: 92px; height: 92px; border-radius: 18px; background: #EFE8D6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ photo }}" alt="{{ t.photoAlt }}" style="width: 92px; height: 92px; object-fit: cover;">
+          </sc-if>
+          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">
+            <svg width="56" height="56" viewBox="0 0 56 56"><rect x="20" y="14" width="16" height="34" rx="6" fill="#7FB0C9"></rect><rect x="23" y="8" width="10" height="8" rx="2" fill="#2B6CB0"></rect><rect x="20" y="24" width="16" height="12" fill="#FFF8ED"></rect></svg>
+          </sc-if>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
+            <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 32px;">{{ itemZh }}</div>
+            <div style="font-size: 15px; color: #7C8A73;">{{ itemEn }} · {{ t.modelSays }}{{ clsLine }}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+            <div style="font-size: 22px; font-weight: 700; color: #2F5A3C;">{{ t.confidence }} {{ confPct }}</div>
+            <div style="font-size: 12px; font-weight: 700; color: {{ confNoteColor }};">{{ confNote }}</div>
+          </div>
+        </div>
+        <div style="text-align: center; padding: 16px 26px; border-radius: 16px; background: {{ binBg }};">
+          <div style="font-size: 13px; color: #FFFFFF; opacity: 0.85;">{{ t.putInto }}</div>
+          <div style="font-size: 22px; font-weight: 900; color: #FFFFFF;">{{ binZh }}</div>
+          <div style="font-size: 11px; color: #FFFFFF; opacity: 0.85;">{{ binEn }}</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; margin-top: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">{{ t.blockMaterial }}</div>
+            <p style="font-size: 15px; line-height: 1.9; color: #4A5A4B; margin: 0; text-wrap: pretty;">{{ material }}</p>
+          </div>
+          <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">{{ t.blockHistory }}</div>
+            <p style="font-size: 15px; line-height: 1.9; color: #4A5A4B; margin: 0; text-wrap: pretty;">{{ history }}</p>
+          </div>
+          <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 10px;">{{ t.blockRelated }}</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <sc-for list="{{ related }}" as="r" hint-placeholder-count="4">
+                <div onClick="{{ r.pick }}" style="padding: 7px 14px; border-radius: 16px; background: #EFE8D6; font-size: 14px; cursor: pointer;" style-hover="background: #DCE7D3;">{{ r.zh }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 14px;">{{ t.probsTitle }}</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ probs }}" as="p" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: 88px 1fr 52px; gap: 10px; align-items: center; font-size: 13px;">
+                  <div style="color: #4A5A4B;">{{ p.label }}</div>
+                  <div style="height: 8px; border-radius: 4px; background: #EFE8D6; overflow: hidden;"><div style="height: 100%; border-radius: 4px; background: {{ p.color }}; width: {{ p.w }};"></div></div>
+                  <div style="text-align: right; color: #7C8A73;">{{ p.pct }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div onClick="{{ goSimulator }}" style="padding: 28px; border-radius: 18px; background: #1E3A2B; color: #FAF7EF; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center;" style-hover="background: #2A4C38;">
+            <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 700; font-size: 21px; line-height: 1.6;">{{ t.waitingA }}<br>{{ t.waitingB }}</div>
+            <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-weight: 700; color: #F0B27A;">{{ t.enterSim }} <span style="animation: pulse 1.6s ease-in-out infinite;">→</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══════════ SIMULATOR ═══════════ -->
+  <sc-if value="{{ isSimulator }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; max-width: 1080px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.simTitle }}</h2>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Future Simulator — its future is your choice.</div></sc-if>
+      </div>
+
+      <sc-if value="{{ simChoosing }}" hint-placeholder-val="{{ true }}">
+        <div style="animation: fadeUp 0.5s ease both;">
+          <div style="text-align: center; font-size: 19px; color: #4A5A4B; margin-bottom: 30px;">{{ t.simPre }}<b>{{ itemZh }}</b>{{ t.simPost }}</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;">
+            <sc-for list="{{ binChoices }}" as="b" hint-placeholder-count="4">
+              <div onClick="{{ b.choose }}" style="padding: 30px 20px; border-radius: 20px; background: #FFFDF6; border: 2px solid #E5DCC8; text-align: center; cursor: pointer; transition: transform 0.15s;" style-hover="transform: translateY(-5px); border-color: {{ b.color }};">
+                <svg width="58" height="62" viewBox="0 0 58 62"><rect x="8" y="16" width="42" height="42" rx="6" fill="{{ b.color }}"></rect><rect x="4" y="8" width="50" height="10" rx="4" fill="{{ b.color }}"></rect><rect x="24" y="2" width="10" height="8" rx="2" fill="{{ b.color }}"></rect></svg>
+                <div style="font-weight: 900; font-size: 18px; margin-top: 12px; color: {{ b.color }};">{{ b.zh }}</div>
+                <div style="font-size: 12px; color: #A9A183; margin-top: 2px;">{{ b.en }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="text-align: center; font-size: 13px; color: #A9A183; margin-top: 22px;">{{ t.simHint }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ simPlaying }}" hint-placeholder-val="{{ false }}">
+        <div style="animation: fadeUp 0.4s ease both;">
+          <sc-if value="{{ styleJourney }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 26px;">
+              <sc-for list="{{ railSteps }}" as="rs" hint-placeholder-count="4">
+                <div style="display: flex; align-items: center;">
+                  <div style="display: flex; flex-direction: column; align-items: center; width: 130px;">
+                    <div style="width: 34px; height: 34px; border-radius: 17px; background: {{ rs.dotBg }}; border: 2.5px solid {{ rs.dotBorder }}; display: flex; align-items: center; justify-content: center; color: {{ rs.dotFg }}; font-weight: 700; font-size: 14px; transition: all 0.4s;">{{ rs.num }}</div>
+                    <div style="font-size: 13px; margin-top: 8px; color: {{ rs.labelColor }}; font-weight: {{ rs.labelWeight }}; text-align: center;">{{ rs.t }}</div>
+                  </div>
+                  <sc-if value="{{ rs.hasLink }}" hint-placeholder-val="{{ true }}"><div style="width: 46px; height: 3px; border-radius: 2px; background: {{ rs.linkBg }}; margin-bottom: 22px;"></div></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="border-radius: 24px; background: {{ stageBg }}; border: 1px solid #E5DCC8; padding: 40px; display: flex; flex-direction: column; align-items: center; min-height: 380px; box-sizing: border-box; justify-content: center;">
+            <div style="height: 210px; display: flex; align-items: center;">
+              <sc-if value="{{ scBinGood }}" hint-placeholder-val="{{ true }}">
+                <svg width="240" height="200" viewBox="0 0 240 200"><rect x="70" y="70" width="100" height="110" rx="10" fill="{{ chosenBinColor }}"></rect><rect x="60" y="52" width="120" height="20" rx="8" fill="{{ chosenBinColor }}"></rect><g style="animation: drop 1.2s ease-out both;"><rect x="108" y="10" width="24" height="48" rx="8" fill="#7FB0C9"></rect><rect x="114" y="2" width="12" height="10" rx="3" fill="#2B6CB0"></rect></g><circle cx="50" cy="60" r="5" fill="#D97B29" style="animation: sparkle 2s ease-in-out infinite;"></circle><circle cx="196" cy="48" r="4" fill="#3E7C4F" style="animation: sparkle 2.4s ease-in-out 0.5s infinite;"></circle></svg>
+              </sc-if>
+              <sc-if value="{{ scSort }}" hint-placeholder-val="{{ false }}">
+                <svg width="300" height="200" viewBox="0 0 300 200"><rect x="10" y="130" width="280" height="16" rx="8" fill="#8A9B7E"></rect><g style="animation: beltmove 1.6s linear infinite;"><circle cx="40" cy="152" r="8" fill="#5C6B54"></circle><circle cx="100" cy="152" r="8" fill="#5C6B54"></circle><circle cx="160" cy="152" r="8" fill="#5C6B54"></circle><circle cx="220" cy="152" r="8" fill="#5C6B54"></circle><circle cx="280" cy="152" r="8" fill="#5C6B54"></circle></g><g style="animation: shake 1.4s ease-in-out infinite;"><rect x="132" y="78" width="24" height="50" rx="8" fill="#7FB0C9"></rect><rect x="138" y="70" width="12" height="10" rx="3" fill="#2B6CB0"></rect></g><rect x="110" y="14" width="70" height="30" rx="8" fill="#1E3A2B"></rect><text x="145" y="34" text-anchor="middle" font-size="13" fill="#F0B27A" font-weight="bold">{{ t.scanning }}</text><path d="M126 44 L 118 78 M164 44 L 172 78" stroke="#F0B27A" stroke-width="2" stroke-dasharray="4 4" style="animation: flicker 0.8s linear infinite;"></path></svg>
+              </sc-if>
+              <sc-if value="{{ scTransform }}" hint-placeholder-val="{{ false }}">
+                <svg width="300" height="200" viewBox="0 0 300 200"><rect x="90" y="50" width="120" height="100" rx="14" fill="#3E7C4F"></rect><circle cx="150" cy="100" r="30" fill="none" stroke="#DCE7D3" stroke-width="6" stroke-dasharray="30 16" style="transform-origin: 150px 100px; animation: spin 2s linear infinite;"></circle><g style="animation: sink 1.8s ease-in infinite;"><rect x="140" y="8" width="20" height="38" rx="6" fill="#7FB0C9"></rect></g><g style="animation: pulse 1.4s ease-in-out infinite;"><circle cx="120" cy="172" r="5" fill="#7FB0C9"></circle><circle cx="145" cy="180" r="5" fill="#9CC3D6"></circle><circle cx="170" cy="172" r="5" fill="#7FB0C9"></circle><circle cx="192" cy="180" r="5" fill="#9CC3D6"></circle></g></svg>
+              </sc-if>
+              <sc-if value="{{ scReborn }}" hint-placeholder-val="{{ false }}">
+                <svg width="260" height="200" viewBox="0 0 260 200"><g style="animation: fadeUp 1s ease both;"><path d="M100 70 L 130 52 L 160 70 L 178 88 L 164 102 L 156 94 L 156 150 L 104 150 L 104 94 L 96 102 L 82 88 Z" fill="{{ rebornColor }}"></path></g><circle cx="60" cy="60" r="6" fill="#D97B29" style="animation: sparkle 1.6s ease-in-out infinite;"></circle><circle cx="204" cy="52" r="5" fill="#3E7C4F" style="animation: sparkle 2s ease-in-out 0.4s infinite;"></circle><circle cx="196" cy="150" r="4" fill="#D97B29" style="animation: sparkle 1.8s ease-in-out 0.8s infinite;"></circle><circle cx="52" cy="140" r="4" fill="#3E7C4F" style="animation: sparkle 2.2s ease-in-out 1.1s infinite;"></circle></svg>
+              </sc-if>
+              <sc-if value="{{ scBinBad }}" hint-placeholder-val="{{ false }}">
+                <svg width="240" height="200" viewBox="0 0 240 200"><rect x="70" y="70" width="100" height="110" rx="10" fill="#6B7280"></rect><rect x="60" y="52" width="120" height="20" rx="8" fill="#6B7280"></rect><g style="animation: drop 1.2s ease-out both;"><rect x="108" y="10" width="24" height="48" rx="8" fill="#7FB0C9"></rect><rect x="114" y="2" width="12" height="10" rx="3" fill="#2B6CB0"></rect></g><path d="M84 96 q 10 8 20 0 M124 104 q 12 6 24 -2" stroke="#4B5563" stroke-width="4" fill="none" stroke-linecap="round"></path></svg>
+              </sc-if>
+              <sc-if value="{{ scMix }}" hint-placeholder-val="{{ false }}">
+                <svg width="280" height="200" viewBox="0 0 280 200"><path d="M30 180 Q 80 110 140 130 Q 200 100 250 180 Z" fill="#8B8F8A"></path><circle cx="100" cy="150" r="12" fill="#6B7280"></circle><rect x="160" y="138" width="26" height="18" rx="4" fill="#A8A29E" transform="rotate(14 173 147)"></rect><g style="animation: sink 3s ease-in both;"><rect x="128" y="96" width="20" height="40" rx="7" fill="#7FB0C9"></rect></g><circle cx="70" cy="120" r="3" fill="#B0B4AE" style="animation: floaty 3s ease-in-out infinite;"></circle><circle cx="210" cy="112" r="3" fill="#B0B4AE" style="animation: floaty 3.4s ease-in-out 0.8s infinite;"></circle></svg>
+              </sc-if>
+              <sc-if value="{{ scLandfill }}" hint-placeholder-val="{{ false }}">
+                <svg width="300" height="200" viewBox="0 0 300 200"><rect x="0" y="160" width="300" height="40" fill="#7A6F5C"></rect><path d="M40 160 Q 150 60 260 160 Z" fill="#95886F"></path><g style="animation: sink 4s ease-in both;"><rect x="138" y="98" width="20" height="40" rx="7" fill="#7FB0C9" opacity="0.8"></rect></g><circle cx="80" cy="70" r="14" fill="#C9C2B2" opacity="0.5" style="animation: floaty 4s ease-in-out infinite;"></circle><circle cx="220" cy="56" r="10" fill="#C9C2B2" opacity="0.4" style="animation: floaty 4.6s ease-in-out 1s infinite;"></circle><text x="150" y="188" text-anchor="middle" font-size="12" fill="#E8E0CE">{{ t.years450 }}</text></svg>
+              </sc-if>
+              <sc-if value="{{ scEnergy }}" hint-placeholder-val="{{ false }}">
+                <svg width="280" height="200" viewBox="0 0 280 200"><rect x="60" y="90" width="100" height="90" rx="10" fill="#5C6B54"></rect><path d="M95 90 C 85 60 105 52 102 34 C 122 46 124 68 116 90 Z" fill="#D97B29" style="animation: flicker 0.7s linear infinite;"></path><path d="M160 120 L 216 120" stroke="#D9CFAF" stroke-width="5" stroke-linecap="round"></path><circle cx="228" cy="120" r="16" fill="#F0B27A" style="animation: pulse 1.2s ease-in-out infinite;"></circle><path d="M228 96 v -10 M228 144 v 10 M204 120 h -0 M252 120 h 10 M211 103 l -7 -7 M245 103 l 7 -7" stroke="#F0B27A" stroke-width="3" stroke-linecap="round"></path></svg>
+              </sc-if>
+            </div>
+            <div style="text-align: center; margin-top: 18px; max-width: 560px;">
+              <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 24px; color: {{ stageTitleColor }};">{{ stepTitle }}</div>
+              <div style="font-size: 16px; line-height: 1.8; margin-top: 8px; color: {{ stageSubColor }};">{{ stepSub }}</div>
+              <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 13px; font-style: italic; margin-top: 6px; color: {{ stageEnColor }};">{{ stepEn }}</div></sc-if>
+            </div>
+            <sc-if value="{{ styleTheater }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; gap: 8px; margin-top: 22px;">
+                <sc-for list="{{ railSteps }}" as="d" hint-placeholder-count="4"><div style="width: 26px; height: 5px; border-radius: 3px; background: {{ d.linkBg }};"></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ simDone }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width: 640px; margin: 0 auto; animation: fadeUp 0.6s ease both;">
+          <div style="border-radius: 24px; background: {{ msgBg }}; padding: 40px 44px; color: {{ msgFg }}; position: relative;">
+            <div style="font-size: 12px; letter-spacing: 3px; opacity: 0.7;">{{ t.letterKicker }}</div>
+            <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 26px; margin: 10px 0 14px;">{{ t.letterTitle }}</div>
+            <p style="font-size: 16px; line-height: 2; margin: 0; text-wrap: pretty;">{{ futureMsg }}</p>
+            <div style="margin-top: 18px; font-size: 14px; opacity: 0.75;">{{ t.yours }}{{ itemZh }}</div>
+          </div>
+          <div style="display: flex; gap: 14px; justify-content: center; margin-top: 26px;">
+            <div onClick="{{ rewrite }}" style="padding: 14px 32px; border-radius: 28px; background: #D97B29; color: #FFF8ED; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 6px 16px rgba(217,123,41,0.3);" style-hover="background: #C06A1E;">{{ t.rewriteBtn }}</div>
+            <div onClick="{{ goRecord }}" style="padding: 14px 28px; border-radius: 28px; border: 1.5px solid #C9BD9F; color: #4A5A4B; font-size: 16px; cursor: pointer;" style-hover="border-color: #3E7C4F; color: #3E7C4F;">{{ t.doneBtn }}</div>
+          </div>
+          <div style="text-align: center; font-size: 13px; color: #A9A183; margin-top: 14px;">{{ rewriteHint }}</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- ═══════════ EXPLORE ═══════════ -->
+  <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
+      <div style="text-align: center; margin-bottom: 36px;">
+        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.exploreTitle }}</h2>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Exploration Space — one object a day, one story at a time.</div></sc-if>
+      </div>
+      <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
+        <div style="padding: 30px 32px; border-radius: 20px; background: #1E3A2B; color: #FAF7EF;">
+          <div style="font-size: 12px; letter-spacing: 3px; color: #9DB8A0;">{{ t.dailyLabel }}{{ todayStr }}</div>
+          <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 34px; margin: 12px 0 4px;">{{ dailyZh }}</div>
+          <div style="font-size: 14px; color: #9DB8A0; font-style: italic;">{{ dailyEn }}</div>
+          <p style="font-size: 15px; line-height: 1.9; color: #D9E4D6; margin: 16px 0 22px; text-wrap: pretty;">{{ dailyFact }}</p>
+          <div onClick="{{ pickDaily }}" style="display: inline-block; padding: 11px 24px; border-radius: 22px; background: #D97B29; color: #FFF8ED; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: #E88C3C;">{{ t.meetIt }}</div>
+        </div>
+        <div style="padding: 30px 32px; border-radius: 20px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+          <div style="font-weight: 700; font-size: 18px; margin-bottom: 4px;">{{ t.campusTitle }}</div>
+          <div style="font-size: 13px; color: #7C8A73; margin-bottom: 18px;">{{ t.campusSub }}</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+            <sc-for list="{{ storyPanels }}" as="sp" hint-placeholder-count="4">
+              <div style="text-align: center;">
+                <div style="border-radius: 14px; background: {{ sp.bg }}; height: 88px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="52" height="60" viewBox="0 0 52 60"><path d="{{ sp.path }}" fill="{{ sp.fill }}"></path><path d="{{ sp.path2 }}" fill="{{ sp.fill2 }}"></path></svg>
+                </div>
+                <div style="font-size: 13px; font-weight: 700; margin-top: 8px;">{{ sp.t }}</div>
+                <div style="font-size: 11.5px; color: #7C8A73; line-height: 1.55; margin-top: 3px;">{{ sp.s }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <p style="font-size: 13px; color: #7C8A73; line-height: 1.8; margin: 16px 0 0; text-wrap: pretty;">{{ t.cupNote }}</p>
+        </div>
+      </div>
+      <div onClick="{{ goRecord }}" style="margin-top: 20px; padding: 20px 28px; border-radius: 18px; background: #EFE8D6; display: flex; align-items: center; gap: 14px; cursor: pointer;" style-hover="background: #E7DEC6;">
+        <div style="font-weight: 700; font-size: 16px;">{{ t.myRecord }}</div>
+        <div style="font-size: 14px; color: #7C8A73; flex: 1;">{{ t.recSummaryA }}{{ idCount }}{{ t.recSummaryB }}{{ simCount }}{{ t.recSummaryC }}</div>
+        <div style="color: #A9A183; font-size: 20px;">→</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══════════ MY RECORD ═══════════ -->
+  <sc-if value="{{ isRecord }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; max-width: 760px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.myRecord }}</h2>
+        <div style="font-size: 13px; color: #7C8A73;">{{ t.recNote }}</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+        <div style="padding: 22px; border-radius: 16px; background: #FFFDF6; border: 1px solid #E5DCC8; text-align: center;"><div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; color: #2F5A3C;">{{ idCount }}</div><div style="font-size: 13px; color: #7C8A73;">{{ t.recIdCount }}</div></div>
+        <div style="padding: 22px; border-radius: 16px; background: #FFFDF6; border: 1px solid #E5DCC8; text-align: center;"><div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; color: #B8641B;">{{ simCount }}</div><div style="font-size: 13px; color: #7C8A73;">{{ t.recSimCount }}</div></div>
+      </div>
+      <sc-if value="{{ hasRecords }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <sc-for list="{{ records }}" as="rec" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-radius: 14px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+              <div style="width: 10px; height: 10px; border-radius: 5px; background: {{ rec.dot }};"></div>
+              <div style="font-weight: 700; font-size: 15px;">{{ rec.name }}</div>
+              <div style="font-size: 14px; color: #7C8A73; flex: 1;">{{ rec.desc }}</div>
+              <div style="font-size: 12px; color: #A9A183;">{{ rec.time }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div onClick="{{ clearRecords }}" style="margin-top: 18px; text-align: center; font-size: 13px; color: #A9A183; cursor: pointer; text-decoration: underline;" style-hover="color: #B8641B;">{{ t.clearBtn }}</div>
+      </sc-if>
+      <sc-if value="{{ noRecords }}" hint-placeholder-val="{{ true }}">
+        <div style="text-align: center; padding: 48px 20px; border-radius: 18px; border: 1.5px dashed #C9BD9F; color: #7C8A73;">
+          <div style="font-size: 16px; margin-bottom: 14px;">{{ t.recEmpty }}</div>
+          <div onClick="{{ goIdentify }}" style="display: inline-block; padding: 12px 28px; border-radius: 24px; background: #3E7C4F; color: #FAF7EF; font-weight: 700; cursor: pointer;" style-hover="background: #2F6640;">{{ t.goIdent }}</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <footer style="padding: 22px 48px; border-top: 1px solid #E5DCC8; display: flex; gap: 20px; align-items: center; font-size: 12.5px; color: #A9A183;">
+    <div>Second Life AI · 万物皆有新生</div>
+    <div style="flex: 1;"></div>
+    <div>{{ t.footNote }}</div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, loaded: false };
+
+  componentDidMount() {
+    let lang = 'zh', records = [];
+    try {
+      const l = window.localStorage.getItem('slai.lang');
+      if (l === 'zh' || l === 'en') lang = l;
+      const r = window.localStorage.getItem('slai.records');
+      if (r) { const p = JSON.parse(r); if (Array.isArray(p)) records = p.slice(0, 60); }
+    } catch (e) { /* localStorage blocked — run in memory only */ }
+    this.setState({ lang, records, loaded: true });
+  }
+
+  componentWillUnmount() { clearInterval(this._timer); }
+
+  persist(key, val) {
+    try { window.localStorage.setItem('slai.' + key, val); } catch (e) { /* ignore */ }
+  }
+
+  setLang(lang) {
+    this.persist('lang', lang);
+    this.setState({ lang });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     UI STRINGS — every piece of chrome, in both languages.
+     Add a new language by adding a third key here.
+     ───────────────────────────────────────────────────────── */
+  ui() {
+    const zh = {
+      brand: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
+      navHome: '首页', navIdentify: '识别中心', navExplore: '探索空间', navRecord: '我的记录',
+      ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
+      badge: '课程作品 · 由真实训练的 TrashNet 模型驱动',
+      kickerMinimal: 'SECOND LIFE AI · 课程作品',
+      heroA: '每一件物品，', heroB: '都值得第二次生命',
+      heroBody: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。在这里，垃圾分类不再是"该扔哪个桶"的查询，而是一次为物品选择命运的旅程：认识它 → 选择它的未来 → 见证结果。',
+      heroBodyShort: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。认识它 → 选择它的未来 → 见证结果。',
+      accCaption: '验证集准确率（TTA）· TrashNet 六分类',
+      mapTitle: '六个模型类别 → 四分类投放的透明映射',
+      honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。页面上所有置信度均为模型真实输出，从不夸大。',
+      identTitle: 'AI 物品识别中心',
+      analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
+      uploadTitle: '拍照或上传图片', uploadSub: '点击选择一张照片。若后端 /api/identify 已启动，将返回模型真实输出；否则使用演示数据。',
+      orType: '或者，输入物品名称',
+      searchPlaceholder: '例如：塑料瓶、咖啡杯、快递纸箱…',
+      libCovers: '内容库覆盖的常见物品：',
+      missPre: '内容库暂时没有「', missPost: '」的条目。它可能不属于模型的六个类别——试试上面的常见物品，或上传一张照片。',
+      modelSays: '模型判定：', confidence: '置信度',
+      confLive: '真实 softmax 输出，未取整夸大',
+      confDemo: '⚠ 演示数据 · 后端未连接，此数字非模型实时输出',
+      putInto: '应投入',
+      blockMaterial: '③ 它是什么做的 · Material',
+      blockHistory: '④ 它的小小历史 · History',
+      blockRelated: '⑤ 同材质的伙伴们 · Same material',
+      probsTitle: '模型的完整判断（六类概率）',
+      waitingA: '"这件物品正等待开启', waitingB: '下一段旅程。"',
+      enterSim: '进入未来模拟器，为它做出选择',
+      simTitle: '未来模拟器',
+      simPre: '这只', simPost: '正等待开启下一段旅程——它的未来，由你决定。',
+      simHint: '没有提示，凭直觉选——选错也是故事的一部分。',
+      scanning: '扫描中', years450: '450 年，才能完全降解',
+      letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: '来自未来的信',
+      yours: '—— 你的',
+      rewriteBtn: '【改写它的未来】', doneBtn: '完成，看我的记录',
+      rewriteToCorrect: '点击改写，看看如果当初选对了，它会经历什么。',
+      rewriteToWrong: '点击改写，看看另一种选择会把它带向哪里。',
+      exploreTitle: 'AI 环境探索空间',
+      dailyLabel: '今日物品 · ', meetIt: '认识它 →',
+      campusTitle: '校园故事：一只咖啡杯的一天',
+      campusSub: 'A campus story — honest ending included.',
+      cupNote: '诚实的小注脚：多数一次性咖啡杯内壁有塑料淋膜，很难当纸回收——所以它属于其他垃圾。自带杯子，是给它更好的未来。',
+      myRecord: '我的记录',
+      recSummaryA: '这台浏览器已完成 ', recSummaryB: ' 次识别、', recSummaryC: ' 次未来模拟',
+      recNote: '只保存在这台浏览器里（localStorage）——没有账号，没有服务器。',
+      recIdCount: '次物品识别', recSimCount: '次未来模拟',
+      recEmpty: '这里还是空的——去识别一件物品，为它选择未来吧。',
+      goIdent: '去识别中心 →', clearBtn: '清空本机记录',
+      recId: '识别 · 置信度 ', recIdDemo: '识别（演示） · 置信度 ',
+      recSimGood: '选择了正确的未来', recSimBad: '见证了另一种结局',
+      footNote: 'TrashNet 六分类 · 验证准确率 94.93%（TTA）· 全站离线运行 · 无外部 API',
+      langLabel: 'EN', langTitle: 'Switch to English',
+      photoAlt: '你上传的照片'
+    };
+    const en = {
+      brand: 'Second Life AI', brandA: 'Second', brandB: 'Life', brandC: 'AI',
+      navHome: 'Home', navIdentify: 'Identify', navExplore: 'Explore', navRecord: 'My Record',
+      ctaStart: 'Start exploring', ctaExplore: '【Start exploring】', ctaBrowse: 'Browse the Exploration Space first',
+      badge: 'Course project · powered by a genuinely trained TrashNet model',
+      kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
+      heroA: 'Every object deserves', heroB: 'a second life',
+      heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup — "which bin?" — and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
+      heroBodyShort: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
+      accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
+      mapTitle: 'Six model classes → four bins, mapped transparently',
+      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Every confidence figure on this site is the model\u2019s real output — never rounded up.',
+      identTitle: 'AI Recognition Center',
+      analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
+      uploadTitle: 'Take or upload a photo', uploadSub: 'Click to choose an image. If the /api/identify backend is running, you get the model\u2019s real output; otherwise demo data is shown.',
+      orType: 'Or type the name of an item',
+      searchPlaceholder: 'e.g. plastic bottle, coffee cup, parcel box…',
+      libCovers: 'Common items in the content library:',
+      missPre: 'The content library has no entry for "', missPost: '" yet. It may fall outside the model\u2019s six classes — try one of the common items above, or upload a photo.',
+      modelSays: 'Model says: ', confidence: 'Confidence',
+      confLive: 'Real softmax output, never rounded up',
+      confDemo: '⚠ Demo data · backend not connected, this is not live model output',
+      putInto: 'Put it in',
+      blockMaterial: '③ What it is made of · Material',
+      blockHistory: '④ A short history · History',
+      blockRelated: '⑤ Same-material companions · Related',
+      probsTitle: 'The model\u2019s full judgement (six-class probabilities)',
+      waitingA: '"This object is waiting to begin', waitingB: 'its next journey."',
+      enterSim: 'Enter the Future Simulator and choose for it',
+      simTitle: 'Future Simulator',
+      simPre: 'This ', simPost: ' is waiting to begin its next journey — its future is yours to decide.',
+      simHint: 'No hints. Go with your instinct — getting it wrong is part of the story too.',
+      scanning: 'SCANNING', years450: '450 years to fully degrade',
+      letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: 'A letter from the future',
+      yours: '—— your ',
+      rewriteBtn: '【Rewrite its future】', doneBtn: 'Done — see my record',
+      rewriteToCorrect: 'Tap rewrite to see what would have happened if you had chosen right.',
+      rewriteToWrong: 'Tap rewrite to see where the other choice would have taken it.',
+      exploreTitle: 'AI Exploration Space',
+      dailyLabel: 'Object of the day · ', meetIt: 'Meet it →',
+      campusTitle: 'A campus story: one day of a coffee cup',
+      campusSub: '一只咖啡杯的一天 —— 结局是诚实的。',
+      cupNote: 'An honest footnote: most disposable coffee cups are lined with plastic film inside, which makes them very hard to recycle as paper — so they belong in residual waste. Bringing your own cup is the better future for it.',
+      myRecord: 'My Record',
+      recSummaryA: 'This browser has completed ', recSummaryB: ' identifications and ', recSummaryC: ' future simulations',
+      recNote: 'Stored only in this browser (localStorage) — no accounts, no server.',
+      recIdCount: 'identifications', recSimCount: 'future simulations',
+      recEmpty: 'Nothing here yet — go identify an object and choose a future for it.',
+      goIdent: 'Go to the Recognition Center →', clearBtn: 'Clear records on this device',
+      recId: 'Identified · confidence ', recIdDemo: 'Identified (demo) · confidence ',
+      recSimGood: 'Chose the right future', recSimBad: 'Witnessed the other ending',
+      footNote: 'TrashNet six classes · 94.93% validation accuracy (TTA) · fully offline · no external APIs',
+      langLabel: '中文', langTitle: '切换到中文',
+      photoAlt: 'The photo you uploaded'
+    };
+    return this.state.lang === 'en' ? en : zh;
+  }
+
+  lib() {
+    const BINS = {
+      recyclable: { zh: '可回收物', en: 'Recyclable', color: '#2B6CB0' },
+      kitchen: { zh: '厨余垃圾', en: 'Food waste', color: '#4C8C4A' },
+      hazard: { zh: '有害垃圾', en: 'Hazardous', color: '#C0392B' },
+      other: { zh: '其他垃圾', en: 'Residual', color: '#6B7280' }
+    };
+    const CLS = { plastic: '塑料', glass: '玻璃', metal: '金属', paper: '纸类', cardboard: '纸板', trash: '其他' };
+    const CLS_EN = { plastic: 'Plastic', glass: 'Glass', metal: 'Metal', paper: 'Paper', cardboard: 'Cardboard', trash: 'Trash' };
+    const ITEMS = {
+      bottle: { zh: '塑料瓶', en: 'Plastic bottle', cls: 'plastic', bin: 'recyclable', conf: 0.962,
+        probs: { plastic: 0.962, glass: 0.015, metal: 0.010, trash: 0.007, paper: 0.004, cardboard: 0.002 },
+        material: '瓶身是 PET（聚对苯二甲酸乙二醇酯）——轻、透明、结实，还能牢牢锁住气泡，所以饮料公司都爱它。瓶盖通常是另一种塑料 HDPE，颜色更实、更韧。',
+        materialEn: 'The body is PET (polyethylene terephthalate) — light, clear, strong, and airtight enough to hold the fizz in, which is why drinks companies love it. The cap is usually a different plastic, HDPE: more opaque, and tougher.',
+        history: '1973 年，工程师 Nathaniel Wyeth 发明了 PET 瓶，替代了沉重易碎的玻璃瓶。从此每年上千亿只瓶子被造出来——它们的平均使用时间，往往只有十几分钟。',
+        historyEn: 'In 1973 the engineer Nathaniel Wyeth invented the PET bottle, replacing heavy, breakable glass. Hundreds of billions have been made every year since — and the average one is used for barely ten minutes.',
+        related: ['jar2', 'lunchbox', 'jar'] },
+      cup: { zh: '咖啡杯', en: 'Coffee cup', cls: 'trash', bin: 'other', conf: 0.884,
+        probs: { trash: 0.884, paper: 0.078, plastic: 0.024, cardboard: 0.010, glass: 0.003, metal: 0.001 },
+        material: '看起来是纸，其实内壁有一层聚乙烯淋膜用来防水。这层膜让它既不能当纸回收，也不能当塑料回收——所以它属于其他垃圾。',
+        materialEn: 'It looks like paper, but the inside is coated with a film of polyethylene to keep it waterproof. That film means it can be recycled neither as paper nor as plastic — so it belongs in residual waste.',
+        history: '一次性纸杯诞生于 1907 年的美国，本是为公共饮水卫生发明的。今天全球每年用掉约 5000 亿只，绝大多数只陪伴人类不到一小时。',
+        historyEn: 'The disposable cup was born in America in 1907, invented for the sake of public drinking hygiene. Today the world gets through roughly 500 billion a year, most of them keeping someone company for under an hour.',
+        related: ['bottle', 'lunchbox'] },
+      box: { zh: '快递纸箱', en: 'Parcel box', cls: 'cardboard', bin: 'recyclable', conf: 0.973,
+        probs: { cardboard: 0.973, paper: 0.019, trash: 0.005, plastic: 0.002, glass: 0.001, metal: 0.000 },
+        material: '瓦楞纸板：两层平纸夹一层波浪形芯纸，像微型拱桥一样抗压。原料主要是回收纸浆——它自己往往就是再生的。',
+        materialEn: 'Corrugated board: a wavy core sandwiched between two flat sheets, resisting pressure like a row of tiny arches. It is made mostly from recycled pulp — it is usually already a second life.',
+        history: '瓦楞纸箱 1871 年获得专利，电商时代让它成为世界上流通最广的包装。压平投放，是给分拣员最好的礼物。',
+        historyEn: 'The corrugated box was patented in 1871, and the e-commerce era made it the most widely circulated package on earth. Flattening it before you bin it is the kindest gift you can give a sorter.',
+        related: ['newspaper', 'book', 'printerpaper'] },
+      jar: { zh: '玻璃罐', en: 'Glass jar', cls: 'glass', bin: 'recyclable', conf: 0.941,
+        probs: { glass: 0.941, plastic: 0.031, metal: 0.017, trash: 0.008, paper: 0.002, cardboard: 0.001 },
+        material: '钠钙玻璃：沙子、纯碱和石灰石在 1500°C 下熔成。化学性质极稳定，装什么都不串味。',
+        materialEn: 'Soda-lime glass: sand, soda ash and limestone melted together at 1500°C. It is so chemically stable that nothing it holds ever picks up a taste.',
+        history: '玻璃容器已有三千多年历史。它最了不起的一点：可以被无限次回收重熔，品质不打折扣——真正的循环冠军。',
+        historyEn: 'Glass containers go back more than three thousand years. Their finest quality: they can be remelted endlessly with no loss of quality — the true champion of the circular economy.',
+        related: ['jar2', 'can'] },
+      can: { zh: '易拉罐', en: 'Aluminum can', cls: 'metal', bin: 'recyclable', conf: 0.958,
+        probs: { metal: 0.958, plastic: 0.021, glass: 0.012, trash: 0.006, paper: 0.002, cardboard: 0.001 },
+        material: '罐身是铝合金，薄得只有 0.1 毫米左右，却能承受内部气压。铝的价值很高：回收重熔只需原生铝冶炼约 5% 的能量。',
+        materialEn: 'The body is aluminium alloy, only about 0.1 mm thick, yet strong enough to hold the pressure inside. Aluminium is valuable: remelting it takes roughly 5% of the energy needed to smelt it from ore.',
+        history: '1959 年第一只铝质易拉罐问世。一只被回收的铝罐，最快 60 天就能变成新罐回到货架上。',
+        historyEn: 'The first aluminium can appeared in 1959. A recycled can can be back on the shelf as a brand-new can in as little as 60 days.',
+        related: ['spoon', 'jar'] },
+      newspaper: { zh: '报纸', en: 'Newspaper', cls: 'paper', bin: 'recyclable', conf: 0.967,
+        probs: { paper: 0.967, cardboard: 0.021, trash: 0.007, plastic: 0.003, glass: 0.001, metal: 0.001 },
+        material: '新闻纸：便宜、轻、吸墨快，多由机械浆和回收纸浆制成。纤维每回收一次会变短一点，大约能循环 5–7 次。',
+        materialEn: 'Newsprint: cheap, light and quick to take ink, made mostly from mechanical and recycled pulp. The fibres get a little shorter each time round, so it can cycle about five to seven times.',
+        history: '报纸曾是世界上最大宗的纸制品。今天它的再生去向很多：新的新闻纸、蛋托、包装缓冲材料。',
+        historyEn: 'Newspaper was once the largest paper product in the world. Today it is reborn in many forms: fresh newsprint, egg trays, protective packaging.',
+        related: ['box', 'printerpaper', 'book'] },
+      bag: { zh: '塑料袋', en: 'Plastic bag', cls: 'trash', bin: 'other', conf: 0.861,
+        probs: { trash: 0.861, plastic: 0.102, paper: 0.019, cardboard: 0.010, glass: 0.005, metal: 0.003 },
+        material: '薄膜塑料（多为 PE）。太轻太软，会缠住回收厂的分拣机器，多数城市把它归入其他垃圾。',
+        materialEn: 'Film plastic, usually PE. Too light and too soft — it tangles the sorting machinery at recycling plants, so most cities class it as residual waste.',
+        history: '塑料袋 1965 年在瑞典获得专利，本意是替代纸袋、少砍树。真正的问题不是它的出生，而是"只用一次"。',
+        historyEn: 'The plastic bag was patented in Sweden in 1965, meant to replace paper bags and fell fewer trees. The problem was never its birth — it was "use once".',
+        related: ['bottle', 'lunchbox'] },
+      milkbox: { zh: '牛奶盒', en: 'Milk carton', cls: 'cardboard', bin: 'recyclable', conf: 0.902, probs: { cardboard: 0.902, paper: 0.061, plastic: 0.024, trash: 0.010, glass: 0.002, metal: 0.001 },
+        material: '复合包装：纸板 + 聚乙烯膜 + 有时还有铝箔，共六层。需要专门的水力碎浆工艺分离，洗净压平再投放。',
+        materialEn: 'A composite pack: cardboard plus polyethylene film, sometimes aluminium foil too — six layers in all. Separating them takes a dedicated hydropulping process. Rinse and flatten before binning.',
+        history: '利乐式无菌包装 1952 年发明，让牛奶不用冷藏也能保存数月。',
+        historyEn: 'Aseptic carton packaging was invented in 1952, letting milk keep for months without refrigeration.',
+        related: ['box', 'cup'] },
+      book: { zh: '旧课本', en: 'Old textbook', cls: 'paper', bin: 'recyclable', conf: 0.955, probs: { paper: 0.955, cardboard: 0.031, trash: 0.008, plastic: 0.004, glass: 0.001, metal: 0.001 },
+        material: '书写纸 + 胶装书脊。纸张品质高，是回收厂喜欢的原料。',
+        materialEn: 'Writing paper with a glued spine. The paper is high grade — exactly the feedstock a recycling mill is glad to see.',
+        history: '一本课本的纸，可能已经历过好几次生命——课本之前，它或许是一张报纸。',
+        historyEn: 'The paper in a textbook may already have lived several lives — before it was a textbook, it might have been a newspaper.',
+        related: ['newspaper', 'printerpaper'] },
+      printerpaper: { zh: '打印纸', en: 'Printer paper', cls: 'paper', bin: 'recyclable', conf: 0.971, probs: { paper: 0.971, cardboard: 0.018, trash: 0.006, plastic: 0.003, glass: 0.001, metal: 0.001 },
+        material: '漂白化学浆制成，纤维长、品质高——回收界的"优等生"。',
+        materialEn: 'Made from bleached chemical pulp: long fibres, high quality — the star pupil of the recycling world.',
+        history: '办公室曾预言"无纸化"，但打印纸依然是校园里最常见的纸类。双面打印，等于给树减负一半。',
+        historyEn: 'Offices once promised a "paperless" future, yet printer paper is still the most common paper on campus. Printing double-sided halves the load on the forest.',
+        related: ['newspaper', 'book'] },
+      foam: { zh: '泡沫盒', en: 'Foam box', cls: 'trash', bin: 'other', conf: 0.837, probs: { trash: 0.837, plastic: 0.118, paper: 0.021, cardboard: 0.014, glass: 0.006, metal: 0.004 },
+        material: '发泡聚苯乙烯（EPS），98% 是空气。太轻、易碎、常沾油污，绝大多数城市不回收。',
+        materialEn: 'Expanded polystyrene (EPS) — 98% of it is air. Too light, too brittle, and usually greasy: almost no city recycles it.',
+        history: '它保温又便宜，但几乎无法降解——是"方便"的代价最直观的样子。',
+        historyEn: 'It insulates well and costs almost nothing, but it barely degrades — the most visible price of "convenient".',
+        related: ['bag', 'lunchbox'] },
+      spoon: { zh: '金属勺', en: 'Metal spoon', cls: 'metal', bin: 'recyclable', conf: 0.929, probs: { metal: 0.929, plastic: 0.038, glass: 0.019, trash: 0.009, paper: 0.003, cardboard: 0.002 },
+        material: '不锈钢：铁 + 铬 + 镍。铬在表面形成看不见的氧化膜，所以它不生锈。',
+        materialEn: 'Stainless steel: iron plus chromium plus nickel. The chromium forms an invisible oxide skin on the surface, which is why it never rusts.',
+        history: '金属餐具可以用几十年，回收后重熔又是新钢材——耐用品本身就是最好的环保。',
+        historyEn: 'Metal cutlery lasts decades, and once collected it is remelted into new steel — durability is itself the best environmentalism.',
+        related: ['can'] },
+      jar2: { zh: '玻璃瓶', en: 'Glass bottle', cls: 'glass', bin: 'recyclable', conf: 0.948, probs: { glass: 0.948, plastic: 0.026, metal: 0.014, trash: 0.008, paper: 0.003, cardboard: 0.001 },
+        material: '与玻璃罐同族的钠钙玻璃，颜色来自微量金属氧化物：绿色是铁，棕色是铁加硫。',
+        materialEn: 'The same soda-lime family as the glass jar; the colour comes from traces of metal oxide — green from iron, brown from iron plus sulphur.',
+        history: '在很多国家，玻璃瓶走"押金返还"系统，洗干净能直接重复使用 20 次以上。',
+        historyEn: 'In many countries glass bottles run on a deposit-return system: washed clean, one bottle is reused twenty times or more.',
+        related: ['jar', 'can'] },
+      papercup: { zh: '纸杯', en: 'Paper cup', cls: 'trash', bin: 'other', conf: 0.871, probs: { trash: 0.871, paper: 0.089, plastic: 0.022, cardboard: 0.012, glass: 0.004, metal: 0.002 },
+        material: '和咖啡杯一样：纸身 + 聚乙烯淋膜。防水的代价是难回收。',
+        materialEn: 'The same as the coffee cup: a paper body with a polyethylene lining. The price of being waterproof is being hard to recycle.',
+        history: '纸杯是"看起来环保"的经典案例——材质诚实地告诉我们：它属于其他垃圾。',
+        historyEn: 'The paper cup is the classic case of "looks eco-friendly". Its material tells us honestly: it belongs in residual waste.',
+        related: ['cup', 'bottle'] },
+      lunchbox: { zh: '塑料餐盒', en: 'Plastic lunchbox', cls: 'plastic', bin: 'recyclable', conf: 0.913, probs: { plastic: 0.913, trash: 0.051, paper: 0.019, glass: 0.009, cardboard: 0.005, metal: 0.003 },
+        material: '多为 PP（聚丙烯），耐热可进微波炉。冲洗干净再投放——油污是回收最大的敌人。',
+        materialEn: 'Usually PP (polypropylene), heat-resistant and microwave-safe. Rinse it before you bin it — grease is recycling\u2019s greatest enemy.',
+        history: '外卖时代让它数量激增。一只干净的 PP 餐盒是合格的可回收物，一只油腻的只能进其他垃圾。',
+        historyEn: 'The delivery era made their numbers explode. A clean PP box is a perfectly good recyclable; a greasy one can only go to residual waste.',
+        related: ['bottle', 'bag'] }
+    };
+    const STORIES = {
+      plastic: {
+        correct: [
+          { scene: 'binGood', t: '进入蓝色的家', te: 'Into the blue home', s: '我和成百上千个同伴一起，安静地等待下一段旅程。', e: 'Into the blue bin, with hundreds of my kind, quietly waiting.' },
+          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '分拣中心的光学眼一眼认出：我是 PET，值得被留下。', e: 'The optical sorter recognizes me at once: PET — worth keeping.' },
+          { scene: 'transform', t: '重新开始', te: 'Starting over', s: '破碎、清洗、熔融——我变成了细细的再生纤维。', e: 'Shredded, washed, melted — I become fine recycled fibre.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成了一件抓绒外套的一部分，将陪一个人度过整个冬天。', e: 'Reborn as part of a fleece jacket, to keep someone warm all winter.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾桶，和剩饭、纸巾混在了一起。', e: 'Into the wrong bin, mixed with leftovers and tissues.' },
+          { scene: 'mix', t: '无人问津', te: 'Nobody looks', s: '转运站里没有人再把我挑出来。我的 PET，被当成了普通垃圾。', e: 'No one picks me out at the transfer station. My PET counts as ordinary rubbish now.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '在填埋场，我需要大约 450 年才能消失。循环里，永远少了我。', e: 'In the landfill I need some 450 years to disappear. The loop is missing me forever.' }],
+        msgCorrect: '谢谢你那天的选择。三个月后，我以另一种样子回到了人们身边——一件温暖的外套。四百五十年的等待，被你变成了一个新的开始。一个小小的动作，改写了我的整个未来。',
+        msgCorrectEn: 'Thank you for the choice you made that day. Three months later I came back to people in another shape — a warm jacket. Four hundred and fifty years of waiting, turned by you into a new beginning. One small action rewrote my whole future.',
+        msgWrong: '我没有怪你，只是有点遗憾。我本可以成为一件外套、一条围巾、一个新的瓶子……在这里，我只能慢慢地、慢慢地消失。如果时间能重来，你愿意为我换一个未来吗？',
+        msgWrongEn: 'I don\u2019t blame you — I\u2019m only a little sorry. I could have been a jacket, a scarf, a new bottle… Here, all I can do is disappear, slowly, very slowly. If time could run again, would you choose me a different future?',
+        rebornColor: '#3E7C4F'
+      },
+      cardboard: {
+        correct: [
+          { scene: 'binGood', t: '压平出发', te: 'Flattened, and off', s: '我被压得平平整整，和其他纸板叠在一起。', e: 'Pressed flat and stacked with the other board.' },
+          { scene: 'sort', t: '按纸分家', te: 'Paper parts ways', s: '分拣线把我和普通纸张分开——瓦楞纸有自己的去处。', e: 'The line separates me from ordinary paper — corrugated has its own destination.' },
+          { scene: 'transform', t: '化为纸浆', te: 'Back to pulp', s: '在水力碎浆机里，我散成温热的纤维，杂质被滤走。', e: 'In the hydropulper I loosen into warm fibre and the impurities are filtered away.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '两周后，我成为一只崭新的纸箱，装着某个人期待的包裹。', e: 'Two weeks later I am a brand-new box, carrying somebody\u2019s awaited parcel.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，纸箱最怕的就是被油污浸透。', e: 'Into the wrong bin — grease is what a box fears most.' },
+          { scene: 'mix', t: '纤维尽失', te: 'Fibres lost', s: '混杂和污渍让我的纸纤维再也无法被使用。', e: 'Mixing and staining make my fibres unusable.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '我被填埋了。为造我而倒下的那棵树，白白倒下了。', e: 'I am buried. The tree that fell to make me fell for nothing.' }],
+        msgCorrect: '谢谢你把我压平、放对了地方。现在我是一只新纸箱，正在去往下一个收件人的路上。纸的生命可以循环五到七次——这是我的第二次，还有好几次，等着未来的你。',
+        msgCorrectEn: 'Thank you for flattening me and putting me in the right place. I am a new box now, on my way to the next person waiting. Paper can live five to seven times — this was my second, and several more are waiting for the future you.',
+        msgWrong: '其实我很容易获得新生——只要被放对地方。这一次没有关系，下一只纸箱还会遇见你。愿意为它换一个未来吗？',
+        msgWrongEn: 'The truth is I am easy to bring back — I only need to be put in the right place. It is alright this time. The next box will meet you too. Will you choose it a different future?',
+        rebornColor: '#B8895A'
+      },
+      paper: {
+        correct: [
+          { scene: 'binGood', t: '进入蓝色的家', te: 'Into the blue home', s: '我和报纸、作业本们叠在一起，等待出发。', e: 'Stacked with newspapers and exercise books, waiting to leave.' },
+          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '我是高品质的纸纤维——回收线上的优等生。', e: 'High-grade paper fibre — the star pupil of the recycling line.' },
+          { scene: 'transform', t: '化为纸浆', te: 'Back to pulp', s: '脱墨、碎浆，我又变回柔软的纤维。', e: 'De-inked and repulped, I am soft fibre again.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一张新的纸——也许会印上某个学生的满分试卷。', e: 'Reborn as a fresh sheet — perhaps some student\u2019s perfect score.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，和湿漉漉的东西挤在一起。', e: 'Into the wrong bin, pressed against wet things.' },
+          { scene: 'mix', t: '纤维尽失', te: 'Fibres lost', s: '浸湿和污染让我的纤维彻底报废。', e: 'Soaked and contaminated, my fibres are finished.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '一张本可以再活五次的纸，在这里结束了。', e: 'A sheet with five lives left ends here.' }],
+        msgCorrect: '谢谢你。我已经是一张新的纸了——白净、平整，正在文具店的货架上等待下一个故事。纸的旅程可以循环五到七次，你为我保住了剩下的每一次。',
+        msgCorrectEn: 'Thank you. I am already a new sheet — clean, white and flat, waiting on a stationery shelf for the next story. Paper can go round five to seven times, and you saved every turn I had left.',
+        msgWrong: '被浸湿的那一刻我就知道回不去了。纸其实是最容易重生的材料——下一张纸，请让它进蓝色的桶，好吗？',
+        msgWrongEn: 'The moment I was soaked I knew there was no way back. Paper is actually the easiest material to bring back to life — so the next sheet, please, let it go in the blue bin?',
+        rebornColor: '#8A9B7E'
+      },
+      glass: {
+        correct: [
+          { scene: 'binGood', t: '小心轻放', te: 'Handled with care', s: '我完整地落进可回收物桶——谢谢你的温柔。', e: 'I land in the recycling bin in one piece — thank you for being gentle.' },
+          { scene: 'sort', t: '按色分家', te: 'Sorted by colour', s: '在回收厂，我和同色的伙伴们分在一起。', e: 'At the plant I am grouped with companions of my own colour.' },
+          { scene: 'transform', t: '烈火重熔', te: 'Remelted in fire', s: '1500°C 的熔炉里，我重新变成透亮的玻璃液。', e: 'In a 1500°C furnace I become clear molten glass again.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一只全新的瓶子——玻璃可以这样无限次重生。', e: 'Reborn as a brand-new bottle — glass can do this endlessly.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进其他垃圾，在黑暗里磕碎了一角。', e: 'Into the wrong bin, chipping a corner in the dark.' },
+          { scene: 'mix', t: '危险的碎片', te: 'Dangerous shards', s: '碎玻璃混在垃圾里，还可能划伤环卫工人的手。', e: 'Broken glass in the rubbish can cut a sanitation worker\u2019s hand.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '玻璃几乎永远不会降解。我将在填埋场躺上一百万年。', e: 'Glass almost never degrades. I will lie in this landfill for a million years.' }],
+        msgCorrect: '谢谢你。我已经重熔成一只新瓶子了。玻璃是少数可以无限循环、品质不减的材料——只要每次都有人像你一样，把我放对地方。',
+        msgCorrectEn: 'Thank you. I have been remelted into a new bottle. Glass is one of the few materials that can circle forever without losing quality — as long as someone, every time, puts me in the right place, the way you did.',
+        msgWrong: '在这里躺一百万年，实在太久了。我本可以在六十天内变成一只新瓶子回到货架上。下一只玻璃瓶，请替我送它回家。',
+        msgWrongEn: 'A million years lying here is far too long. I could have been a new bottle back on the shelf within sixty days. The next glass bottle — please send it home for me.',
+        rebornColor: '#7FB0C9'
+      },
+      metal: {
+        correct: [
+          { scene: 'binGood', t: '清脆落桶', te: 'A bright clink', s: '"当啷"一声，我落进了可回收物桶。', e: 'With a bright clink I land in the recycling bin.' },
+          { scene: 'sort', t: '磁与涡流', te: 'Magnets and eddies', s: '磁选和涡流分选把我从传送带上轻轻托起。', e: 'Magnetic and eddy-current sorters lift me gently off the belt.' },
+          { scene: 'transform', t: '烈火重熔', te: 'Remelted in fire', s: '重熔我只需原生冶炼 5% 的能量——金属的超能力。', e: 'Remelting me takes just 5% of the energy of primary smelting — metal\u2019s superpower.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '六十天后，我又出现在货架上——一只崭新的罐子。', e: 'Sixty days later I am back on the shelf — a brand-new can.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，高价值的铝被埋没了。', e: 'Into the wrong bin — high-value aluminium, buried.' },
+          { scene: 'mix', t: '无人问津', te: 'Nobody looks', s: '没有磁选，没有涡流，没有人发现我。', e: 'No magnet, no eddy current, nobody finds me.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '为炼出我消耗的所有电力，就这样浪费掉了。', e: 'All the electricity it took to smelt me is simply wasted.' }],
+        msgCorrect: '谢谢你。我已经重熔归来——还是一只罐子，但完全是新的。金属可以永远循环，每次重生只花 5% 的能量。你的一个选择，省下了 95%。',
+        msgCorrectEn: 'Thank you. I have been remelted and I am back — still a can, but entirely new. Metal can circle forever, and each rebirth costs only 5% of the energy. Your one choice saved the other 95%.',
+        msgWrong: '炼出一克铝需要很多很多电，而重熔我只要一点点。被埋在这里，是最贵的一种浪费。下一只易拉罐，请让它回到循环里。',
+        msgWrongEn: 'Smelting a single gram of aluminium takes a great deal of electricity; remelting me takes very little. Buried here, I am the most expensive kind of waste. The next can — please let it back into the loop.',
+        rebornColor: '#A9A9B0'
+      },
+      trash: {
+        correct: [
+          { scene: 'binGood', t: '去对的地方', te: 'To the right place', s: '我确实不可回收——你诚实地把我放进了其他垃圾。', e: 'I really am not recyclable — and you honestly put me in residual waste.' },
+          { scene: 'sort', t: '安全处理', te: 'Handled safely', s: '我和其他残余垃圾一起，被送往焚烧发电厂。', e: 'With the rest of the residual waste I go to the waste-to-energy plant.' },
+          { scene: 'energy', t: '最后的贡献', te: 'A last contribution', s: '燃烧我的热量变成了电——今晚点亮某盏路灯。', e: 'The heat of burning me becomes electricity — lighting a street lamp tonight.' },
+          { scene: 'reborn', t: '体面告别', te: 'A decent farewell', s: '我没能循环，但走得干净利落，没有拖累别人。', e: 'No second life for me, but a clean ending that dragged nobody down.' }],
+        wrong: [
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我混进了可回收物桶——但我真的不可回收。', e: 'I slip into the recycling bin — but I really cannot be recycled.' },
+          { scene: 'mix', t: '连累了别人', te: 'Dragging others down', s: '我的油污弄脏了一整批干净的纸和塑料。', e: 'My grease dirties a whole clean batch of paper and plastic.' },
+          { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '整批可回收物因为我被降级处理。好心办了坏事。', e: 'The whole batch is downgraded because of me. Good intentions, bad outcome.' }],
+        msgCorrect: '谢谢你的诚实。不是所有物品都能循环——但放对地方的我，最后变成了电，点亮了今晚的一盏灯。这也是一种体面的告别。',
+        msgCorrectEn: 'Thank you for your honesty. Not everything can be recycled — but put in the right place, I became electricity in the end, and lit one lamp tonight. That is a decent way to say goodbye too.',
+        msgWrong: '把我放进可回收物，看起来是好意，其实害了一整桶干净的伙伴。分类的意义在于诚实——下一次，让我去我该去的地方吧。',
+        msgWrongEn: 'Putting me in with the recyclables looked like kindness, but it ruined a whole bin of clean companions. Sorting is about honesty — next time, let me go where I truly belong.',
+        rebornColor: '#D97B29'
+      }
+    };
+    const CHIP_ORDER = ['bottle', 'cup', 'box', 'jar', 'can', 'newspaper', 'bag', 'milkbox', 'book', 'printerpaper', 'foam', 'spoon', 'jar2', 'papercup', 'lunchbox'];
+    return { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER };
+  }
+
+  /* Records are stored as structured data (not rendered text) so that they
+     survive a page reload AND re-render correctly when the language changes. */
+  addRecord(rec) {
+    const t = new Date();
+    const time = t.getHours() + ':' + String(t.getMinutes()).padStart(2, '0');
+    this.setState(s => {
+      const records = [Object.assign({ time }, rec)].concat(s.records).slice(0, 60);
+      this.persist('records', JSON.stringify(records));
+      return { records };
+    });
+  }
+
+  clearRecords() {
+    this.persist('records', '[]');
+    this.setState({ records: [] });
+  }
+
+  startStory(binId) {
+    const { ITEMS } = this.lib();
+    const item = ITEMS[this.state.itemKey];
+    this.playPath(binId === item.bin ? 'correct' : 'wrong', binId);
+  }
+
+  playPath(path, binId) {
+    clearInterval(this._timer);
+    const { ITEMS, STORIES } = this.lib();
+    const item = ITEMS[this.state.itemKey];
+    const steps = STORIES[item.cls][path];
+    this.setState({ simPhase: 'playing', simPath: path, simStep: 0, chosenBin: binId });
+    this._timer = setInterval(() => {
+      this.setState(s => {
+        if (s.simStep + 1 < steps.length) return { simStep: s.simStep + 1 };
+        clearInterval(this._timer);
+        setTimeout(() => this.addRecord({ k: 'sim', item: this.state.itemKey, path }), 400);
+        return { simPhase: 'done' };
+      });
+    }, 2600);
+  }
+
+  pick(key, opts) {
+    const o = opts || {};
+    const { ITEMS } = this.lib();
+    // Live picks (photo upload) carry the model's real conf + full probs; text
+    // picks don't, so we clear them and fall back to the library item's numbers.
+    this.setState({ itemKey: key, page: 'result', queryMiss: false, query: '', simPhase: 'choose', simStep: 0,
+      live: !!o.live, photo: o.photo || null,
+      liveConf: typeof o.conf === 'number' ? o.conf : null,
+      liveProbs: o.probs || null });
+    this.addRecord({ k: 'id', item: key, conf: o.conf || ITEMS[key].conf, live: !!o.live });
+  }
+
+  /* Real file upload. Tries the Flask backend first; if it is not running
+     (e.g. the file is opened directly), falls back to demo data and says so. */
+  onFile(e) {
+    const f = e.target && e.target.files && e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      this.setState({ analyzing: true, photo: dataUrl });
+      const fd = new FormData();
+      fd.append('image', f);
+      const done = (key, conf, probs, live) => {
+        this.setState({ analyzing: false });
+        this.pick(key, { conf, probs, live, photo: dataUrl });
+      };
+      const fallback = () => setTimeout(() => done('bottle', null, null, false), 900);
+      if (typeof fetch !== 'function' || window.location.protocol === 'file:') { fallback(); return; }
+      fetch('/api/identify', { method: 'POST', body: fd })
+        .then(r => { if (!r.ok) throw new Error('bad status'); return r.json(); })
+        .then(d => {
+          const { ITEMS } = this.lib();
+          // Backend returns { cls: 'plastic', conf: 0.9612, probs: {...} }. Map
+          // the class to a representative library item so the story blocks have
+          // content, and carry the real conf + probs through to the display.
+          const key = Object.keys(ITEMS).find(k => ITEMS[k].cls === d.cls) || 'bottle';
+          done(key, typeof d.conf === 'number' ? d.conf : null, d.probs || null, true);
+        })
+        .catch(fallback);
+    };
+    reader.onerror = () => this.setState({ analyzing: false });
+    reader.readAsDataURL(f);
+  }
+
+  renderVals() {
+    const { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER } = this.lib();
+    const t = this.ui();
+    const st = this.state;
+    const isEn = st.lang === 'en';
+    const L = (a, b) => (isEn ? b : a);
+    const item = ITEMS[st.itemKey];
+    const bin = BINS[item.bin];
+    // Live upload → the model's real numbers; text pick → the library item's.
+    const shownConf = (st.live && typeof st.liveConf === 'number') ? st.liveConf : item.conf;
+    const shownProbs = (st.live && st.liveProbs) ? st.liveProbs : item.probs;
+    const story = STORIES[item.cls];
+    const steps = story[st.simPath];
+    const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
+    // `english` still drives the small italic subtitles — they only make sense
+    // while the page itself is in Chinese.
+    const english = (this.props.showEnglish ?? true) && !isEn;
+    const layout = this.props.homeLayout ?? 'story';
+    const simStyle = this.props.simulatorStyle ?? 'journey';
+
+    const navDefs = [['home', t.navHome], ['identify', t.navIdentify], ['explore', t.navExplore], ['record', t.navRecord]];
+    const navItems = navDefs.map(([p, label]) => ({ label, go: go(p), weight: st.page === p ? 700 : 400, color: st.page === p ? '#2F5A3C' : '#4A5A4B', bg: st.page === p ? '#DCE7D3' : 'transparent' }));
+
+    const modules = [
+      { num: L('一', 'I'), title: L('AI 物品识别中心', 'AI Recognition Center'), sub: L('拍照或输入名称，真实模型告诉你它是什么、该去哪。', 'Photograph it or type its name; a real model tells you what it is and where it goes.'), tint: '#3E7C4F', go: go('identify') },
+      { num: L('二', 'II'), title: L('未来模拟器', 'Future Simulator'), sub: L('为它选择一个桶，见证两种截然不同的未来。', 'Choose a bin for it, and witness two very different futures.'), tint: '#D97B29', go: () => { this.setState({ page: 'simulator', simPhase: 'choose', simStep: 0 }); } },
+      { num: L('三', 'III'), title: L('AI 环境探索空间', 'AI Exploration Space'), sub: L('每日一物、校园故事，和属于你自己的记录。', 'An object a day, a campus story, and a record of your own.'), tint: '#7C8A73', go: go('explore') }
+    ];
+
+    const binRecyclable = L('可回收物', 'Recyclable'), binOther = L('其他垃圾', 'Residual');
+    const mappingChips = [
+      { cls: L('纸板 cardboard', 'cardboard'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('玻璃 glass', 'glass'), bin: binRecyclable, color: '#2B6CB0' },
+      { cls: L('金属 metal', 'metal'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('纸类 paper', 'paper'), bin: binRecyclable, color: '#2B6CB0' },
+      { cls: L('塑料 plastic', 'plastic'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('其他 trash', 'trash'), bin: binOther, color: '#6B7280' }
+    ];
+
+    const nameOf = k => L(ITEMS[k].zh, ITEMS[k].en);
+    const chips = CHIP_ORDER.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) }));
+    const marqueeItems = [...CHIP_ORDER, ...CHIP_ORDER].map(k => ({ zh: ITEMS[k].zh, en: ITEMS[k].en }));
+
+    const clsLabelAll = isEn
+      ? { plastic: 'plastic', glass: 'glass', metal: 'metal', paper: 'paper', cardboard: 'cardboard', trash: 'trash' }
+      : { plastic: '塑料 plastic', glass: '玻璃 glass', metal: '金属 metal', paper: '纸类 paper', cardboard: '纸板 cardboard', trash: '其他 trash' };
+    const probs = Object.entries(shownProbs).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: clsLabelAll[k], pct: (v * 100).toFixed(1) + '%', w: Math.max(v * 100, 0.8) + '%', color: k === item.cls ? '#3E7C4F' : '#C9BD9F' }));
+
+    const binChoices = ['recyclable', 'kitchen', 'hazard', 'other'].map(id => ({ zh: L(BINS[id].zh, BINS[id].en), en: L(BINS[id].en, BINS[id].zh), color: BINS[id].color, choose: () => this.startStory(id) }));
+
+    const isWrong = st.simPath === 'wrong';
+    const railColorDone = isWrong ? '#6B7280' : '#3E7C4F';
+    const railSteps = steps.map((s2, i) => {
+      const done = i < st.simStep, active = i === st.simStep;
+      return { num: i + 1, t: L(s2.t, s2.te), hasLink: i < steps.length - 1,
+        dotBg: done || active ? railColorDone : '#FFFDF6', dotBorder: done || active ? railColorDone : '#C9BD9F', dotFg: done || active ? '#FAF7EF' : '#A9A183',
+        labelColor: active ? '#23372B' : '#A9A183', labelWeight: active ? 700 : 400, linkBg: done ? railColorDone : '#E5DCC8' };
+    });
+    const cur = steps[Math.min(st.simStep, steps.length - 1)];
+    const theater = simStyle === 'theater';
+    const sc = name => st.simPhase === 'playing' && cur.scene === name;
+
+    const dayIdx = Math.floor(Date.now() / 86400000) % CHIP_ORDER.length;
+    const dailyKey = CHIP_ORDER[dayIdx];
+    const daily = ITEMS[dailyKey];
+    const now = new Date();
+    const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const storyPanels = [
+      { t: L('8:05 出生', '8:05 Born'), s: L('在咖啡店被装满，开始了一天。', 'Filled at the café; the day begins.'), bg: '#F6E8D8', fill: '#D97B29', path: 'M14 18 L38 18 L34 52 L18 52 Z', fill2: '#8C5A22', path2: 'M14 14 L38 14 L38 20 L14 20 Z' },
+      { t: L('9:40 陪伴', '9:40 Company'), s: L('在早八的课桌上，被慢慢喝完。', 'Slowly emptied on an 8am desk.'), bg: '#EFE8D6', fill: '#D97B29', path: 'M16 22 L36 22 L33 50 L19 50 Z', fill2: '#C9BD9F', path2: 'M10 52 L42 52 L42 56 L10 56 Z' },
+      { t: L('12:30 抉择', '12:30 The choice'), s: L('因为内壁的塑料膜，它被诚实地投进其他垃圾。', 'Because of its plastic lining, honestly binned as residual waste.'), bg: '#E4E4E2', fill: '#6B7280', path: 'M12 24 L40 24 L40 54 L12 54 Z', fill2: '#4B5563', path2: 'M10 18 L42 18 L42 26 L10 26 Z' },
+      { t: L('22:00 告别', '22:00 Farewell'), s: L('焚烧发电——它的热量点亮了今晚的路灯。', 'Waste-to-energy — its heat lights a street lamp tonight.'), bg: '#FBEFD9', fill: '#D97B29', path: 'M24 14 C 16 30 20 36 18 46 C 30 44 36 34 28 14 Z', fill2: '#F0B27A', path2: 'M40 40 a 6 6 0 1 1 -0.1 0 Z' }
+    ];
+
+    const records = st.records.map(r => {
+      const it = ITEMS[r.item] || ITEMS.bottle;
+      const name = L(it.zh, it.en);
+      if (r.k === 'sim') {
+        const good = r.path === 'correct';
+        return { name, desc: good ? t.recSimGood : t.recSimBad, dot: good ? '#3E7C4F' : '#6B7280', time: r.time };
+      }
+      const conf = typeof r.conf === 'number' ? r.conf : it.conf;
+      return { name, desc: (r.live ? t.recId : t.recIdDemo) + (conf * 100).toFixed(1) + '%', dot: '#2B6CB0', time: r.time };
+    });
+    const idCount = st.records.filter(r => r.k === 'id').length;
+    const simCount = st.records.filter(r => r.k === 'sim').length;
+
+    return {
+      t, english, isEn,
+      toggleLang: () => this.setLang(isEn ? 'zh' : 'en'),
+      isHome: st.page === 'home', isIdentify: st.page === 'identify', isResult: st.page === 'result',
+      isSimulator: st.page === 'simulator', isExplore: st.page === 'explore', isRecord: st.page === 'record',
+      homeStory: layout === 'story', homeSplit: layout === 'split', homeMinimal: layout === 'minimal',
+      goHome: go('home'), goIdentify: go('identify'), goExplore: go('explore'), goRecord: go('record'),
+      goSimulator: () => this.setState({ page: 'simulator', simPhase: 'choose', simStep: 0 }),
+      navItems, modules, mappingChips, chips, marqueeItems,
+      query: st.query, queryMiss: st.queryMiss,
+      onQuery: e => this.setState({ query: e.target.value, queryMiss: false }),
+      onQueryKey: e => {
+        if (e.key !== 'Enter') return;
+        const q = st.query.trim().toLowerCase();
+        const hit = Object.keys(ITEMS).find(k => ITEMS[k].zh === st.query.trim() || ITEMS[k].en.toLowerCase() === q);
+        if (hit) this.pick(hit); else this.setState({ queryMiss: true });
+      },
+      analyzing: st.analyzing, notAnalyzing: !st.analyzing,
+      onFile: e => this.onFile(e),
+      photo: st.photo, hasPhoto: !!st.photo, noPhoto: !st.photo,
+      isLive: st.live, isDemo: !st.live,
+      confNote: st.live ? t.confLive : t.confDemo,
+      confNoteColor: st.live ? '#A9A183' : '#B8641B',
+      itemZh: L(item.zh, item.en), itemEn: L(item.en, item.zh),
+      clsZh: L(CLS[item.cls], CLS_EN[item.cls]), clsEn: item.cls,
+      clsLine: L(CLS[item.cls] + '（' + item.cls + '）', CLS_EN[item.cls]),
+      confPct: (shownConf * 100).toFixed(1) + '%',
+      binZh: L(bin.zh, bin.en), binEn: L(bin.en, bin.zh), binBg: bin.color,
+      material: L(item.material, item.materialEn), history: L(item.history, item.historyEn),
+      related: item.related.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) })),
+      probs, binChoices,
+      simChoosing: st.simPhase === 'choose', simPlaying: st.simPhase === 'playing', simDone: st.simPhase === 'done',
+      styleJourney: !theater && st.simPhase === 'playing', styleTheater: theater && st.simPhase === 'playing',
+      railSteps,
+      stageBg: theater ? '#1E3A2B' : '#FFFDF6',
+      stageTitleColor: theater ? '#F0B27A' : (isWrong ? '#6B7280' : '#2F5A3C'),
+      stageSubColor: theater ? '#D9E4D6' : '#4A5A4B',
+      stageEnColor: theater ? '#9DB8A0' : '#A9A183',
+      stepTitle: L(cur.t, cur.te), stepSub: L(cur.s, cur.e), stepEn: cur.e,
+      scBinGood: sc('binGood'), scSort: sc('sort'), scTransform: sc('transform'), scReborn: sc('reborn'),
+      scBinBad: sc('binBad'), scMix: sc('mix'), scLandfill: sc('landfill'), scEnergy: sc('energy'),
+      chosenBinColor: st.chosenBin ? BINS[st.chosenBin].color : '#2B6CB0',
+      rebornColor: story.rebornColor,
+      msgBg: isWrong ? '#4B5563' : '#1E3A2B', msgFg: '#FAF7EF',
+      futureMsg: isWrong ? L(story.msgWrong, story.msgWrongEn) : L(story.msgCorrect, story.msgCorrectEn),
+      rewrite: () => this.playPath(isWrong ? 'correct' : 'wrong', isWrong ? item.bin : (item.bin === 'other' ? 'recyclable' : 'other')),
+      rewriteHint: isWrong ? t.rewriteToCorrect : t.rewriteToWrong,
+      todayStr: isEn ? (MON[now.getMonth()] + ' ' + now.getDate()) : ((now.getMonth() + 1) + '月' + now.getDate() + '日'),
+      dailyZh: L(daily.zh, daily.en), dailyEn: L(daily.en, daily.zh),
+      dailyFact: L(daily.history, daily.historyEn),
+      pickDaily: () => this.pick(dailyKey),
+      storyPanels,
+      idCount, simCount,
+      records, hasRecords: records.length > 0, noRecords: records.length === 0,
+      clearRecords: () => this.clearRecords()
+    };
+  }
+}
+</script>
+</body>
+</html>
