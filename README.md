@@ -1,60 +1,112 @@
-# TrashNet 6-Class Classification
+# TrashNet Image Classification — Project Overview
 
-Reproducible pipeline for the TrashNet garbage dataset (2527 images: paper, glass,
-plastic, metal, cardboard, trash). Leakage-free by construction: split-before-augment,
-group-aware splits (near-duplicate photos never span splits), test set touched exactly
-once via a single `--final-eval` path.
+*Last updated: 2026-07-20. This is the group-facing summary; the code and full
+audit trail live in `trashnet-current/`.*
 
-## Quickstart
+## What we're building
 
-```bash
-bash scripts/setup_env.sh          # venv + deps + GPU smoke test + freeze lockfile
-source .venv/bin/activate
-python scripts/download_data.py    # fetch dataset, verify counts, dedup, build splits
-python -m src.train --config configs/baseline.yaml   # M1 baseline (one command retrain)
-python -m src.evaluate --checkpoint checkpoints/baseline_resnet50/fold0/best.pth  # val metrics
-```
+A classifier for the **TrashNet dataset**: 2,527 photos of garbage in 6 classes
+(paper 594, glass 501, plastic 482, metal 410, cardboard 403, trash 137). It's a
+one-week team competition judged 50% on technical merit and 50% on presentation.
+Every team gets the same task, so our angle is a **high accuracy number that
+survives scrutiny**, plus poster findings about *why* published numbers on this
+dataset (99–100%) are often inflated.
 
-## All commands
+## The rules the whole pipeline is built around
 
-| Command | Purpose |
-|---|---|
-| `python scripts/download_data.py` | Fetch data, verify per-class counts, quarantine test, dedup, build committed splits |
-| `python -m src.train --config configs/<name>.yaml [--resume] [--fold K] [--overfit-batch]` | Train + log one run to experiments.csv |
-| `python -m src.kfold --config configs/<winner>.yaml` | 5-fold CV ensemble (resumable per fold) |
-| `python -m src.evaluate --checkpoint <ckpt-or-ensemble.json> [--tta]` | Val metrics + confusion matrix + per-class table |
-| `python -m src.evaluate --final-eval --checkpoint <ensemble.json> [--tta]` | **The single test-set run** |
-| `python -m src.leakage_experiment` | Arm A (correct) vs Arm B (leaked) pipeline comparison |
-| `python -m src.analysis --audit --gradcam` | cleanlab label audit + Grad-CAM figures |
-| `python demo/app.py` | Offline Gradio demo (class + confidence + Grad-CAM) |
-| `pytest tests/` | Split/leakage unit tests |
+1. **The test set (361 images) is touched exactly once, at the very end.** All
+   decisions are made on validation only. A guard file (`reports/TEST_SPENT.json`)
+   physically blocks re-running the test eval.
+2. **Group-aware splits.** TrashNet contains many photos of the *same object*
+   from different angles. Near-duplicates are detected and kept inside one split,
+   so the model is never tested on an object it trained on. This is the leak that
+   inflates the literature numbers.
+3. **Split first, augment after** — augmentation is applied to training data only.
+4. **Everything is logged and reproducible**: seeds fixed, every run appends to
+   an append-only `experiments.csv`, every decision gate was pre-registered
+   before the experiment ran.
 
-## Rules this repo enforces at runtime
+## What has happened so far
 
-1. **Test is quarantined.** `data/splits/test.csv` is written once by `download_data.py`.
-   Every training/eval entry point asserts that no test image — and no near-duplicate
-   *group* — appears in any train/val fold. Only `--final-eval` may read test images.
-2. **Split before augmenting.** Augmentation lives inside the train `DataLoader` only.
-   (`src/leakage_experiment.py` deliberately violates this in Arm B to measure the effect.)
-3. **ImageNet normalization** everywhere (0.485/0.456/0.406, 0.229/0.224/0.225).
-4. **Accuracy is never reported alone** — per-class recall + confusion matrix always.
-5. **Every run** appends a row to `experiments.csv` (config hash + hyperparams + val
-   metrics). Reported numbers must be traceable to a row.
-6. Seeds fixed, deps frozen to `requirements.lock.txt`, checkpoints saved every epoch,
-   crashed runs resume with `--resume`.
+**July 17 — codebase built.** Full pipeline: data download + dedup + splits,
+training with resume, evaluation with TTA, 5-fold CV ensembling, leakage
+experiment harness, label-audit tools, offline Gradio demo.
 
-## Repo layout
+**July 18 — first training session (Windows GPU PC).** A ResNet-50 baseline was
+trained, then three pre-registered improvement attempts were run. All three
+failed their acceptance gate (+7 net validation images required):
 
-```
-configs/        one yaml per experiment (baseline.yaml is the reference)
-data/raw/       images (gitignored)      data/splits/  committed seeded fold indices
-src/            pipeline modules         scripts/      setup + download
-experiments.csv append-only run log      reports/      figures + tables (committed)
-checkpoints/    gitignored               demo/         offline Gradio app
-paper/          short paper + figures    tests/        split/leakage unit tests
-```
+| Experiment | Val result (TTA) | Net vs. baseline | Verdict |
+|---|---:|---:|---|
+| 4-view test-time augmentation (TTA) | 412/434 | **+8** | ✅ adopted |
+| Progressive resize 224→384px | 412/434 | 0 | ❌ rejected |
+| Modern augmentation (TrivialAugment etc.) | 415/434 | +3 | ❌ rejected (trash-class recall collapsed) |
+| Weight decay 0.05→0.10 | 411/434 | −1 | ❌ rejected |
 
-## Sanity targets
+The session stopped itself after two consecutive failed steps, per its
+pre-registered stopping rule. Key insight: recipe tweaks on a 2015-era backbone
+just shuffle *which* images are wrong — the remaining headroom is in the
+**backbone itself** and in **ensembling**, neither of which had been tried yet.
 
-Honest ceiling ≈ 96–97%. Test is ~380 images, so 1% ≈ 4 images → differences under
-~1.5% are noise. Above ~97% on an honest pipeline: suspect a bug before celebrating.
+### Current official numbers
+
+| Metric | Result |
+|---|---:|
+| Validation, ResNet-50 baseline | 404/434 = **93.09%** |
+| Validation, + 4-view TTA | 412/434 = **94.93%** |
+| Test (single pre-intervention measurement, now spent) | 322/361 = **89.20%** |
+
+Context for the test number: a manual audit of the highest-loss test errors
+found roughly **half look mislabeled or genuinely ambiguous** — part of our
+poster story, not just an excuse. Honest ceiling estimate for this dataset with
+clean methodology: **~96–97%**. (Published 99–100% claims come from the leakage
+our pipeline is designed to avoid — and to demonstrate.)
+
+**July 19 → 20 — first overnight optimization run failed silently.** The new
+"autopilot" (backbone bake-off → 5-fold ensemble) hung at its very first step:
+downloading pretrained weights from huggingface.co, which the training PC
+apparently couldn't reach. Diagnosed and fixed: there is now a **`test.bat`
+preflight** that checks the GPU, data, downloads *all* weights up front (with an
+automatic mirror fallback), and runs the unit tests before any overnight run.
+
+## What happens next
+
+1. **Training PC:** unzip `trash-classification-v2-20260720.zip`, double-click
+   **`test.bat`**, wait for `ALL CHECKS PASSED`, then double-click **`train.bat`**
+   and leave it overnight (~8–16 h, resumable if interrupted).
+   By default it runs the maximum-accuracy pipeline: a bake-off of modern
+   backbones (EVA-02, ConvNeXtV2, SigLIP-2 — all far stronger than ResNet-50) →
+   5-fold CV of the winner → a 10-model two-architecture ensemble.
+   Results land in `reports/AUTOPILOT_SUMMARY.md`. Calibrated expectation:
+   **96–97.5%** out-of-fold accuracy; anything above that we treat as a bug
+   until proven otherwise.
+2. **Poster experiments (not yet run):**
+   - **Leakage demo:** identical model, two pipelines — split-first (honest) vs.
+     augment-then-split (leaky) — to reproduce the mechanism behind 99–100%
+     literature claims.
+   - **Label audit:** cleanlab + manual review to quantify mislabeled images.
+   - **Grad-CAM** figures showing what the model actually looks at.
+3. **Paper + A0 poster**, plus the offline demo app (`demo/app.py`: upload a
+   photo → class + confidence + Grad-CAM overlay).
+
+## Folder map
+
+| Path | Size | What it is |
+|---|---:|---|
+| `README.md` | — | This file |
+| `trashnet-current/trash-classification/` | 51 MB | **The live codebase** — same content as the zip below. Start here to read code or run the demo/tests |
+| `trash-classification-v2-20260720.zip` | 41 MB | Ready-to-send bundle for the Windows training PC (includes the dataset; run `test.bat` first, then `train.bat`) |
+| `trashnet-current/archive-20260718-results/` | <1 MB | July 18 session results (`FINAL_SUMMARY.md`, `RESULTS.md`, `EXPERIMENT_LOG.md`, old reports) + original project spec (`IMPLEMENTATION_PROMPT.md`) — source of the numbers above |
+| `trash-classification/` | 47 MB | Superseded July 17 first version of the code — historical only, use `trashnet-current` instead |
+
+No Python environments are included anywhere — `test.bat` (Windows) or
+`scripts/setup_env.sh` (Mac/Linux) rebuilds one automatically.
+
+## Headline numbers policy (for whoever writes the poster)
+
+Use the validation numbers freely. The **89.20% test number must always be
+captioned** as the single pre-intervention measurement — it was never used to
+pick a model. When the new ensemble is done we either (a) report its pooled
+out-of-fold accuracy (n=2,166, leakage-free) and keep the old test caption, or
+(b) consciously spend one fresh test measurement on the final ensemble. That's
+a group decision — one shot, no re-rolls.
