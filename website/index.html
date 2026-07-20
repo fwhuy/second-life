@@ -170,7 +170,7 @@
     <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 56px 40px; box-sizing: border-box; width: 100%;">
       <div style="text-align: center; margin-bottom: 40px; animation: fadeUp 0.5s ease both;">
         <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; margin: 0 0 8px;">{{ t.identTitle }}</h2>
-        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Recognition Center — meet the object before choosing its future.</div></sc-if>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Recognition Center, meet the object before choosing its future.</div></sc-if>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <div style="position: relative; overflow: hidden; border: 2px dashed #C9BD9F; border-radius: 20px; padding: 48px 32px; text-align: center; cursor: pointer; background: #FFFDF6;" style-hover="border-color: #3E7C4F; background: #F4F1E4;">
@@ -218,7 +218,7 @@
         <div style="flex: 1;">
           <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
             <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 32px;">{{ itemZh }}</div>
-            <div style="font-size: 15px; color: #7C8A73;">{{ itemEn }} · {{ t.modelSays }}{{ clsLine }}</div>
+            <div style="font-size: 15px; color: #7C8A73;">{{ itemEn }}{{ t.modelSays }}{{ clsLine }}</div>
           </div>
           <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
             <div style="font-size: 22px; font-weight: 700; color: #2F5A3C;">{{ t.confidence }} {{ confPct }}</div>
@@ -278,7 +278,7 @@
     <div style="flex: 1; max-width: 1080px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%;">
       <div style="text-align: center; margin-bottom: 32px;">
         <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.simTitle }}</h2>
-        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Future Simulator — its future is your choice.</div></sc-if>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Future Simulator, its future is your choice.</div></sc-if>
       </div>
 
       <sc-if value="{{ simChoosing }}" hint-placeholder-val="{{ true }}">
@@ -377,7 +377,7 @@
     <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
       <div style="text-align: center; margin-bottom: 36px;">
         <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.exploreTitle }}</h2>
-        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Exploration Space — one object a day, one story at a time.</div></sc-if>
+        <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Exploration Space, one object a day, one story at a time.</div></sc-if>
       </div>
       <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
         <div style="padding: 30px 32px; border-radius: 20px; background: #1E3A2B; color: #FAF7EF;">
@@ -446,7 +446,7 @@
   </sc-if>
 
   <footer style="padding: 22px 48px; border-top: 1px solid #E5DCC8; display: flex; gap: 20px; align-items: center; font-size: 12.5px; color: #A9A183;">
-    <div>Second Life AI · 万物皆有新生</div>
+    <div>{{ t.footBrand }}</div>
     <div style="flex: 1;"></div>
     <div>{{ t.footNote }}</div>
   </footer>
@@ -463,7 +463,7 @@ class Component extends DCLogic {
       if (l === 'zh' || l === 'en') lang = l;
       const r = window.localStorage.getItem('slai.records');
       if (r) { const p = JSON.parse(r); if (Array.isArray(p)) records = p.slice(0, 60); }
-    } catch (e) { /* localStorage blocked — run in memory only */ }
+    } catch (e) { /* localStorage blocked, run in memory only */ }
     this.setState({ lang, records, loaded: true });
   }
 
@@ -479,7 +479,7 @@ class Component extends DCLogic {
   }
 
   /* ─────────────────────────────────────────────────────────
-     UI STRINGS — every piece of chrome, in both languages.
+     UI STRINGS, every piece of chrome, in both languages.
      Add a new language by adding a third key here.
      ───────────────────────────────────────────────────────── */
   ui() {
@@ -497,11 +497,11 @@ class Component extends DCLogic {
       honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。页面上所有置信度均为模型真实输出，从不夸大。',
       identTitle: 'AI 物品识别中心',
       analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
-      uploadTitle: '拍照或上传图片', uploadSub: '点击选择一张照片。若后端 /api/identify 已启动，将返回模型真实输出；否则使用演示数据。',
+      uploadTitle: '拍照或上传图片', uploadSub: '点击添加图片',
       orType: '或者，输入物品名称',
       searchPlaceholder: '例如：塑料瓶、咖啡杯、快递纸箱…',
       libCovers: '内容库覆盖的常见物品：',
-      missPre: '内容库暂时没有「', missPost: '」的条目。它可能不属于模型的六个类别——试试上面的常见物品，或上传一张照片。',
+      missPre: '内容库暂时没有「', missPost: '」的条目。它可能不属于模型的六个类别，试试上面的常见物品，或上传一张照片。',
       modelSays: '模型判定：', confidence: '置信度',
       confLive: '真实 softmax 输出，未取整夸大',
       confDemo: '⚠ 演示数据 · 后端未连接，此数字非模型实时输出',
@@ -513,28 +513,29 @@ class Component extends DCLogic {
       waitingA: '"这件物品正等待开启', waitingB: '下一段旅程。"',
       enterSim: '进入未来模拟器，为它做出选择',
       simTitle: '未来模拟器',
-      simPre: '这只', simPost: '正等待开启下一段旅程——它的未来，由你决定。',
-      simHint: '没有提示，凭直觉选——选错也是故事的一部分。',
+      simPre: '这只', simPost: '正等待开启下一段旅程，它的未来，由你决定。',
+      simHint: '没有提示，凭直觉选，选错也是故事的一部分。',
       scanning: '扫描中', years450: '450 年，才能完全降解',
       letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: '来自未来的信',
-      yours: '—— 你的',
+      yours: '， 你的',
       rewriteBtn: '【改写它的未来】', doneBtn: '完成，看我的记录',
       rewriteToCorrect: '点击改写，看看如果当初选对了，它会经历什么。',
       rewriteToWrong: '点击改写，看看另一种选择会把它带向哪里。',
       exploreTitle: 'AI 环境探索空间',
       dailyLabel: '今日物品 · ', meetIt: '认识它 →',
       campusTitle: '校园故事：一只咖啡杯的一天',
-      campusSub: 'A campus story — honest ending included.',
-      cupNote: '诚实的小注脚：多数一次性咖啡杯内壁有塑料淋膜，很难当纸回收——所以它属于其他垃圾。自带杯子，是给它更好的未来。',
+      campusSub: 'A campus story, honest ending included.',
+      cupNote: '诚实的小注脚：多数一次性咖啡杯内壁有塑料淋膜，很难当纸回收，所以它属于其他垃圾。自带杯子，是给它更好的未来。',
       myRecord: '我的记录',
       recSummaryA: '这台浏览器已完成 ', recSummaryB: ' 次识别、', recSummaryC: ' 次未来模拟',
-      recNote: '只保存在这台浏览器里（localStorage）——没有账号，没有服务器。',
+      recNote: '只保存在这台浏览器里（localStorage），没有账号，没有服务器。',
       recIdCount: '次物品识别', recSimCount: '次未来模拟',
-      recEmpty: '这里还是空的——去识别一件物品，为它选择未来吧。',
+      recEmpty: '这里还是空的，去识别一件物品，为它选择未来吧。',
       goIdent: '去识别中心 →', clearBtn: '清空本机记录',
       recId: '识别 · 置信度 ', recIdDemo: '识别（演示） · 置信度 ',
       recSimGood: '选择了正确的未来', recSimBad: '见证了另一种结局',
       footNote: 'TrashNet 六分类 · 验证准确率 94.93%（TTA）· 全站离线运行 · 无外部 API',
+      footBrand: 'Second Life AI · 万物皆有新生',
       langLabel: 'EN', langTitle: 'Switch to English',
       photoAlt: '你上传的照片'
     };
@@ -545,18 +546,18 @@ class Component extends DCLogic {
       badge: 'Course project · powered by a genuinely trained TrashNet model',
       kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
       heroA: 'Every object deserves', heroB: 'a second life',
-      heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup — "which bin?" — and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
+      heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup, "which bin?", and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
       heroBodyShort: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
       accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
-      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Every confidence figure on this site is the model\u2019s real output — never rounded up.',
+      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Every confidence figure on this site is the model\u2019s real output, never rounded up.',
       identTitle: 'AI Recognition Center',
       analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
-      uploadTitle: 'Take or upload a photo', uploadSub: 'Click to choose an image. If the /api/identify backend is running, you get the model\u2019s real output; otherwise demo data is shown.',
+      uploadTitle: 'Take or upload a photo', uploadSub: 'Click to add an image',
       orType: 'Or type the name of an item',
       searchPlaceholder: 'e.g. plastic bottle, coffee cup, parcel box…',
       libCovers: 'Common items in the content library:',
-      missPre: 'The content library has no entry for "', missPost: '" yet. It may fall outside the model\u2019s six classes — try one of the common items above, or upload a photo.',
+      missPre: 'The content library has no entry for "', missPost: '" yet. It may fall outside the model\u2019s six classes, try one of the common items above, or upload a photo.',
       modelSays: 'Model says: ', confidence: 'Confidence',
       confLive: 'Real softmax output, never rounded up',
       confDemo: '⚠ Demo data · backend not connected, this is not live model output',
@@ -568,28 +569,29 @@ class Component extends DCLogic {
       waitingA: '"This object is waiting to begin', waitingB: 'its next journey."',
       enterSim: 'Enter the Future Simulator and choose for it',
       simTitle: 'Future Simulator',
-      simPre: 'This ', simPost: ' is waiting to begin its next journey — its future is yours to decide.',
-      simHint: 'No hints. Go with your instinct — getting it wrong is part of the story too.',
+      simPre: 'This ', simPost: ' is waiting to begin its next journey, its future is yours to decide.',
+      simHint: 'No hints. Go with your instinct, getting it wrong is part of the story too.',
       scanning: 'SCANNING', years450: '450 years to fully degrade',
       letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: 'A letter from the future',
-      yours: '—— your ',
-      rewriteBtn: '【Rewrite its future】', doneBtn: 'Done — see my record',
+      yours: '， your ',
+      rewriteBtn: '【Rewrite its future】', doneBtn: 'Done, see my record',
       rewriteToCorrect: 'Tap rewrite to see what would have happened if you had chosen right.',
       rewriteToWrong: 'Tap rewrite to see where the other choice would have taken it.',
       exploreTitle: 'AI Exploration Space',
       dailyLabel: 'Object of the day · ', meetIt: 'Meet it →',
       campusTitle: 'A campus story: one day of a coffee cup',
-      campusSub: '一只咖啡杯的一天 —— 结局是诚实的。',
-      cupNote: 'An honest footnote: most disposable coffee cups are lined with plastic film inside, which makes them very hard to recycle as paper — so they belong in residual waste. Bringing your own cup is the better future for it.',
+      campusSub: 'An honest story, ending included.',
+      cupNote: 'An honest footnote: most disposable coffee cups are lined with plastic film inside, which makes them very hard to recycle as paper, so they belong in residual waste. Bringing your own cup is the better future for it.',
       myRecord: 'My Record',
       recSummaryA: 'This browser has completed ', recSummaryB: ' identifications and ', recSummaryC: ' future simulations',
-      recNote: 'Stored only in this browser (localStorage) — no accounts, no server.',
+      recNote: 'Stored only in this browser (localStorage), no accounts, no server.',
       recIdCount: 'identifications', recSimCount: 'future simulations',
-      recEmpty: 'Nothing here yet — go identify an object and choose a future for it.',
+      recEmpty: 'Nothing here yet, go identify an object and choose a future for it.',
       goIdent: 'Go to the Recognition Center →', clearBtn: 'Clear records on this device',
       recId: 'Identified · confidence ', recIdDemo: 'Identified (demo) · confidence ',
       recSimGood: 'Chose the right future', recSimBad: 'Witnessed the other ending',
       footNote: 'TrashNet six classes · 94.93% validation accuracy (TTA) · fully offline · no external APIs',
+      footBrand: 'Second Life AI',
       langLabel: '中文', langTitle: '切换到中文',
       photoAlt: 'The photo you uploaded'
     };
@@ -608,22 +610,22 @@ class Component extends DCLogic {
     const ITEMS = {
       bottle: { zh: '塑料瓶', en: 'Plastic bottle', cls: 'plastic', bin: 'recyclable', conf: 0.962,
         probs: { plastic: 0.962, glass: 0.015, metal: 0.010, trash: 0.007, paper: 0.004, cardboard: 0.002 },
-        material: '瓶身是 PET（聚对苯二甲酸乙二醇酯）——轻、透明、结实，还能牢牢锁住气泡，所以饮料公司都爱它。瓶盖通常是另一种塑料 HDPE，颜色更实、更韧。',
-        materialEn: 'The body is PET (polyethylene terephthalate) — light, clear, strong, and airtight enough to hold the fizz in, which is why drinks companies love it. The cap is usually a different plastic, HDPE: more opaque, and tougher.',
-        history: '1973 年，工程师 Nathaniel Wyeth 发明了 PET 瓶，替代了沉重易碎的玻璃瓶。从此每年上千亿只瓶子被造出来——它们的平均使用时间，往往只有十几分钟。',
-        historyEn: 'In 1973 the engineer Nathaniel Wyeth invented the PET bottle, replacing heavy, breakable glass. Hundreds of billions have been made every year since — and the average one is used for barely ten minutes.',
+        material: '瓶身是 PET（聚对苯二甲酸乙二醇酯），轻、透明、结实，还能牢牢锁住气泡，所以饮料公司都爱它。瓶盖通常是另一种塑料 HDPE，颜色更实、更韧。',
+        materialEn: 'The body is PET (polyethylene terephthalate), light, clear, strong, and airtight enough to hold the fizz in, which is why drinks companies love it. The cap is usually a different plastic, HDPE: more opaque, and tougher.',
+        history: '1973 年，工程师 Nathaniel Wyeth 发明了 PET 瓶，替代了沉重易碎的玻璃瓶。从此每年上千亿只瓶子被造出来，它们的平均使用时间，往往只有十几分钟。',
+        historyEn: 'In 1973 the engineer Nathaniel Wyeth invented the PET bottle, replacing heavy, breakable glass. Hundreds of billions have been made every year since, and the average one is used for barely ten minutes.',
         related: ['jar2', 'lunchbox', 'jar'] },
       cup: { zh: '咖啡杯', en: 'Coffee cup', cls: 'trash', bin: 'other', conf: 0.884,
         probs: { trash: 0.884, paper: 0.078, plastic: 0.024, cardboard: 0.010, glass: 0.003, metal: 0.001 },
-        material: '看起来是纸，其实内壁有一层聚乙烯淋膜用来防水。这层膜让它既不能当纸回收，也不能当塑料回收——所以它属于其他垃圾。',
-        materialEn: 'It looks like paper, but the inside is coated with a film of polyethylene to keep it waterproof. That film means it can be recycled neither as paper nor as plastic — so it belongs in residual waste.',
+        material: '看起来是纸，其实内壁有一层聚乙烯淋膜用来防水。这层膜让它既不能当纸回收，也不能当塑料回收，所以它属于其他垃圾。',
+        materialEn: 'It looks like paper, but the inside is coated with a film of polyethylene to keep it waterproof. That film means it can be recycled neither as paper nor as plastic, so it belongs in residual waste.',
         history: '一次性纸杯诞生于 1907 年的美国，本是为公共饮水卫生发明的。今天全球每年用掉约 5000 亿只，绝大多数只陪伴人类不到一小时。',
         historyEn: 'The disposable cup was born in America in 1907, invented for the sake of public drinking hygiene. Today the world gets through roughly 500 billion a year, most of them keeping someone company for under an hour.',
         related: ['bottle', 'lunchbox'] },
       box: { zh: '快递纸箱', en: 'Parcel box', cls: 'cardboard', bin: 'recyclable', conf: 0.973,
         probs: { cardboard: 0.973, paper: 0.019, trash: 0.005, plastic: 0.002, glass: 0.001, metal: 0.000 },
-        material: '瓦楞纸板：两层平纸夹一层波浪形芯纸，像微型拱桥一样抗压。原料主要是回收纸浆——它自己往往就是再生的。',
-        materialEn: 'Corrugated board: a wavy core sandwiched between two flat sheets, resisting pressure like a row of tiny arches. It is made mostly from recycled pulp — it is usually already a second life.',
+        material: '瓦楞纸板：两层平纸夹一层波浪形芯纸，像微型拱桥一样抗压。原料主要是回收纸浆，它自己往往就是再生的。',
+        materialEn: 'Corrugated board: a wavy core sandwiched between two flat sheets, resisting pressure like a row of tiny arches. It is made mostly from recycled pulp, it is usually already a second life.',
         history: '瓦楞纸箱 1871 年获得专利，电商时代让它成为世界上流通最广的包装。压平投放，是给分拣员最好的礼物。',
         historyEn: 'The corrugated box was patented in 1871, and the e-commerce era made it the most widely circulated package on earth. Flattening it before you bin it is the kindest gift you can give a sorter.',
         related: ['newspaper', 'book', 'printerpaper'] },
@@ -631,8 +633,8 @@ class Component extends DCLogic {
         probs: { glass: 0.941, plastic: 0.031, metal: 0.017, trash: 0.008, paper: 0.002, cardboard: 0.001 },
         material: '钠钙玻璃：沙子、纯碱和石灰石在 1500°C 下熔成。化学性质极稳定，装什么都不串味。',
         materialEn: 'Soda-lime glass: sand, soda ash and limestone melted together at 1500°C. It is so chemically stable that nothing it holds ever picks up a taste.',
-        history: '玻璃容器已有三千多年历史。它最了不起的一点：可以被无限次回收重熔，品质不打折扣——真正的循环冠军。',
-        historyEn: 'Glass containers go back more than three thousand years. Their finest quality: they can be remelted endlessly with no loss of quality — the true champion of the circular economy.',
+        history: '玻璃容器已有三千多年历史。它最了不起的一点：可以被无限次回收重熔，品质不打折扣，真正的循环冠军。',
+        historyEn: 'Glass containers go back more than three thousand years. Their finest quality: they can be remelted endlessly with no loss of quality, the true champion of the circular economy.',
         related: ['jar2', 'can'] },
       can: { zh: '易拉罐', en: 'Aluminum can', cls: 'metal', bin: 'recyclable', conf: 0.958,
         probs: { metal: 0.958, plastic: 0.021, glass: 0.012, trash: 0.006, paper: 0.002, cardboard: 0.001 },
@@ -643,7 +645,7 @@ class Component extends DCLogic {
         related: ['spoon', 'jar'] },
       newspaper: { zh: '报纸', en: 'Newspaper', cls: 'paper', bin: 'recyclable', conf: 0.967,
         probs: { paper: 0.967, cardboard: 0.021, trash: 0.007, plastic: 0.003, glass: 0.001, metal: 0.001 },
-        material: '新闻纸：便宜、轻、吸墨快，多由机械浆和回收纸浆制成。纤维每回收一次会变短一点，大约能循环 5–7 次。',
+        material: '新闻纸：便宜、轻、吸墨快，多由机械浆和回收纸浆制成。纤维每回收一次会变短一点，大约能循环 5-7 次。',
         materialEn: 'Newsprint: cheap, light and quick to take ink, made mostly from mechanical and recycled pulp. The fibres get a little shorter each time round, so it can cycle about five to seven times.',
         history: '报纸曾是世界上最大宗的纸制品。今天它的再生去向很多：新的新闻纸、蛋托、包装缓冲材料。',
         historyEn: 'Newspaper was once the largest paper product in the world. Today it is reborn in many forms: fresh newsprint, egg trays, protective packaging.',
@@ -651,55 +653,55 @@ class Component extends DCLogic {
       bag: { zh: '塑料袋', en: 'Plastic bag', cls: 'trash', bin: 'other', conf: 0.861,
         probs: { trash: 0.861, plastic: 0.102, paper: 0.019, cardboard: 0.010, glass: 0.005, metal: 0.003 },
         material: '薄膜塑料（多为 PE）。太轻太软，会缠住回收厂的分拣机器，多数城市把它归入其他垃圾。',
-        materialEn: 'Film plastic, usually PE. Too light and too soft — it tangles the sorting machinery at recycling plants, so most cities class it as residual waste.',
+        materialEn: 'Film plastic, usually PE. Too light and too soft, it tangles the sorting machinery at recycling plants, so most cities class it as residual waste.',
         history: '塑料袋 1965 年在瑞典获得专利，本意是替代纸袋、少砍树。真正的问题不是它的出生，而是"只用一次"。',
-        historyEn: 'The plastic bag was patented in Sweden in 1965, meant to replace paper bags and fell fewer trees. The problem was never its birth — it was "use once".',
+        historyEn: 'The plastic bag was patented in Sweden in 1965, meant to replace paper bags and fell fewer trees. The problem was never its birth, it was "use once".',
         related: ['bottle', 'lunchbox'] },
       milkbox: { zh: '牛奶盒', en: 'Milk carton', cls: 'cardboard', bin: 'recyclable', conf: 0.902, probs: { cardboard: 0.902, paper: 0.061, plastic: 0.024, trash: 0.010, glass: 0.002, metal: 0.001 },
         material: '复合包装：纸板 + 聚乙烯膜 + 有时还有铝箔，共六层。需要专门的水力碎浆工艺分离，洗净压平再投放。',
-        materialEn: 'A composite pack: cardboard plus polyethylene film, sometimes aluminium foil too — six layers in all. Separating them takes a dedicated hydropulping process. Rinse and flatten before binning.',
+        materialEn: 'A composite pack: cardboard plus polyethylene film, sometimes aluminium foil too, six layers in all. Separating them takes a dedicated hydropulping process. Rinse and flatten before binning.',
         history: '利乐式无菌包装 1952 年发明，让牛奶不用冷藏也能保存数月。',
         historyEn: 'Aseptic carton packaging was invented in 1952, letting milk keep for months without refrigeration.',
         related: ['box', 'cup'] },
       book: { zh: '旧课本', en: 'Old textbook', cls: 'paper', bin: 'recyclable', conf: 0.955, probs: { paper: 0.955, cardboard: 0.031, trash: 0.008, plastic: 0.004, glass: 0.001, metal: 0.001 },
         material: '书写纸 + 胶装书脊。纸张品质高，是回收厂喜欢的原料。',
-        materialEn: 'Writing paper with a glued spine. The paper is high grade — exactly the feedstock a recycling mill is glad to see.',
-        history: '一本课本的纸，可能已经历过好几次生命——课本之前，它或许是一张报纸。',
-        historyEn: 'The paper in a textbook may already have lived several lives — before it was a textbook, it might have been a newspaper.',
+        materialEn: 'Writing paper with a glued spine. The paper is high grade, exactly the feedstock a recycling mill is glad to see.',
+        history: '一本课本的纸，可能已经历过好几次生命，课本之前，它或许是一张报纸。',
+        historyEn: 'The paper in a textbook may already have lived several lives, before it was a textbook, it might have been a newspaper.',
         related: ['newspaper', 'printerpaper'] },
       printerpaper: { zh: '打印纸', en: 'Printer paper', cls: 'paper', bin: 'recyclable', conf: 0.971, probs: { paper: 0.971, cardboard: 0.018, trash: 0.006, plastic: 0.003, glass: 0.001, metal: 0.001 },
-        material: '漂白化学浆制成，纤维长、品质高——回收界的"优等生"。',
-        materialEn: 'Made from bleached chemical pulp: long fibres, high quality — the star pupil of the recycling world.',
+        material: '漂白化学浆制成，纤维长、品质高，回收界的"优等生"。',
+        materialEn: 'Made from bleached chemical pulp: long fibres, high quality, the star pupil of the recycling world.',
         history: '办公室曾预言"无纸化"，但打印纸依然是校园里最常见的纸类。双面打印，等于给树减负一半。',
         historyEn: 'Offices once promised a "paperless" future, yet printer paper is still the most common paper on campus. Printing double-sided halves the load on the forest.',
         related: ['newspaper', 'book'] },
       foam: { zh: '泡沫盒', en: 'Foam box', cls: 'trash', bin: 'other', conf: 0.837, probs: { trash: 0.837, plastic: 0.118, paper: 0.021, cardboard: 0.014, glass: 0.006, metal: 0.004 },
         material: '发泡聚苯乙烯（EPS），98% 是空气。太轻、易碎、常沾油污，绝大多数城市不回收。',
-        materialEn: 'Expanded polystyrene (EPS) — 98% of it is air. Too light, too brittle, and usually greasy: almost no city recycles it.',
-        history: '它保温又便宜，但几乎无法降解——是"方便"的代价最直观的样子。',
-        historyEn: 'It insulates well and costs almost nothing, but it barely degrades — the most visible price of "convenient".',
+        materialEn: 'Expanded polystyrene (EPS), 98% of it is air. Too light, too brittle, and usually greasy: almost no city recycles it.',
+        history: '它保温又便宜，但几乎无法降解，是"方便"的代价最直观的样子。',
+        historyEn: 'It insulates well and costs almost nothing, but it barely degrades, the most visible price of "convenient".',
         related: ['bag', 'lunchbox'] },
       spoon: { zh: '金属勺', en: 'Metal spoon', cls: 'metal', bin: 'recyclable', conf: 0.929, probs: { metal: 0.929, plastic: 0.038, glass: 0.019, trash: 0.009, paper: 0.003, cardboard: 0.002 },
         material: '不锈钢：铁 + 铬 + 镍。铬在表面形成看不见的氧化膜，所以它不生锈。',
         materialEn: 'Stainless steel: iron plus chromium plus nickel. The chromium forms an invisible oxide skin on the surface, which is why it never rusts.',
-        history: '金属餐具可以用几十年，回收后重熔又是新钢材——耐用品本身就是最好的环保。',
-        historyEn: 'Metal cutlery lasts decades, and once collected it is remelted into new steel — durability is itself the best environmentalism.',
+        history: '金属餐具可以用几十年，回收后重熔又是新钢材，耐用品本身就是最好的环保。',
+        historyEn: 'Metal cutlery lasts decades, and once collected it is remelted into new steel, durability is itself the best environmentalism.',
         related: ['can'] },
       jar2: { zh: '玻璃瓶', en: 'Glass bottle', cls: 'glass', bin: 'recyclable', conf: 0.948, probs: { glass: 0.948, plastic: 0.026, metal: 0.014, trash: 0.008, paper: 0.003, cardboard: 0.001 },
         material: '与玻璃罐同族的钠钙玻璃，颜色来自微量金属氧化物：绿色是铁，棕色是铁加硫。',
-        materialEn: 'The same soda-lime family as the glass jar; the colour comes from traces of metal oxide — green from iron, brown from iron plus sulphur.',
+        materialEn: 'The same soda-lime family as the glass jar; the colour comes from traces of metal oxide, green from iron, brown from iron plus sulphur.',
         history: '在很多国家，玻璃瓶走"押金返还"系统，洗干净能直接重复使用 20 次以上。',
         historyEn: 'In many countries glass bottles run on a deposit-return system: washed clean, one bottle is reused twenty times or more.',
         related: ['jar', 'can'] },
       papercup: { zh: '纸杯', en: 'Paper cup', cls: 'trash', bin: 'other', conf: 0.871, probs: { trash: 0.871, paper: 0.089, plastic: 0.022, cardboard: 0.012, glass: 0.004, metal: 0.002 },
         material: '和咖啡杯一样：纸身 + 聚乙烯淋膜。防水的代价是难回收。',
         materialEn: 'The same as the coffee cup: a paper body with a polyethylene lining. The price of being waterproof is being hard to recycle.',
-        history: '纸杯是"看起来环保"的经典案例——材质诚实地告诉我们：它属于其他垃圾。',
+        history: '纸杯是"看起来环保"的经典案例，材质诚实地告诉我们：它属于其他垃圾。',
         historyEn: 'The paper cup is the classic case of "looks eco-friendly". Its material tells us honestly: it belongs in residual waste.',
         related: ['cup', 'bottle'] },
       lunchbox: { zh: '塑料餐盒', en: 'Plastic lunchbox', cls: 'plastic', bin: 'recyclable', conf: 0.913, probs: { plastic: 0.913, trash: 0.051, paper: 0.019, glass: 0.009, cardboard: 0.005, metal: 0.003 },
-        material: '多为 PP（聚丙烯），耐热可进微波炉。冲洗干净再投放——油污是回收最大的敌人。',
-        materialEn: 'Usually PP (polypropylene), heat-resistant and microwave-safe. Rinse it before you bin it — grease is recycling\u2019s greatest enemy.',
+        material: '多为 PP（聚丙烯），耐热可进微波炉。冲洗干净再投放，油污是回收最大的敌人。',
+        materialEn: 'Usually PP (polypropylene), heat-resistant and microwave-safe. Rinse it before you bin it, grease is recycling\u2019s greatest enemy.',
         history: '外卖时代让它数量激增。一只干净的 PP 餐盒是合格的可回收物，一只油腻的只能进其他垃圾。',
         historyEn: 'The delivery era made their numbers explode. A clean PP box is a perfectly good recyclable; a greasy one can only go to residual waste.',
         related: ['bottle', 'bag'] }
@@ -708,97 +710,97 @@ class Component extends DCLogic {
       plastic: {
         correct: [
           { scene: 'binGood', t: '进入蓝色的家', te: 'Into the blue home', s: '我和成百上千个同伴一起，安静地等待下一段旅程。', e: 'Into the blue bin, with hundreds of my kind, quietly waiting.' },
-          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '分拣中心的光学眼一眼认出：我是 PET，值得被留下。', e: 'The optical sorter recognizes me at once: PET — worth keeping.' },
-          { scene: 'transform', t: '重新开始', te: 'Starting over', s: '破碎、清洗、熔融——我变成了细细的再生纤维。', e: 'Shredded, washed, melted — I become fine recycled fibre.' },
+          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '分拣中心的光学眼一眼认出：我是 PET，值得被留下。', e: 'The optical sorter recognizes me at once: PET, worth keeping.' },
+          { scene: 'transform', t: '重新开始', te: 'Starting over', s: '破碎、清洗、熔融，我变成了细细的再生纤维。', e: 'Shredded, washed, melted, I become fine recycled fibre.' },
           { scene: 'reborn', t: '新生', te: 'Second life', s: '我成了一件抓绒外套的一部分，将陪一个人度过整个冬天。', e: 'Reborn as part of a fleece jacket, to keep someone warm all winter.' }],
         wrong: [
           { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾桶，和剩饭、纸巾混在了一起。', e: 'Into the wrong bin, mixed with leftovers and tissues.' },
           { scene: 'mix', t: '无人问津', te: 'Nobody looks', s: '转运站里没有人再把我挑出来。我的 PET，被当成了普通垃圾。', e: 'No one picks me out at the transfer station. My PET counts as ordinary rubbish now.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '在填埋场，我需要大约 450 年才能消失。循环里，永远少了我。', e: 'In the landfill I need some 450 years to disappear. The loop is missing me forever.' }],
-        msgCorrect: '谢谢你那天的选择。三个月后，我以另一种样子回到了人们身边——一件温暖的外套。四百五十年的等待，被你变成了一个新的开始。一个小小的动作，改写了我的整个未来。',
-        msgCorrectEn: 'Thank you for the choice you made that day. Three months later I came back to people in another shape — a warm jacket. Four hundred and fifty years of waiting, turned by you into a new beginning. One small action rewrote my whole future.',
+        msgCorrect: '谢谢你那天的选择。三个月后，我以另一种样子回到了人们身边，一件温暖的外套。四百五十年的等待，被你变成了一个新的开始。一个小小的动作，改写了我的整个未来。',
+        msgCorrectEn: 'Thank you for the choice you made that day. Three months later I came back to people in another shape, a warm jacket. Four hundred and fifty years of waiting, turned by you into a new beginning. One small action rewrote my whole future.',
         msgWrong: '我没有怪你，只是有点遗憾。我本可以成为一件外套、一条围巾、一个新的瓶子……在这里，我只能慢慢地、慢慢地消失。如果时间能重来，你愿意为我换一个未来吗？',
-        msgWrongEn: 'I don\u2019t blame you — I\u2019m only a little sorry. I could have been a jacket, a scarf, a new bottle… Here, all I can do is disappear, slowly, very slowly. If time could run again, would you choose me a different future?',
+        msgWrongEn: 'I don\u2019t blame you, I\u2019m only a little sorry. I could have been a jacket, a scarf, a new bottle… Here, all I can do is disappear, slowly, very slowly. If time could run again, would you choose me a different future?',
         rebornColor: '#3E7C4F'
       },
       cardboard: {
         correct: [
           { scene: 'binGood', t: '压平出发', te: 'Flattened, and off', s: '我被压得平平整整，和其他纸板叠在一起。', e: 'Pressed flat and stacked with the other board.' },
-          { scene: 'sort', t: '按纸分家', te: 'Paper parts ways', s: '分拣线把我和普通纸张分开——瓦楞纸有自己的去处。', e: 'The line separates me from ordinary paper — corrugated has its own destination.' },
+          { scene: 'sort', t: '按纸分家', te: 'Paper parts ways', s: '分拣线把我和普通纸张分开，瓦楞纸有自己的去处。', e: 'The line separates me from ordinary paper, corrugated has its own destination.' },
           { scene: 'transform', t: '化为纸浆', te: 'Back to pulp', s: '在水力碎浆机里，我散成温热的纤维，杂质被滤走。', e: 'In the hydropulper I loosen into warm fibre and the impurities are filtered away.' },
           { scene: 'reborn', t: '新生', te: 'Second life', s: '两周后，我成为一只崭新的纸箱，装着某个人期待的包裹。', e: 'Two weeks later I am a brand-new box, carrying somebody\u2019s awaited parcel.' }],
         wrong: [
-          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，纸箱最怕的就是被油污浸透。', e: 'Into the wrong bin — grease is what a box fears most.' },
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，纸箱最怕的就是被油污浸透。', e: 'Into the wrong bin, grease is what a box fears most.' },
           { scene: 'mix', t: '纤维尽失', te: 'Fibres lost', s: '混杂和污渍让我的纸纤维再也无法被使用。', e: 'Mixing and staining make my fibres unusable.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '我被填埋了。为造我而倒下的那棵树，白白倒下了。', e: 'I am buried. The tree that fell to make me fell for nothing.' }],
-        msgCorrect: '谢谢你把我压平、放对了地方。现在我是一只新纸箱，正在去往下一个收件人的路上。纸的生命可以循环五到七次——这是我的第二次，还有好几次，等着未来的你。',
-        msgCorrectEn: 'Thank you for flattening me and putting me in the right place. I am a new box now, on my way to the next person waiting. Paper can live five to seven times — this was my second, and several more are waiting for the future you.',
-        msgWrong: '其实我很容易获得新生——只要被放对地方。这一次没有关系，下一只纸箱还会遇见你。愿意为它换一个未来吗？',
-        msgWrongEn: 'The truth is I am easy to bring back — I only need to be put in the right place. It is alright this time. The next box will meet you too. Will you choose it a different future?',
+        msgCorrect: '谢谢你把我压平、放对了地方。现在我是一只新纸箱，正在去往下一个收件人的路上。纸的生命可以循环五到七次，这是我的第二次，还有好几次，等着未来的你。',
+        msgCorrectEn: 'Thank you for flattening me and putting me in the right place. I am a new box now, on my way to the next person waiting. Paper can live five to seven times, this was my second, and several more are waiting for the future you.',
+        msgWrong: '其实我很容易获得新生，只要被放对地方。这一次没有关系，下一只纸箱还会遇见你。愿意为它换一个未来吗？',
+        msgWrongEn: 'The truth is I am easy to bring back, I only need to be put in the right place. It is alright this time. The next box will meet you too. Will you choose it a different future?',
         rebornColor: '#B8895A'
       },
       paper: {
         correct: [
           { scene: 'binGood', t: '进入蓝色的家', te: 'Into the blue home', s: '我和报纸、作业本们叠在一起，等待出发。', e: 'Stacked with newspapers and exercise books, waiting to leave.' },
-          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '我是高品质的纸纤维——回收线上的优等生。', e: 'High-grade paper fibre — the star pupil of the recycling line.' },
+          { scene: 'sort', t: '被认出来了', te: 'Recognized', s: '我是高品质的纸纤维，回收线上的优等生。', e: 'High-grade paper fibre, the star pupil of the recycling line.' },
           { scene: 'transform', t: '化为纸浆', te: 'Back to pulp', s: '脱墨、碎浆，我又变回柔软的纤维。', e: 'De-inked and repulped, I am soft fibre again.' },
-          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一张新的纸——也许会印上某个学生的满分试卷。', e: 'Reborn as a fresh sheet — perhaps some student\u2019s perfect score.' }],
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一张新的纸，也许会印上某个学生的满分试卷。', e: 'Reborn as a fresh sheet, perhaps some student\u2019s perfect score.' }],
         wrong: [
           { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，和湿漉漉的东西挤在一起。', e: 'Into the wrong bin, pressed against wet things.' },
           { scene: 'mix', t: '纤维尽失', te: 'Fibres lost', s: '浸湿和污染让我的纤维彻底报废。', e: 'Soaked and contaminated, my fibres are finished.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '一张本可以再活五次的纸，在这里结束了。', e: 'A sheet with five lives left ends here.' }],
-        msgCorrect: '谢谢你。我已经是一张新的纸了——白净、平整，正在文具店的货架上等待下一个故事。纸的旅程可以循环五到七次，你为我保住了剩下的每一次。',
-        msgCorrectEn: 'Thank you. I am already a new sheet — clean, white and flat, waiting on a stationery shelf for the next story. Paper can go round five to seven times, and you saved every turn I had left.',
-        msgWrong: '被浸湿的那一刻我就知道回不去了。纸其实是最容易重生的材料——下一张纸，请让它进蓝色的桶，好吗？',
-        msgWrongEn: 'The moment I was soaked I knew there was no way back. Paper is actually the easiest material to bring back to life — so the next sheet, please, let it go in the blue bin?',
+        msgCorrect: '谢谢你。我已经是一张新的纸了，白净、平整，正在文具店的货架上等待下一个故事。纸的旅程可以循环五到七次，你为我保住了剩下的每一次。',
+        msgCorrectEn: 'Thank you. I am already a new sheet, clean, white and flat, waiting on a stationery shelf for the next story. Paper can go round five to seven times, and you saved every turn I had left.',
+        msgWrong: '被浸湿的那一刻我就知道回不去了。纸其实是最容易重生的材料，下一张纸，请让它进蓝色的桶，好吗？',
+        msgWrongEn: 'The moment I was soaked I knew there was no way back. Paper is actually the easiest material to bring back to life, so the next sheet, please, let it go in the blue bin?',
         rebornColor: '#8A9B7E'
       },
       glass: {
         correct: [
-          { scene: 'binGood', t: '小心轻放', te: 'Handled with care', s: '我完整地落进可回收物桶——谢谢你的温柔。', e: 'I land in the recycling bin in one piece — thank you for being gentle.' },
+          { scene: 'binGood', t: '小心轻放', te: 'Handled with care', s: '我完整地落进可回收物桶，谢谢你的温柔。', e: 'I land in the recycling bin in one piece, thank you for being gentle.' },
           { scene: 'sort', t: '按色分家', te: 'Sorted by colour', s: '在回收厂，我和同色的伙伴们分在一起。', e: 'At the plant I am grouped with companions of my own colour.' },
           { scene: 'transform', t: '烈火重熔', te: 'Remelted in fire', s: '1500°C 的熔炉里，我重新变成透亮的玻璃液。', e: 'In a 1500°C furnace I become clear molten glass again.' },
-          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一只全新的瓶子——玻璃可以这样无限次重生。', e: 'Reborn as a brand-new bottle — glass can do this endlessly.' }],
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '我成为一只全新的瓶子，玻璃可以这样无限次重生。', e: 'Reborn as a brand-new bottle, glass can do this endlessly.' }],
         wrong: [
           { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进其他垃圾，在黑暗里磕碎了一角。', e: 'Into the wrong bin, chipping a corner in the dark.' },
           { scene: 'mix', t: '危险的碎片', te: 'Dangerous shards', s: '碎玻璃混在垃圾里，还可能划伤环卫工人的手。', e: 'Broken glass in the rubbish can cut a sanitation worker\u2019s hand.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '玻璃几乎永远不会降解。我将在填埋场躺上一百万年。', e: 'Glass almost never degrades. I will lie in this landfill for a million years.' }],
-        msgCorrect: '谢谢你。我已经重熔成一只新瓶子了。玻璃是少数可以无限循环、品质不减的材料——只要每次都有人像你一样，把我放对地方。',
-        msgCorrectEn: 'Thank you. I have been remelted into a new bottle. Glass is one of the few materials that can circle forever without losing quality — as long as someone, every time, puts me in the right place, the way you did.',
+        msgCorrect: '谢谢你。我已经重熔成一只新瓶子了。玻璃是少数可以无限循环、品质不减的材料，只要每次都有人像你一样，把我放对地方。',
+        msgCorrectEn: 'Thank you. I have been remelted into a new bottle. Glass is one of the few materials that can circle forever without losing quality, as long as someone, every time, puts me in the right place, the way you did.',
         msgWrong: '在这里躺一百万年，实在太久了。我本可以在六十天内变成一只新瓶子回到货架上。下一只玻璃瓶，请替我送它回家。',
-        msgWrongEn: 'A million years lying here is far too long. I could have been a new bottle back on the shelf within sixty days. The next glass bottle — please send it home for me.',
+        msgWrongEn: 'A million years lying here is far too long. I could have been a new bottle back on the shelf within sixty days. The next glass bottle, please send it home for me.',
         rebornColor: '#7FB0C9'
       },
       metal: {
         correct: [
           { scene: 'binGood', t: '清脆落桶', te: 'A bright clink', s: '"当啷"一声，我落进了可回收物桶。', e: 'With a bright clink I land in the recycling bin.' },
           { scene: 'sort', t: '磁与涡流', te: 'Magnets and eddies', s: '磁选和涡流分选把我从传送带上轻轻托起。', e: 'Magnetic and eddy-current sorters lift me gently off the belt.' },
-          { scene: 'transform', t: '烈火重熔', te: 'Remelted in fire', s: '重熔我只需原生冶炼 5% 的能量——金属的超能力。', e: 'Remelting me takes just 5% of the energy of primary smelting — metal\u2019s superpower.' },
-          { scene: 'reborn', t: '新生', te: 'Second life', s: '六十天后，我又出现在货架上——一只崭新的罐子。', e: 'Sixty days later I am back on the shelf — a brand-new can.' }],
+          { scene: 'transform', t: '烈火重熔', te: 'Remelted in fire', s: '重熔我只需原生冶炼 5% 的能量，金属的超能力。', e: 'Remelting me takes just 5% of the energy of primary smelting, metal\u2019s superpower.' },
+          { scene: 'reborn', t: '新生', te: 'Second life', s: '六十天后，我又出现在货架上，一只崭新的罐子。', e: 'Sixty days later I am back on the shelf, a brand-new can.' }],
         wrong: [
-          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，高价值的铝被埋没了。', e: 'Into the wrong bin — high-value aluminium, buried.' },
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我掉进了其他垃圾，高价值的铝被埋没了。', e: 'Into the wrong bin, high-value aluminium, buried.' },
           { scene: 'mix', t: '无人问津', te: 'Nobody looks', s: '没有磁选，没有涡流，没有人发现我。', e: 'No magnet, no eddy current, nobody finds me.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '为炼出我消耗的所有电力，就这样浪费掉了。', e: 'All the electricity it took to smelt me is simply wasted.' }],
-        msgCorrect: '谢谢你。我已经重熔归来——还是一只罐子，但完全是新的。金属可以永远循环，每次重生只花 5% 的能量。你的一个选择，省下了 95%。',
-        msgCorrectEn: 'Thank you. I have been remelted and I am back — still a can, but entirely new. Metal can circle forever, and each rebirth costs only 5% of the energy. Your one choice saved the other 95%.',
+        msgCorrect: '谢谢你。我已经重熔归来，还是一只罐子，但完全是新的。金属可以永远循环，每次重生只花 5% 的能量。你的一个选择，省下了 95%。',
+        msgCorrectEn: 'Thank you. I have been remelted and I am back, still a can, but entirely new. Metal can circle forever, and each rebirth costs only 5% of the energy. Your one choice saved the other 95%.',
         msgWrong: '炼出一克铝需要很多很多电，而重熔我只要一点点。被埋在这里，是最贵的一种浪费。下一只易拉罐，请让它回到循环里。',
-        msgWrongEn: 'Smelting a single gram of aluminium takes a great deal of electricity; remelting me takes very little. Buried here, I am the most expensive kind of waste. The next can — please let it back into the loop.',
+        msgWrongEn: 'Smelting a single gram of aluminium takes a great deal of electricity; remelting me takes very little. Buried here, I am the most expensive kind of waste. The next can, please let it back into the loop.',
         rebornColor: '#A9A9B0'
       },
       trash: {
         correct: [
-          { scene: 'binGood', t: '去对的地方', te: 'To the right place', s: '我确实不可回收——你诚实地把我放进了其他垃圾。', e: 'I really am not recyclable — and you honestly put me in residual waste.' },
+          { scene: 'binGood', t: '去对的地方', te: 'To the right place', s: '我确实不可回收，你诚实地把我放进了其他垃圾。', e: 'I really am not recyclable, and you honestly put me in residual waste.' },
           { scene: 'sort', t: '安全处理', te: 'Handled safely', s: '我和其他残余垃圾一起，被送往焚烧发电厂。', e: 'With the rest of the residual waste I go to the waste-to-energy plant.' },
-          { scene: 'energy', t: '最后的贡献', te: 'A last contribution', s: '燃烧我的热量变成了电——今晚点亮某盏路灯。', e: 'The heat of burning me becomes electricity — lighting a street lamp tonight.' },
+          { scene: 'energy', t: '最后的贡献', te: 'A last contribution', s: '燃烧我的热量变成了电，今晚点亮某盏路灯。', e: 'The heat of burning me becomes electricity, lighting a street lamp tonight.' },
           { scene: 'reborn', t: '体面告别', te: 'A decent farewell', s: '我没能循环，但走得干净利落，没有拖累别人。', e: 'No second life for me, but a clean ending that dragged nobody down.' }],
         wrong: [
-          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我混进了可回收物桶——但我真的不可回收。', e: 'I slip into the recycling bin — but I really cannot be recycled.' },
+          { scene: 'binBad', t: '走错了门', te: 'Wrong door', s: '我混进了可回收物桶，但我真的不可回收。', e: 'I slip into the recycling bin, but I really cannot be recycled.' },
           { scene: 'mix', t: '连累了别人', te: 'Dragging others down', s: '我的油污弄脏了一整批干净的纸和塑料。', e: 'My grease dirties a whole clean batch of paper and plastic.' },
           { scene: 'landfill', t: '故事的终点', te: 'End of the story', s: '整批可回收物因为我被降级处理。好心办了坏事。', e: 'The whole batch is downgraded because of me. Good intentions, bad outcome.' }],
-        msgCorrect: '谢谢你的诚实。不是所有物品都能循环——但放对地方的我，最后变成了电，点亮了今晚的一盏灯。这也是一种体面的告别。',
-        msgCorrectEn: 'Thank you for your honesty. Not everything can be recycled — but put in the right place, I became electricity in the end, and lit one lamp tonight. That is a decent way to say goodbye too.',
-        msgWrong: '把我放进可回收物，看起来是好意，其实害了一整桶干净的伙伴。分类的意义在于诚实——下一次，让我去我该去的地方吧。',
-        msgWrongEn: 'Putting me in with the recyclables looked like kindness, but it ruined a whole bin of clean companions. Sorting is about honesty — next time, let me go where I truly belong.',
+        msgCorrect: '谢谢你的诚实。不是所有物品都能循环，但放对地方的我，最后变成了电，点亮了今晚的一盏灯。这也是一种体面的告别。',
+        msgCorrectEn: 'Thank you for your honesty. Not everything can be recycled, but put in the right place, I became electricity in the end, and lit one lamp tonight. That is a decent way to say goodbye too.',
+        msgWrong: '把我放进可回收物，看起来是好意，其实害了一整桶干净的伙伴。分类的意义在于诚实，下一次，让我去我该去的地方吧。',
+        msgWrongEn: 'Putting me in with the recyclables looked like kindness, but it ruined a whole bin of clean companions. Sorting is about honesty, next time, let me go where I truly belong.',
         rebornColor: '#D97B29'
       }
     };
@@ -904,7 +906,7 @@ class Component extends DCLogic {
     const story = STORIES[item.cls];
     const steps = story[st.simPath];
     const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
-    // `english` still drives the small italic subtitles — they only make sense
+    // `english` still drives the small italic subtitles, they only make sense
     // while the page itself is in Chinese.
     const english = (this.props.showEnglish ?? true) && !isEn;
     const layout = this.props.homeLayout ?? 'story';
@@ -928,14 +930,14 @@ class Component extends DCLogic {
 
     const nameOf = k => L(ITEMS[k].zh, ITEMS[k].en);
     const chips = CHIP_ORDER.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) }));
-    const marqueeItems = [...CHIP_ORDER, ...CHIP_ORDER].map(k => ({ zh: ITEMS[k].zh, en: ITEMS[k].en }));
+    const marqueeItems = [...CHIP_ORDER, ...CHIP_ORDER].map(k => ({ zh: nameOf(k), en: isEn ? '' : ITEMS[k].en }));
 
     const clsLabelAll = isEn
       ? { plastic: 'plastic', glass: 'glass', metal: 'metal', paper: 'paper', cardboard: 'cardboard', trash: 'trash' }
       : { plastic: '塑料 plastic', glass: '玻璃 glass', metal: '金属 metal', paper: '纸类 paper', cardboard: '纸板 cardboard', trash: '其他 trash' };
     const probs = Object.entries(shownProbs).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: clsLabelAll[k], pct: (v * 100).toFixed(1) + '%', w: Math.max(v * 100, 0.8) + '%', color: k === item.cls ? '#3E7C4F' : '#C9BD9F' }));
 
-    const binChoices = ['recyclable', 'kitchen', 'hazard', 'other'].map(id => ({ zh: L(BINS[id].zh, BINS[id].en), en: L(BINS[id].en, BINS[id].zh), color: BINS[id].color, choose: () => this.startStory(id) }));
+    const binChoices = ['recyclable', 'kitchen', 'hazard', 'other'].map(id => ({ zh: L(BINS[id].zh, BINS[id].en), en: isEn ? '' : BINS[id].en, color: BINS[id].color, choose: () => this.startStory(id) }));
 
     const isWrong = st.simPath === 'wrong';
     const railColorDone = isWrong ? '#6B7280' : '#3E7C4F';
@@ -959,7 +961,7 @@ class Component extends DCLogic {
       { t: L('8:05 出生', '8:05 Born'), s: L('在咖啡店被装满，开始了一天。', 'Filled at the café; the day begins.'), bg: '#F6E8D8', fill: '#D97B29', path: 'M14 18 L38 18 L34 52 L18 52 Z', fill2: '#8C5A22', path2: 'M14 14 L38 14 L38 20 L14 20 Z' },
       { t: L('9:40 陪伴', '9:40 Company'), s: L('在早八的课桌上，被慢慢喝完。', 'Slowly emptied on an 8am desk.'), bg: '#EFE8D6', fill: '#D97B29', path: 'M16 22 L36 22 L33 50 L19 50 Z', fill2: '#C9BD9F', path2: 'M10 52 L42 52 L42 56 L10 56 Z' },
       { t: L('12:30 抉择', '12:30 The choice'), s: L('因为内壁的塑料膜，它被诚实地投进其他垃圾。', 'Because of its plastic lining, honestly binned as residual waste.'), bg: '#E4E4E2', fill: '#6B7280', path: 'M12 24 L40 24 L40 54 L12 54 Z', fill2: '#4B5563', path2: 'M10 18 L42 18 L42 26 L10 26 Z' },
-      { t: L('22:00 告别', '22:00 Farewell'), s: L('焚烧发电——它的热量点亮了今晚的路灯。', 'Waste-to-energy — its heat lights a street lamp tonight.'), bg: '#FBEFD9', fill: '#D97B29', path: 'M24 14 C 16 30 20 36 18 46 C 30 44 36 34 28 14 Z', fill2: '#F0B27A', path2: 'M40 40 a 6 6 0 1 1 -0.1 0 Z' }
+      { t: L('22:00 告别', '22:00 Farewell'), s: L('焚烧发电，它的热量点亮了今晚的路灯。', 'Waste-to-energy, its heat lights a street lamp tonight.'), bg: '#FBEFD9', fill: '#D97B29', path: 'M24 14 C 16 30 20 36 18 46 C 30 44 36 34 28 14 Z', fill2: '#F0B27A', path2: 'M40 40 a 6 6 0 1 1 -0.1 0 Z' }
     ];
 
     const records = st.records.map(r => {
@@ -998,11 +1000,11 @@ class Component extends DCLogic {
       isLive: st.live, isDemo: !st.live,
       confNote: st.live ? t.confLive : t.confDemo,
       confNoteColor: st.live ? '#A9A183' : '#B8641B',
-      itemZh: L(item.zh, item.en), itemEn: L(item.en, item.zh),
+      itemZh: L(item.zh, item.en), itemEn: isEn ? '' : (item.en + ' · '),
       clsZh: L(CLS[item.cls], CLS_EN[item.cls]), clsEn: item.cls,
       clsLine: L(CLS[item.cls] + '（' + item.cls + '）', CLS_EN[item.cls]),
       confPct: (shownConf * 100).toFixed(1) + '%',
-      binZh: L(bin.zh, bin.en), binEn: L(bin.en, bin.zh), binBg: bin.color,
+      binZh: L(bin.zh, bin.en), binEn: isEn ? '' : bin.en, binBg: bin.color,
       material: L(item.material, item.materialEn), history: L(item.history, item.historyEn),
       related: item.related.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) })),
       probs, binChoices,
@@ -1023,7 +1025,7 @@ class Component extends DCLogic {
       rewrite: () => this.playPath(isWrong ? 'correct' : 'wrong', isWrong ? item.bin : (item.bin === 'other' ? 'recyclable' : 'other')),
       rewriteHint: isWrong ? t.rewriteToCorrect : t.rewriteToWrong,
       todayStr: isEn ? (MON[now.getMonth()] + ' ' + now.getDate()) : ((now.getMonth() + 1) + '月' + now.getDate() + '日'),
-      dailyZh: L(daily.zh, daily.en), dailyEn: L(daily.en, daily.zh),
+      dailyZh: L(daily.zh, daily.en), dailyEn: isEn ? '' : daily.en,
       dailyFact: L(daily.history, daily.historyEn),
       pickDaily: () => this.pick(dailyKey),
       storyPanels,
