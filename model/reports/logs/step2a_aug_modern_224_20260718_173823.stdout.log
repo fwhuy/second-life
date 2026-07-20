@@ -1,0 +1,42 @@
+run=resnet50_224_aug_modern fold=0 device=cuda config_hash=c3b7f8e2c9
+train=1732 val=434 (group-disjoint, test untouched)
+--- phase head ---
+epoch   0 [head] train_loss 1.3921 val_loss 0.9502 val_acc 0.7281 macro_f1 0.7007
+epoch   1 [head] train_loss 1.0551 val_loss 0.7484 val_acc 0.7926 macro_f1 0.7656
+epoch   2 [head] train_loss 0.9401 val_loss 0.6444 val_acc 0.8226 macro_f1 0.7927
+epoch   3 [head] train_loss 0.8584 val_loss 0.5648 val_acc 0.8594 macro_f1 0.8321
+epoch   4 [head] train_loss 0.8303 val_loss 0.5431 val_acc 0.8641 macro_f1 0.8367
+--- phase ft ---
+epoch   5 [ft] train_loss 0.8135 val_loss 0.4899 val_acc 0.8664 macro_f1 0.8461
+epoch   6 [ft] train_loss 0.7795 val_loss 0.4465 val_acc 0.8756 macro_f1 0.8558
+epoch   7 [ft] train_loss 0.7198 val_loss 0.4055 val_acc 0.8894 macro_f1 0.8666
+epoch   8 [ft] train_loss 0.6972 val_loss 0.3796 val_acc 0.9032 macro_f1 0.8874
+epoch   9 [ft] train_loss 0.6451 val_loss 0.3609 val_acc 0.9078 macro_f1 0.8850
+epoch  10 [ft] train_loss 0.6256 val_loss 0.3451 val_acc 0.9147 macro_f1 0.8975
+epoch  11 [ft] train_loss 0.6229 val_loss 0.3342 val_acc 0.9240 macro_f1 0.9125
+epoch  12 [ft] train_loss 0.5937 val_loss 0.3061 val_acc 0.9286 macro_f1 0.9097
+epoch  13 [ft] train_loss 0.5859 val_loss 0.3149 val_acc 0.9147 macro_f1 0.8948
+epoch  14 [ft] train_loss 0.5849 val_loss 0.3055 val_acc 0.9286 macro_f1 0.9116
+epoch  15 [ft] train_loss 0.5692 val_loss 0.2942 val_acc 0.9332 macro_f1 0.9181
+epoch  16 [ft] train_loss 0.5636 val_loss 0.2868 val_acc 0.9355 macro_f1 0.9223
+epoch  17 [ft] train_loss 0.5451 val_loss 0.3005 val_acc 0.9355 macro_f1 0.9187
+epoch  18 [ft] train_loss 0.5475 val_loss 0.2909 val_acc 0.9355 macro_f1 0.9248
+epoch  19 [ft] train_loss 0.5331 val_loss 0.2873 val_acc 0.9470 macro_f1 0.9347
+epoch  20 [ft] train_loss 0.5373 val_loss 0.2814 val_acc 0.9401 macro_f1 0.9292
+epoch  21 [ft] train_loss 0.5446 val_loss 0.2805 val_acc 0.9355 macro_f1 0.9245
+epoch  22 [ft] train_loss 0.5177 val_loss 0.2816 val_acc 0.9470 macro_f1 0.9344
+epoch  23 [ft] train_loss 0.5270 val_loss 0.2887 val_acc 0.9447 macro_f1 0.9323
+epoch  24 [ft] train_loss 0.5286 val_loss 0.2835 val_acc 0.9447 macro_f1 0.9303
+epoch  25 [ft] train_loss 0.5166 val_loss 0.2798 val_acc 0.9493 macro_f1 0.9344
+epoch  26 [ft] train_loss 0.5328 val_loss 0.2688 val_acc 0.9470 macro_f1 0.9375
+epoch  27 [ft] train_loss 0.5171 val_loss 0.2688 val_acc 0.9470 macro_f1 0.9348
+epoch  28 [ft] train_loss 0.5164 val_loss 0.2744 val_acc 0.9447 macro_f1 0.9327
+epoch  29 [ft] train_loss 0.5032 val_loss 0.2738 val_acc 0.9378 macro_f1 0.9267
+epoch  30 [ft] train_loss 0.5158 val_loss 0.2763 val_acc 0.9470 macro_f1 0.9381
+epoch  31 [ft] train_loss 0.5096 val_loss 0.2702 val_acc 0.9493 macro_f1 0.9365
+epoch  32 [ft] train_loss 0.5168 val_loss 0.2706 val_acc 0.9493 macro_f1 0.9370
+epoch  33 [ft] train_loss 0.5117 val_loss 0.2766 val_acc 0.9493 macro_f1 0.9366
+epoch  34 [ft] train_loss 0.5113 val_loss 0.2784 val_acc 0.9447 macro_f1 0.9329
+epoch  35 [ft] train_loss 0.5179 val_loss 0.2718 val_acc 0.9470 macro_f1 0.9348
+early stop at epoch 35 (best val_acc 0.9493)
+best val_acc 0.9493 -> C:\Users\Yuvra\Downloads\trash-classification\trash-classification\checkpoints\resnet50_224_aug_modern\fold0\best.pth

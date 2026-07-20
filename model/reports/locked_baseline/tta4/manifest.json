@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "eval_id": "baseline_resnet50_raw_epoch44_val_fold0_tta4",
+  "role": "locked_reference",
+  "protocol": "tta4_v1_raw",
+  "checkpoint": {
+    "path": "checkpoints/baseline_resnet50/fold0/best_raw.pth",
+    "sha256": "716C697AA0EA661BA933A62B2308CB42A555F13588367E45538DE1B92BFDD173",
+    "epoch": 44,
+    "weights": "raw"
+  },
+  "model": {
+    "name": "resnet50.tv2_in1k",
+    "img_size": 224,
+    "config_hash": "ab586f1a72"
+  },
+  "data": {
+    "split": "val_fold0",
+    "n": 434,
+    "class_order": ["cardboard", "glass", "metal", "paper", "plastic", "trash"],
+    "supports": [69, 86, 71, 102, 83, 23],
+    "folds_csv_sha256": "2F6E712865974741E326764C720D232130D535FEBAA71B6EAA3C063DA99001C1",
+    "identity_scheme": "sorted_path_tsv_path_label_group_fold_utf8_lf_v1",
+    "identity_sha256": "b761576345b66207f1c8420eecca867dd669d3fc6af60e9b6736e1b5ffe9db96",
+    "legacy_identity_sha256_literal_escapes": "4097db5e5103ba509add6594ec17729b35579d54415af7161974af815246e1c8"
+  },
+  "predictions": {
+    "path": "reports/locked_baseline/tta4/predictions.csv",
+    "sha256": "B4591E442CF988FE2B6A2446BF69B5A92C85663A03F6009190038B83955685C5"
+  },
+  "metrics": {
+    "correct": 412,
+    "accuracy": 0.9493087557603687,
+    "macro_f1": 0.9413997489480129,
+    "class_correct": [64, 78, 67, 101, 82, 20],
+    "confusion_matrix": [
+      [64, 0, 1, 2, 1, 1],
+      [0, 78, 3, 1, 4, 0],
+      [0, 2, 67, 0, 1, 1],
+      [0, 0, 0, 101, 1, 0],
+      [0, 0, 0, 1, 82, 0],
+      [0, 0, 0, 1, 2, 20]
+    ]
+  }
+}

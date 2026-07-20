@@ -1,0 +1,290 @@
+{
+  "threshold": {
+    "fraction": 0.015,
+    "n": 434,
+    "min_net_images": 7,
+    "reference_correct": 412,
+    "required_correct": 419
+  },
+  "reference": {
+    "correct": 412,
+    "accuracy": 0.9493087557603687,
+    "macro_f1": 0.9413997489480129,
+    "per_class_recall": {
+      "cardboard": 0.927536231884058,
+      "glass": 0.9069767441860465,
+      "metal": 0.9436619718309859,
+      "paper": 0.9901960784313726,
+      "plastic": 0.9879518072289156,
+      "trash": 0.8695652173913043
+    },
+    "confusion_matrix": [
+      [
+        64,
+        0,
+        1,
+        2,
+        1,
+        1
+      ],
+      [
+        0,
+        78,
+        3,
+        1,
+        4,
+        0
+      ],
+      [
+        0,
+        2,
+        67,
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        101,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        82,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        2,
+        20
+      ]
+    ]
+  },
+  "candidate": {
+    "correct": 412,
+    "accuracy": 0.9493087557603687,
+    "macro_f1": 0.9413997489480129,
+    "per_class_recall": {
+      "cardboard": 0.927536231884058,
+      "glass": 0.9069767441860465,
+      "metal": 0.9436619718309859,
+      "paper": 0.9901960784313726,
+      "plastic": 0.9879518072289156,
+      "trash": 0.8695652173913043
+    },
+    "confusion_matrix": [
+      [
+        64,
+        0,
+        1,
+        2,
+        1,
+        1
+      ],
+      [
+        0,
+        78,
+        3,
+        1,
+        4,
+        0
+      ],
+      [
+        0,
+        2,
+        67,
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        101,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        82,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        2,
+        20
+      ]
+    ]
+  },
+  "paired": {
+    "fixed": 0,
+    "regressed": 0,
+    "net_images": 0,
+    "discordant": 0,
+    "mcnemar_exact_two_sided_p": 1.0
+  },
+  "per_class_recall_delta": {
+    "cardboard": 0.0,
+    "glass": 0.0,
+    "metal": 0.0,
+    "paper": 0.0,
+    "plastic": 0.0,
+    "trash": 0.0
+  },
+  "directional_confusion_delta": {
+    "cardboard->metal": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "cardboard->paper": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    },
+    "cardboard->plastic": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "cardboard->trash": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "glass->metal": {
+      "reference": 3,
+      "candidate": 3,
+      "delta": 0
+    },
+    "glass->paper": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "glass->plastic": {
+      "reference": 4,
+      "candidate": 4,
+      "delta": 0
+    },
+    "metal->glass": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    },
+    "metal->plastic": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "metal->trash": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "paper->plastic": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "plastic->paper": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "trash->paper": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "trash->plastic": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    }
+  },
+  "unordered_confusion_delta": {
+    "cardboard<->metal": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "cardboard<->paper": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    },
+    "cardboard<->plastic": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "cardboard<->trash": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "glass<->metal": {
+      "reference": 5,
+      "candidate": 5,
+      "delta": 0
+    },
+    "glass<->paper": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "glass<->plastic": {
+      "reference": 4,
+      "candidate": 4,
+      "delta": 0
+    },
+    "metal<->plastic": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "metal<->trash": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "paper<->plastic": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    },
+    "paper<->trash": {
+      "reference": 1,
+      "candidate": 1,
+      "delta": 0
+    },
+    "plastic<->trash": {
+      "reference": 2,
+      "candidate": 2,
+      "delta": 0
+    }
+  },
+  "gates": {
+    "net_images_at_least_threshold": false,
+    "macro_f1_not_lower": true,
+    "no_recall_drop_over_5pp": true
+  },
+  "verdict": "rejected"
+}

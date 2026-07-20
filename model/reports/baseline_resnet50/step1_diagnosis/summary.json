@@ -1,0 +1,315 @@
+{
+  "checkpoint": "C:\\Users\\Yuvra\\Downloads\\trash-classification\\trash-classification\\checkpoints\\baseline_resnet50\\fold0\\best_raw.pth",
+  "backbone": "resnet50.tv2_in1k",
+  "resolution": 224,
+  "val_fold": 0,
+  "split_sizes": {
+    "train": 1732,
+    "val": 434,
+    "test": 361
+  },
+  "accuracy": {
+    "train": 0.995958429561201,
+    "val": 0.9308755760368663,
+    "test": 0.8919667590027701
+  },
+  "macro_f1": {
+    "train": 0.9963859578167612,
+    "val": 0.91958646250928,
+    "test": 0.873079018585249
+  },
+  "test_report": {
+    "cardboard": {
+      "precision": 0.9807692307692307,
+      "recall": 0.8793103448275862,
+      "f1-score": 0.9272727272727272,
+      "support": 58.0
+    },
+    "glass": {
+      "precision": 0.9142857142857143,
+      "recall": 0.8888888888888888,
+      "f1-score": 0.9014084507042254,
+      "support": 72.0
+    },
+    "metal": {
+      "precision": 0.8524590163934426,
+      "recall": 0.896551724137931,
+      "f1-score": 0.8739495798319328,
+      "support": 58.0
+    },
+    "paper": {
+      "precision": 0.8709677419354839,
+      "recall": 0.9529411764705882,
+      "f1-score": 0.9101123595505618,
+      "support": 85.0
+    },
+    "plastic": {
+      "precision": 0.9090909090909091,
+      "recall": 0.8695652173913043,
+      "f1-score": 0.8888888888888888,
+      "support": 69.0
+    },
+    "trash": {
+      "precision": 0.7368421052631579,
+      "recall": 0.7368421052631579,
+      "f1-score": 0.7368421052631579,
+      "support": 19.0
+    },
+    "accuracy": 0.8919667590027701,
+    "macro avg": {
+      "precision": 0.877402452956323,
+      "recall": 0.8706832428299095,
+      "f1-score": 0.873079018585249,
+      "support": 361.0
+    },
+    "weighted avg": {
+      "precision": 0.8945023284094054,
+      "recall": 0.8919667590027701,
+      "f1-score": 0.8921473300773006,
+      "support": 361.0
+    }
+  },
+  "test_confusion_matrix": [
+    [
+      51,
+      0,
+      1,
+      6,
+      0,
+      0
+    ],
+    [
+      0,
+      64,
+      4,
+      1,
+      3,
+      0
+    ],
+    [
+      0,
+      1,
+      52,
+      1,
+      2,
+      2
+    ],
+    [
+      1,
+      0,
+      1,
+      81,
+      0,
+      2
+    ],
+    [
+      0,
+      4,
+      3,
+      1,
+      60,
+      1
+    ],
+    [
+      0,
+      1,
+      0,
+      3,
+      1,
+      14
+    ]
+  ],
+  "test_error_count": 39,
+  "top30_wrong_count": 29,
+  "top30_correct_count": 1,
+  "directional_error_pairs": [
+    {
+      "label": "cardboard",
+      "predicted": "paper",
+      "count": 6,
+      "share_of_test_errors": 0.15384615384615385
+    },
+    {
+      "label": "glass",
+      "predicted": "metal",
+      "count": 4,
+      "share_of_test_errors": 0.10256410256410256
+    },
+    {
+      "label": "plastic",
+      "predicted": "glass",
+      "count": 4,
+      "share_of_test_errors": 0.10256410256410256
+    },
+    {
+      "label": "plastic",
+      "predicted": "metal",
+      "count": 3,
+      "share_of_test_errors": 0.07692307692307693
+    },
+    {
+      "label": "glass",
+      "predicted": "plastic",
+      "count": 3,
+      "share_of_test_errors": 0.07692307692307693
+    },
+    {
+      "label": "trash",
+      "predicted": "paper",
+      "count": 3,
+      "share_of_test_errors": 0.07692307692307693
+    },
+    {
+      "label": "paper",
+      "predicted": "trash",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "label": "metal",
+      "predicted": "trash",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "label": "metal",
+      "predicted": "plastic",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "label": "cardboard",
+      "predicted": "metal",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "metal",
+      "predicted": "glass",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "paper",
+      "predicted": "cardboard",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "metal",
+      "predicted": "paper",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "glass",
+      "predicted": "paper",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "paper",
+      "predicted": "metal",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "plastic",
+      "predicted": "paper",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "plastic",
+      "predicted": "trash",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "trash",
+      "predicted": "plastic",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "label": "trash",
+      "predicted": "glass",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    }
+  ],
+  "unordered_error_pairs": [
+    {
+      "class_a": "cardboard",
+      "class_b": "paper",
+      "count": 7,
+      "share_of_test_errors": 0.1794871794871795
+    },
+    {
+      "class_a": "glass",
+      "class_b": "plastic",
+      "count": 7,
+      "share_of_test_errors": 0.1794871794871795
+    },
+    {
+      "class_a": "metal",
+      "class_b": "plastic",
+      "count": 5,
+      "share_of_test_errors": 0.1282051282051282
+    },
+    {
+      "class_a": "glass",
+      "class_b": "metal",
+      "count": 5,
+      "share_of_test_errors": 0.1282051282051282
+    },
+    {
+      "class_a": "paper",
+      "class_b": "trash",
+      "count": 5,
+      "share_of_test_errors": 0.1282051282051282
+    },
+    {
+      "class_a": "metal",
+      "class_b": "trash",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "class_a": "plastic",
+      "class_b": "trash",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "class_a": "metal",
+      "class_b": "paper",
+      "count": 2,
+      "share_of_test_errors": 0.05128205128205128
+    },
+    {
+      "class_a": "glass",
+      "class_b": "paper",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "class_a": "cardboard",
+      "class_b": "metal",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "class_a": "glass",
+      "class_b": "trash",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    },
+    {
+      "class_a": "paper",
+      "class_b": "plastic",
+      "count": 1,
+      "share_of_test_errors": 0.02564102564102564
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+run=resnet50_384_progressive fold=0 device=cuda config_hash=bc27d87b89
+train=1732 val=434 (group-disjoint, test untouched)
+--- phase ft ---
+epoch   0 [ft] train_loss 0.6100 val_loss 0.4646 val_acc 0.9263 macro_f1 0.9178
+epoch   1 [ft] train_loss 0.5862 val_loss 0.4091 val_acc 0.9355 macro_f1 0.9327
+epoch   2 [ft] train_loss 0.5642 val_loss 0.3712 val_acc 0.9263 macro_f1 0.9186
+epoch   3 [ft] train_loss 0.5418 val_loss 0.3451 val_acc 0.9332 macro_f1 0.9258
+epoch   4 [ft] train_loss 0.5424 val_loss 0.3227 val_acc 0.9378 macro_f1 0.9318
+epoch   5 [ft] train_loss 0.5384 val_loss 0.3320 val_acc 0.9286 macro_f1 0.9211
+epoch   6 [ft] train_loss 0.5312 val_loss 0.3031 val_acc 0.9424 macro_f1 0.9336
+epoch   7 [ft] train_loss 0.5201 val_loss 0.2957 val_acc 0.9401 macro_f1 0.9367
+epoch   8 [ft] train_loss 0.5244 val_loss 0.2964 val_acc 0.9470 macro_f1 0.9448
+epoch   9 [ft] train_loss 0.5164 val_loss 0.2983 val_acc 0.9378 macro_f1 0.9339
+epoch  10 [ft] train_loss 0.5138 val_loss 0.2967 val_acc 0.9401 macro_f1 0.9340
+epoch  11 [ft] train_loss 0.5164 val_loss 0.3044 val_acc 0.9332 macro_f1 0.9331
+epoch  12 [ft] train_loss 0.5085 val_loss 0.2896 val_acc 0.9447 macro_f1 0.9406
+epoch  13 [ft] train_loss 0.5101 val_loss 0.2885 val_acc 0.9355 macro_f1 0.9326
+epoch  14 [ft] train_loss 0.5121 val_loss 0.2859 val_acc 0.9470 macro_f1 0.9470
+early stop at epoch 14 (best val_acc 0.9470)
+best val_acc 0.9470 -> C:\Users\Yuvra\Downloads\trash-classification\trash-classification\checkpoints\resnet50_384_progressive\fold0\best.pth

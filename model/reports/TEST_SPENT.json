@@ -1,0 +1,9 @@
+{
+  "spent": true,
+  "checkpoint": "checkpoints/baseline_resnet50/fold0/best_raw.pth",
+  "test_images": 361,
+  "correct": 322,
+  "accuracy": 0.8919667590027701,
+  "display_accuracy_percent": 89.20,
+  "reason": "The test set was evaluated and manually audited during Step 1 diagnosis. It is unavailable for any further model selection or confirmatory evaluation."
+}
