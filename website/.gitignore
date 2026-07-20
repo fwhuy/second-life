@@ -1,0 +1,5 @@
+.venv/
+__pycache__/
+*.pyc
+# model weights are large + reproducible; keep them out of git
+checkpoints/
