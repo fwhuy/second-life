@@ -47,6 +47,10 @@
 </helmet>
 <div style="min-height: 100vh; font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; color: #23372B; background: #FAF7EF; display: flex; flex-direction: column;">
 
+  <sc-if value="{{ showDemoBanner }}" hint-placeholder-val="{{ false }}">
+    <div style="background: #23372B; color: #F0E9D6; text-align: center; padding: 9px 18px; font-size: 13px; line-height: 1.5;">{{ t.demoBar }}</div>
+  </sc-if>
+
   <nav style="display: flex; align-items: center; gap: 28px; padding: 18px 48px; background: rgba(250,247,239,0.95); border-bottom: 1px solid #E5DCC8; position: sticky; top: 0; z-index: 10;">
     <div onClick="{{ goHome }}" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
       <svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="#3E7C4F"></circle><path d="M17 8 C 23 8 26 13 25 18 C 20 17 15 14 17 8 Z" fill="#DCE7D3"></path><path d="M11 24 A 8 8 0 0 1 24 22" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path><path d="M24 22 l 2 -3 M24 22 l -3.4 -0.6" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
@@ -510,7 +514,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
 class Component extends DCLogic {
-  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false };
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false, backendUp: true };
 
   componentDidMount() {
     let lang = 'zh', records = [];
@@ -523,6 +527,15 @@ class Component extends DCLogic {
     this.setState({ lang, records, loaded: true });
     this._onPaste = e => this.onPaste(e);
     window.addEventListener('paste', this._onPaste);
+    // Detect whether the real model backend is reachable. When it isn't (the
+    // site is hosted statically, e.g. GitHub Pages, or opened as a file), show a
+    // banner so viewers know photo identification is running on demo data.
+    if (typeof fetch === 'function' && window.location.protocol !== 'file:') {
+      fetch('/api/model').then(r => { if (!r.ok) throw new Error('down'); })
+        .catch(() => this.setState({ backendUp: false }));
+    } else {
+      this.setState({ backendUp: false });
+    }
   }
 
   componentWillUnmount() {
@@ -549,6 +562,7 @@ class Component extends DCLogic {
       navHome: '首页', navIdentify: '洞察实验室', navExplore: '万物博物馆', navRecord: '我的记录',
       ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
       badge: '课程作品',
+      demoBar: '演示版本 · 在线版的图片识别为示例数据，真实模型在本地运行。',
       kickerMinimal: '万物皆有新生 · 课程作品',
       heroA: '每一件物品，', heroB: '都值得第二次生命',
       heroBody: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。在这里，垃圾分类不再是"该扔哪个桶"的查询，而是一次为物品选择命运的旅程：认识它 → 选择它的未来 → 见证结果。',
@@ -605,6 +619,7 @@ class Component extends DCLogic {
       navHome: 'Home', navIdentify: 'Insight Lab', navExplore: 'Museum', navRecord: 'My Record',
       ctaStart: 'Start exploring', ctaExplore: 'Start exploring', ctaBrowse: 'Browse the Exploration Space first',
       badge: 'Course project',
+      demoBar: 'Demo version · photo identification shows sample data online; the real model runs locally.',
       kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
       heroA: 'Every object deserves', heroB: 'a second life',
       heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup, "which bin?", and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
@@ -1064,6 +1079,7 @@ class Component extends DCLogic {
 
     return {
       t, english, isEn,
+      showDemoBanner: !st.backendUp,
       toggleLang: () => this.setLang(isEn ? 'zh' : 'en'),
       isHome: st.page === 'home', isIdentify: st.page === 'identify', isResult: st.page === 'result',
       isSimulator: st.page === 'simulator', isExplore: st.page === 'explore', isRecord: st.page === 'record',
