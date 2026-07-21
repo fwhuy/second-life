@@ -109,6 +109,65 @@ TEMPERATURE = 0.65            # softens confidence without inflating it
 FEATURE_OOD_THRESHOLD = 0.70  # flag as uncertain if kNN feature distance exceeds this
 
 
+def activation_box(features: torch.Tensor, model, class_index: int):
+    """Return a normalized weak-localization box from the classifier's spatial
+    evidence. This is class activation mapping, not object detection: it shows
+    the region that most influenced the TrashNet prediction without requiring a
+    separately trained detector or box annotations."""
+    if not isinstance(features, torch.Tensor) or features.ndim != 4:
+        return None
+    fmap = features[0].float()
+    # Some backbones expose NHWC features; normalize to CHW.
+    classifier = model.get_classifier() if hasattr(model, "get_classifier") else None
+    in_features = getattr(classifier, "in_features", None)
+    if in_features and fmap.shape[-1] == in_features and fmap.shape[0] != in_features:
+        fmap = fmap.permute(2, 0, 1)
+    try:
+        weights = classifier.weight[class_index].float().view(-1, 1, 1)
+        heat = torch.relu((fmap * weights).sum(0)) if weights.shape[0] == fmap.shape[0] else fmap.abs().mean(0)
+    except (AttributeError, IndexError, RuntimeError):
+        heat = fmap.abs().mean(0)
+    if heat.numel() == 0 or float(heat.max()) <= 0:
+        return None
+    threshold = torch.maximum(torch.quantile(heat.flatten(), 0.72), heat.max() * 0.38)
+    mask = (heat >= threshold).detach().cpu()
+    # Keep the strongest connected evidence island instead of enclosing every
+    # scattered hot cell, which would often produce an unhelpfully huge box.
+    seen, components = set(), []
+    for yy in range(mask.shape[0]):
+        for xx in range(mask.shape[1]):
+            if not bool(mask[yy, xx]) or (yy, xx) in seen:
+                continue
+            stack, component = [(yy, xx)], []
+            seen.add((yy, xx))
+            while stack:
+                cy, cx = stack.pop()
+                component.append((cy, cx))
+                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                    if 0 <= ny < mask.shape[0] and 0 <= nx < mask.shape[1] and bool(mask[ny, nx]) and (ny, nx) not in seen:
+                        seen.add((ny, nx))
+                        stack.append((ny, nx))
+            components.append(component)
+    if not components:
+        return None
+    strongest = max(components, key=lambda c: sum(float(heat[y, x]) for y, x in c))
+    points = torch.tensor(strongest)
+    if points.numel() == 0:
+        return None
+    height, width = heat.shape
+    y1, x1 = points.min(0).values.tolist()
+    y2, x2 = points.max(0).values.tolist()
+    # Add context and enforce a useful minimum size for the overlay.
+    pad_x, pad_y = max(1, round(width * .07)), max(1, round(height * .07))
+    x1, y1 = max(0, x1 - pad_x), max(0, y1 - pad_y)
+    x2, y2 = min(width - 1, x2 + pad_x), min(height - 1, y2 + pad_y)
+    return {
+        "x": round(x1 / width, 4), "y": round(y1 / height, 4),
+        "w": round((x2 - x1 + 1) / width, 4), "h": round((y2 - y1 + 1) / height, 4),
+        "method": "class_activation_map",
+    }
+
+
 @torch.no_grad()
 def predict(img: Image.Image):
     x = TRANSFORM(img.convert("RGB")).unsqueeze(0).to(DEVICE)
@@ -120,14 +179,16 @@ def predict(img: Image.Image):
     # Feature-space out-of-distribution distance, from the reference model (the
     # bank was built with MODELS[0]); None/off when no bank is loaded.
     uncertain, ood_dist = False, None
+    ref = MODELS[0]
+    ref_features = ref.forward_features(x)
+    bbox = activation_box(ref_features, ref, int(disp.argmax()))
     if OOD_BANK is not None:
-        ref = MODELS[0]
         feat = torch.nn.functional.normalize(
-            ref.forward_head(ref.forward_features(x), pre_logits=True), dim=1)[0]
+            ref.forward_head(ref_features, pre_logits=True), dim=1)[0]
         sims = OOD_BANK.to(feat.dtype) @ feat
         ood_dist = float(1 - sims.topk(OOD_K).values.mean())
         uncertain = ood_dist > FEATURE_OOD_THRESHOLD
-    return probs, uncertain, ood_dist
+    return probs, uncertain, ood_dist, bbox
 
 
 def _image_from_request():
@@ -162,10 +223,10 @@ def api_identify():
     img = _image_from_request()
     if img is None:
         return jsonify(error="No image received."), 400
-    probs, uncertain, ood_dist = predict(img)
+    probs, uncertain, ood_dist, bbox = predict(img)
     top = max(probs, key=probs.get)
     # frontend reads cls + conf; `uncertain` triggers the "not one of my six" note
-    return jsonify(cls=top, conf=probs[top], probs=probs, uncertain=uncertain,
+    return jsonify(cls=top, conf=probs[top], probs=probs, uncertain=uncertain, bbox=bbox,
                    ood_distance=None if ood_dist is None else round(ood_dist, 4))
 
 

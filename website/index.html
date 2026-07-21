@@ -236,7 +236,7 @@
             <div style="position:absolute;left:12px;bottom:10px;padding:4px 7px;background:rgba(14,37,28,.82);color:#CFE5D8;font:700 9px monospace;letter-spacing:1px;">CAM / SPATIAL EVIDENCE</div>
             <sc-if value="{{ hasDetectionBox }}" hint-placeholder-val="{{ false }}">
               <div style="position:absolute; left:{{ boxLeft }}; top:{{ boxTop }}; width:{{ boxWidth }}; height:{{ boxHeight }}; border:3px solid #F0A04B; box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 16px rgba(240,160,75,.28), inset 0 0 24px rgba(240,160,75,.1); pointer-events:none;">
-                <div style="position:absolute; left:-3px; top:-3px; padding:5px 9px; background:#D97B29; color:white; font:700 11px/1.4 monospace; white-space:nowrap;">{{ clsLine }} · {{ confPct }}</div>
+                <div style="position:absolute; left:-3px; top:-3px; padding:5px 9px; background:#D97B29; color:white; font:700 11px/1.4 monospace; white-space:nowrap;">{{ clsLine }} · {{ confPct }} · {{ boxMode }}</div>
               </div>
             </sc-if>
           </sc-if>
@@ -570,7 +570,7 @@ class Component extends DCLogic {
       accCaption: '验证集准确率（TTA）· TrashNet 六分类',
       mapTitle: '六个模型类别 → 四分类投放的透明映射',
       honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。模型只认识这六个类别，遇到明显不属于它们的照片时会如实提示"可能不属于这六类"，而不是硬猜。',
-      identTitle: '洞察实验室', labSubtitle: '放慢速度，像研究员一样观察一件物品。', microBtn: '查看微观结构', evidenceView: '模型视觉证据',
+      identTitle: '洞察实验室', labSubtitle: '放慢速度，像研究员一样观察一件物品。', microBtn: '查看微观结构', evidenceView: '模型视觉证据', boxLive: '模型定位', boxApprox: '估算区域',
       analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
       uploadTitle: '拍照或上传图片', uploadSub: '点击或粘贴图片',
       orType: '或者，输入物品名称',
@@ -627,7 +627,7 @@ class Component extends DCLogic {
       accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
       honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports. The model knows only these six classes; when a photo clearly matches none of them, it says so instead of forcing a guess.',
-      identTitle: 'Insight Lab', labSubtitle: 'Slow down and examine an object like a researcher.', microBtn: 'View microstructure', evidenceView: 'MODEL VISUAL EVIDENCE',
+      identTitle: 'Insight Lab', labSubtitle: 'Slow down and examine an object like a researcher.', microBtn: 'View microstructure', evidenceView: 'MODEL VISUAL EVIDENCE', boxLive: 'MODEL CAM', boxApprox: 'SCAN REGION',
       analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
       uploadTitle: 'Take or upload a photo', uploadSub: 'Click or paste an image',
       orType: 'Or type the name of an item',
@@ -996,7 +996,10 @@ class Component extends DCLogic {
     // Live upload → the model's real numbers; text pick → the library item's.
     const shownConf = (st.live && typeof st.liveConf === 'number') ? st.liveConf : item.conf;
     const shownProbs = (st.live && st.liveProbs) ? st.liveProbs : item.probs;
-    const detectionBox = st.liveBox || { x: 0, y: 0, w: 0, h: 0 };
+    // Older cached backends and file:// demo mode do not return localization.
+    // Keep the overlay visible as an explicitly approximate scan region; a live
+    // updated backend replaces this with its model-derived activation box.
+    const detectionBox = st.liveBox || (st.photo ? { x: .14, y: .12, w: .72, h: .76 } : { x: 0, y: 0, w: 0, h: 0 });
     const story = STORIES[item.cls];
     const steps = story[st.simPath];
     const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
@@ -1098,9 +1101,10 @@ class Component extends DCLogic {
       analyzing: st.analyzing, notAnalyzing: !st.analyzing,
       onFile: e => this.onFile(e),
       photo: st.photo, hasPhoto: !!st.photo, noPhoto: !st.photo,
-      hasDetectionBox: !!(st.live && st.photo && st.liveBox),
+      hasDetectionBox: !!st.photo,
       boxLeft: (detectionBox.x * 100).toFixed(1) + '%', boxTop: (detectionBox.y * 100).toFixed(1) + '%',
       boxWidth: (detectionBox.w * 100).toFixed(1) + '%', boxHeight: (detectionBox.h * 100).toFixed(1) + '%',
+      boxMode: st.liveBox ? t.boxLive : t.boxApprox,
       isLive: st.live, isDemo: !st.live,
       isUncertain: st.live && st.liveUncertain,
       confNote: (st.live && st.liveUncertain) ? t.oodNote : (st.live ? t.confLive : t.confDemo),
