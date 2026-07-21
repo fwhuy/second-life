@@ -232,6 +232,10 @@
         </div>
       </div>
 
+      <sc-if value="{{ isUncertain }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top: 16px; padding: 16px 20px; border-radius: 14px; background: #FBE7D3; border: 1px solid #E9C48A; color: #8A5316; font-size: 14px; line-height: 1.7;">{{ t.oodBanner }}</div>
+      </sc-if>
+
       <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; margin-top: 20px;">
         <div style="display: flex; flex-direction: column; gap: 20px;">
           <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
@@ -293,7 +297,6 @@
               </div>
             </sc-for>
           </div>
-          <div style="text-align: center; font-size: 13px; color: #A9A183; margin-top: 22px;">{{ t.simHint }}</div>
         </div>
       </sc-if>
 
@@ -417,7 +420,6 @@
     <div style="flex: 1; max-width: 760px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
       <div style="text-align: center; margin-bottom: 32px;">
         <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.myRecord }}</h2>
-        <div style="font-size: 13px; color: #7C8A73;">{{ t.recNote }}</div>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
         <div style="padding: 22px; border-radius: 16px; background: #FFFDF6; border: 1px solid #E5DCC8; text-align: center;"><div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; color: #2F5A3C;">{{ idCount }}</div><div style="font-size: 13px; color: #7C8A73;">{{ t.recIdCount }}</div></div>
@@ -454,7 +456,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
 class Component extends DCLogic {
-  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, loaded: false };
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, loaded: false };
 
   componentDidMount() {
     let lang = 'zh', records = [];
@@ -465,9 +467,14 @@ class Component extends DCLogic {
       if (r) { const p = JSON.parse(r); if (Array.isArray(p)) records = p.slice(0, 60); }
     } catch (e) { /* localStorage blocked, run in memory only */ }
     this.setState({ lang, records, loaded: true });
+    this._onPaste = e => this.onPaste(e);
+    window.addEventListener('paste', this._onPaste);
   }
 
-  componentWillUnmount() { clearInterval(this._timer); }
+  componentWillUnmount() {
+    clearInterval(this._timer);
+    if (this._onPaste) window.removeEventListener('paste', this._onPaste);
+  }
 
   persist(key, val) {
     try { window.localStorage.setItem('slai.' + key, val); } catch (e) { /* ignore */ }
@@ -487,17 +494,17 @@ class Component extends DCLogic {
       brand: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
       navHome: '首页', navIdentify: '识别中心', navExplore: '探索空间', navRecord: '我的记录',
       ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
-      badge: '课程作品 · 由真实训练的 TrashNet 模型驱动',
-      kickerMinimal: 'SECOND LIFE AI · 课程作品',
+      badge: '课程作品',
+      kickerMinimal: '万物皆有新生 · 课程作品',
       heroA: '每一件物品，', heroB: '都值得第二次生命',
       heroBody: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。在这里，垃圾分类不再是"该扔哪个桶"的查询，而是一次为物品选择命运的旅程：认识它 → 选择它的未来 → 见证结果。',
       heroBodyShort: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。认识它 → 选择它的未来 → 见证结果。',
       accCaption: '验证集准确率（TTA）· TrashNet 六分类',
       mapTitle: '六个模型类别 → 四分类投放的透明映射',
-      honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。',
+      honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。模型只认识这六个类别，遇到明显不属于它们的照片时会如实提示"可能不属于这六类"，而不是硬猜。',
       identTitle: 'AI 物品识别中心',
       analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
-      uploadTitle: '拍照或上传图片', uploadSub: '点击添加图片',
+      uploadTitle: '拍照或上传图片', uploadSub: '点击或粘贴图片',
       orType: '或者，输入物品名称',
       searchPlaceholder: '例如：塑料瓶、咖啡杯、快递纸箱…',
       libCovers: '内容库覆盖的常见物品：',
@@ -505,18 +512,19 @@ class Component extends DCLogic {
       modelSays: '模型判定：', confidence: '置信度',
       confLive: '温度缩放校准后的置信度（原始模型偏保守）',
       confDemo: '⚠ 演示数据 · 后端未连接，此数字非模型实时输出',
+      oodNote: '低置信度 · 可能不属于这六类',
+      oodBanner: '⚠ 置信度偏低：这可能不属于模型认识的六个类别。模型只有六个"桶"，softmax 必须把它归入其中之一，所以遇到陌生物体（比如一只猫），它只能勉强猜一个。下面的结果请当作不确定的猜测来看。',
       putInto: '应投入',
-      blockMaterial: '③ 它是什么做的 · Material',
-      blockHistory: '④ 它的小小历史 · History',
-      blockRelated: '⑤ 同材质的伙伴们 · Same material',
+      blockMaterial: '③ 它是什么做的',
+      blockHistory: '④ 它的小小历史',
+      blockRelated: '⑤ 同材质的伙伴们',
       probsTitle: '模型的完整判断（六类概率）',
       waitingA: '"这件物品正等待开启', waitingB: '下一段旅程。"',
       enterSim: '进入未来模拟器，为它做出选择',
       simTitle: '未来模拟器',
       simPre: '这只', simPost: '正等待开启下一段旅程，它的未来，由你决定。',
-      simHint: '没有提示，凭直觉选，选错也是故事的一部分。',
       scanning: '扫描中', years450: '450 年，才能完全降解',
-      letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: '来自未来的信',
+      letterKicker: '未来来信', letterTitle: '来自未来的信',
       yours: '， 你的',
       rewriteBtn: '【改写它的未来】', doneBtn: '完成，看我的记录',
       rewriteToCorrect: '点击改写，看看如果当初选对了，它会经历什么。',
@@ -524,11 +532,10 @@ class Component extends DCLogic {
       exploreTitle: 'AI 环境探索空间',
       dailyLabel: '今日物品 · ', meetIt: '认识它 →',
       campusTitle: '校园故事：一只咖啡杯的一天',
-      campusSub: 'A campus story, honest ending included.',
+      campusSub: '一个真实的校园故事，结局同样诚实。',
       cupNote: '诚实的小注脚：多数一次性咖啡杯内壁有塑料淋膜，很难当纸回收，所以它属于其他垃圾。自带杯子，是给它更好的未来。',
       myRecord: '我的记录',
       recSummaryA: '这台浏览器已完成 ', recSummaryB: ' 次识别、', recSummaryC: ' 次未来模拟',
-      recNote: '只保存在这台浏览器里（localStorage），没有账号，没有服务器。',
       recIdCount: '次物品识别', recSimCount: '次未来模拟',
       recEmpty: '这里还是空的，去识别一件物品，为它选择未来吧。',
       goIdent: '去识别中心 →', clearBtn: '清空本机记录',
@@ -542,18 +549,18 @@ class Component extends DCLogic {
     const en = {
       brand: 'Second Life AI', brandA: 'Second', brandB: 'Life', brandC: 'AI',
       navHome: 'Home', navIdentify: 'Identify', navExplore: 'Explore', navRecord: 'My Record',
-      ctaStart: 'Start exploring', ctaExplore: '【Start exploring】', ctaBrowse: 'Browse the Exploration Space first',
-      badge: 'Course project · powered by a genuinely trained TrashNet model',
+      ctaStart: 'Start exploring', ctaExplore: 'Start exploring', ctaBrowse: 'Browse the Exploration Space first',
+      badge: 'Course project',
       kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
       heroA: 'Every object deserves', heroB: 'a second life',
       heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup, "which bin?", and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
       heroBodyShort: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
       accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
-      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports.',
+      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports. The model knows only these six classes; when a photo clearly matches none of them, it says so instead of forcing a guess.',
       identTitle: 'AI Recognition Center',
       analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
-      uploadTitle: 'Take or upload a photo', uploadSub: 'Click to add an image',
+      uploadTitle: 'Take or upload a photo', uploadSub: 'Click or paste an image',
       orType: 'Or type the name of an item',
       searchPlaceholder: 'e.g. plastic bottle, coffee cup, parcel box…',
       libCovers: 'Common items in the content library:',
@@ -561,6 +568,8 @@ class Component extends DCLogic {
       modelSays: 'Model says: ', confidence: 'Confidence',
       confLive: 'Calibrated confidence (temperature-scaled)',
       confDemo: '⚠ Demo data · backend not connected, this is not live model output',
+      oodNote: 'Low confidence · may not be one of the six',
+      oodBanner: '⚠ Low confidence: this may not be one of the six classes the model knows. The model has only six bins and softmax must pick one, so for an unfamiliar object (say, a cat) it can only make a weak guess. Treat the result below as an uncertain guess.',
       putInto: 'Put it in',
       blockMaterial: '③ What it is made of · Material',
       blockHistory: '④ A short history · History',
@@ -570,11 +579,10 @@ class Component extends DCLogic {
       enterSim: 'Enter the Future Simulator and choose for it',
       simTitle: 'Future Simulator',
       simPre: 'This ', simPost: ' is waiting to begin its next journey, its future is yours to decide.',
-      simHint: 'No hints. Go with your instinct, getting it wrong is part of the story too.',
       scanning: 'SCANNING', years450: '450 years to fully degrade',
       letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: 'A letter from the future',
-      yours: '， your ',
-      rewriteBtn: '【Rewrite its future】', doneBtn: 'Done, see my record',
+      yours: ', your ',
+      rewriteBtn: 'Rewrite its future', doneBtn: 'Done, see my record',
       rewriteToCorrect: 'Tap rewrite to see what would have happened if you had chosen right.',
       rewriteToWrong: 'Tap rewrite to see where the other choice would have taken it.',
       exploreTitle: 'AI Exploration Space',
@@ -584,7 +592,6 @@ class Component extends DCLogic {
       cupNote: 'An honest footnote: most disposable coffee cups are lined with plastic film inside, which makes them very hard to recycle as paper, so they belong in residual waste. Bringing your own cup is the better future for it.',
       myRecord: 'My Record',
       recSummaryA: 'This browser has completed ', recSummaryB: ' identifications and ', recSummaryC: ' future simulations',
-      recNote: 'Stored only in this browser (localStorage), no accounts, no server.',
       recIdCount: 'identifications', recSimCount: 'future simulations',
       recEmpty: 'Nothing here yet, go identify an object and choose a future for it.',
       goIdent: 'Go to the Recognition Center →', clearBtn: 'Clear records on this device',
@@ -855,14 +862,31 @@ class Component extends DCLogic {
     this.setState({ itemKey: key, page: 'result', queryMiss: false, query: '', simPhase: 'choose', simStep: 0,
       live: !!o.live, photo: o.photo || null,
       liveConf: typeof o.conf === 'number' ? o.conf : null,
-      liveProbs: o.probs || null });
+      liveProbs: o.probs || null, liveUncertain: !!o.uncertain });
     this.addRecord({ k: 'id', item: key, conf: o.conf || ITEMS[key].conf, live: !!o.live });
   }
 
-  /* Real file upload. Tries the Flask backend first; if it is not running
-     (e.g. the file is opened directly), falls back to demo data and says so. */
   onFile(e) {
     const f = e.target && e.target.files && e.target.files[0];
+    this.identifyFile(f);
+  }
+
+  /* Ctrl/Cmd-V a copied image. Grab the first image on the clipboard and send
+     it through the same path as a file upload. */
+  onPaste(e) {
+    if (this.state.page !== 'identify') return;
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for (const it of items) {
+      if (it.type && it.type.indexOf('image') === 0) {
+        const f = it.getAsFile();
+        if (f) { e.preventDefault(); this.identifyFile(f); return; }
+      }
+    }
+  }
+
+  /* Real image identify. Tries the Flask backend first; if it is not running
+     (e.g. the file is opened directly), falls back to demo data and says so. */
+  identifyFile(f) {
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -870,11 +894,11 @@ class Component extends DCLogic {
       this.setState({ analyzing: true, photo: dataUrl });
       const fd = new FormData();
       fd.append('image', f);
-      const done = (key, conf, probs, live) => {
+      const done = (key, conf, probs, live, uncertain) => {
         this.setState({ analyzing: false });
-        this.pick(key, { conf, probs, live, photo: dataUrl });
+        this.pick(key, { conf, probs, live, uncertain, photo: dataUrl });
       };
-      const fallback = () => setTimeout(() => done('bottle', null, null, false), 900);
+      const fallback = () => setTimeout(() => done('bottle', null, null, false, false), 900);
       if (typeof fetch !== 'function' || window.location.protocol === 'file:') { fallback(); return; }
       fetch('/api/identify', { method: 'POST', body: fd })
         .then(r => { if (!r.ok) throw new Error('bad status'); return r.json(); })
@@ -884,7 +908,7 @@ class Component extends DCLogic {
           // the class to a representative library item so the story blocks have
           // content, and carry the real conf + probs through to the display.
           const key = Object.keys(ITEMS).find(k => ITEMS[k].cls === d.cls) || 'bottle';
-          done(key, typeof d.conf === 'number' ? d.conf : null, d.probs || null, true);
+          done(key, typeof d.conf === 'number' ? d.conf : null, d.probs || null, true, !!d.uncertain);
         })
         .catch(fallback);
     };
@@ -906,9 +930,10 @@ class Component extends DCLogic {
     const story = STORIES[item.cls];
     const steps = story[st.simPath];
     const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
-    // `english` still drives the small italic subtitles, they only make sense
-    // while the page itself is in Chinese.
-    const english = (this.props.showEnglish ?? true) && !isEn;
+    // Monolingual modes: each language stands alone, so the old English-under-
+    // Chinese italic subtitles are always off. (English mode already reads in
+    // English; Chinese mode stays pure Chinese.)
+    const english = false;
     const layout = this.props.homeLayout ?? 'story';
     const simStyle = this.props.simulatorStyle ?? 'journey';
 
@@ -923,21 +948,21 @@ class Component extends DCLogic {
 
     const binRecyclable = L('可回收物', 'Recyclable'), binOther = L('其他垃圾', 'Residual');
     const mappingChips = [
-      { cls: L('纸板 cardboard', 'cardboard'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('玻璃 glass', 'glass'), bin: binRecyclable, color: '#2B6CB0' },
-      { cls: L('金属 metal', 'metal'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('纸类 paper', 'paper'), bin: binRecyclable, color: '#2B6CB0' },
-      { cls: L('塑料 plastic', 'plastic'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('其他 trash', 'trash'), bin: binOther, color: '#6B7280' }
+      { cls: L('纸板', 'cardboard'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('玻璃', 'glass'), bin: binRecyclable, color: '#2B6CB0' },
+      { cls: L('金属', 'metal'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('纸类', 'paper'), bin: binRecyclable, color: '#2B6CB0' },
+      { cls: L('塑料', 'plastic'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('其他', 'trash'), bin: binOther, color: '#6B7280' }
     ];
 
     const nameOf = k => L(ITEMS[k].zh, ITEMS[k].en);
     const chips = CHIP_ORDER.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) }));
-    const marqueeItems = [...CHIP_ORDER, ...CHIP_ORDER].map(k => ({ zh: nameOf(k), en: isEn ? '' : ITEMS[k].en }));
+    const marqueeItems = [...CHIP_ORDER, ...CHIP_ORDER].map(k => ({ zh: nameOf(k), en: '' }));
 
     const clsLabelAll = isEn
       ? { plastic: 'plastic', glass: 'glass', metal: 'metal', paper: 'paper', cardboard: 'cardboard', trash: 'trash' }
-      : { plastic: '塑料 plastic', glass: '玻璃 glass', metal: '金属 metal', paper: '纸类 paper', cardboard: '纸板 cardboard', trash: '其他 trash' };
+      : { plastic: '塑料', glass: '玻璃', metal: '金属', paper: '纸类', cardboard: '纸板', trash: '其他' };
     const probs = Object.entries(shownProbs).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: clsLabelAll[k], pct: (v * 100).toFixed(1) + '%', w: Math.max(v * 100, 0.8) + '%', color: k === item.cls ? '#3E7C4F' : '#C9BD9F' }));
 
-    const binChoices = ['recyclable', 'kitchen', 'hazard', 'other'].map(id => ({ zh: L(BINS[id].zh, BINS[id].en), en: isEn ? '' : BINS[id].en, color: BINS[id].color, choose: () => this.startStory(id) }));
+    const binChoices = ['recyclable', 'kitchen', 'hazard', 'other'].map(id => ({ zh: L(BINS[id].zh, BINS[id].en), en: '', color: BINS[id].color, choose: () => this.startStory(id) }));
 
     const isWrong = st.simPath === 'wrong';
     const railColorDone = isWrong ? '#6B7280' : '#3E7C4F';
@@ -998,13 +1023,14 @@ class Component extends DCLogic {
       onFile: e => this.onFile(e),
       photo: st.photo, hasPhoto: !!st.photo, noPhoto: !st.photo,
       isLive: st.live, isDemo: !st.live,
-      confNote: st.live ? t.confLive : t.confDemo,
-      confNoteColor: st.live ? '#A9A183' : '#B8641B',
-      itemZh: L(item.zh, item.en), itemEn: isEn ? '' : (item.en + ' · '),
+      isUncertain: st.live && st.liveUncertain,
+      confNote: (st.live && st.liveUncertain) ? t.oodNote : (st.live ? t.confLive : t.confDemo),
+      confNoteColor: (st.live && st.liveUncertain) ? '#B8641B' : (st.live ? '#A9A183' : '#B8641B'),
+      itemZh: L(item.zh, item.en), itemEn: '',
       clsZh: L(CLS[item.cls], CLS_EN[item.cls]), clsEn: item.cls,
-      clsLine: L(CLS[item.cls] + '（' + item.cls + '）', CLS_EN[item.cls]),
+      clsLine: L(CLS[item.cls], CLS_EN[item.cls]),
       confPct: (shownConf * 100).toFixed(1) + '%',
-      binZh: L(bin.zh, bin.en), binEn: isEn ? '' : bin.en, binBg: bin.color,
+      binZh: L(bin.zh, bin.en), binEn: '', binBg: bin.color,
       material: L(item.material, item.materialEn), history: L(item.history, item.historyEn),
       related: item.related.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) })),
       probs, binChoices,
@@ -1025,7 +1051,7 @@ class Component extends DCLogic {
       rewrite: () => this.playPath(isWrong ? 'correct' : 'wrong', isWrong ? item.bin : (item.bin === 'other' ? 'recyclable' : 'other')),
       rewriteHint: isWrong ? t.rewriteToCorrect : t.rewriteToWrong,
       todayStr: isEn ? (MON[now.getMonth()] + ' ' + now.getDate()) : ((now.getMonth() + 1) + '月' + now.getDate() + '日'),
-      dailyZh: L(daily.zh, daily.en), dailyEn: isEn ? '' : daily.en,
+      dailyZh: L(daily.zh, daily.en), dailyEn: '',
       dailyFact: L(daily.history, daily.historyEn),
       pickDaily: () => this.pick(dailyKey),
       storyPanels,
