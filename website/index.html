@@ -30,6 +30,19 @@
   @keyframes sparkle { 0%,100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
   @keyframes flicker { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
   @keyframes sink { from { transform: translateY(0); opacity: 1; } to { transform: translateY(14px); opacity: 0.25; } }
+  @keyframes scanline { 0% { top: 8%; opacity: 0; } 12%,88% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
+  @keyframes timejump { 0% { opacity: 0; letter-spacing: 16px; } 25%,70% { opacity: 1; } 100% { opacity: 0; letter-spacing: 5px; } }
+  @keyframes letterfall { from { transform: translateY(-80px) rotate(-2deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
+  @keyframes museumdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  * { box-sizing: border-box; }
+  button, input { font: inherit; }
+  @media (max-width: 760px) {
+    nav { padding: 12px 16px !important; gap: 8px !important; overflow-x: auto; }
+    nav > div:nth-child(2), nav > div:last-child { display: none !important; }
+    .responsive-grid { grid-template-columns: 1fr !important; }
+    .responsive-pad { padding-left: 18px !important; padding-right: 18px !important; }
+    .hide-mobile { display: none !important; }
+  }
 </style>
 </helmet>
 <div style="min-height: 100vh; font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; color: #23372B; background: #FAF7EF; display: flex; flex-direction: column;">
@@ -167,15 +180,19 @@
 
   <!-- ═══════════ IDENTIFY ═══════════ -->
   <sc-if value="{{ isIdentify }}" hint-placeholder-val="{{ false }}">
-    <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 56px 40px; box-sizing: border-box; width: 100%;">
+    <div class="responsive-pad" style="flex: 1; width: 100%; padding: 64px 40px 88px; color: #23372B; background-color: #F6F2E8; background-image: linear-gradient(rgba(62,124,79,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(62,124,79,.055) 1px, transparent 1px); background-size: 32px 32px;">
+      <div style="max-width: 1100px; margin: 0 auto;">
       <div style="text-align: center; margin-bottom: 40px; animation: fadeUp 0.5s ease both;">
-        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; margin: 0 0 8px;">{{ t.identTitle }}</h2>
+        <div style="color:#3E7C4F; letter-spacing:4px; font-size:12px; font-weight:700;">OBJECT ANALYSIS / 01</div>
+        <h2 style="font-family: 'Noto Serif SC', Georgia, serif; font-weight: 900; font-size: 46px; margin: 10px 0 8px;">{{ t.identTitle }}</h2>
+        <div style="color:#7C8A73; font-size:14px;">{{ t.labSubtitle }}</div>
         <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Recognition Center, meet the object before choosing its future.</div></sc-if>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-        <div style="position: relative; overflow: hidden; border: 2px dashed #C9BD9F; border-radius: 20px; padding: 48px 32px; text-align: center; cursor: pointer; background: #FFFDF6;" style-hover="border-color: #3E7C4F; background: #F4F1E4;">
+      <div class="responsive-grid" style="display: grid; grid-template-columns: 1.12fr .88fr; gap: 24px;">
+        <div style="position: relative; overflow: hidden; border: 1.5px dashed #8FA58C; border-radius: 24px; padding: 70px 32px; text-align: center; cursor: pointer; background: rgba(255,253,246,.94); box-shadow: inset 0 0 60px rgba(62,124,79,.045), 0 18px 45px rgba(35,55,43,.09);" style-hover="border-color: #3E7C4F; background:#FFFFFF;">
           <input type="file" accept="image/*" onChange="{{ onFile }}" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;">
           <sc-if value="{{ analyzing }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; left:5%; right:5%; height:2px; top:8%; background:#D97B29; box-shadow:0 0 14px rgba(217,123,41,.65); animation:scanline 1.15s linear infinite;"></div>
             <svg width="52" height="52" viewBox="0 0 52 52" style="animation: spin 1s linear infinite;"><circle cx="26" cy="26" r="20" stroke="#DCE7D3" stroke-width="6" fill="none"></circle><path d="M26 6 A 20 20 0 0 1 46 26" stroke="#3E7C4F" stroke-width="6" fill="none" stroke-linecap="round"></path></svg>
             <div style="font-weight: 700; font-size: 18px; margin-top: 16px;">{{ t.analyzing }}</div>
             <div style="font-size: 13px; color: #7C8A73; margin-top: 6px;">{{ t.analyzingSub }}</div>
@@ -184,38 +201,46 @@
             <svg width="52" height="52" viewBox="0 0 52 52"><rect x="6" y="12" width="40" height="32" rx="6" fill="none" stroke="#3E7C4F" stroke-width="2.5"></rect><circle cx="20" cy="24" r="4" fill="#D97B29"></circle><path d="M10 40 l 12 -12 8 8 6 -6 10 10" stroke="#3E7C4F" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
             <div style="font-weight: 700; font-size: 18px; margin-top: 16px;">{{ t.uploadTitle }}</div>
             <div style="font-size: 13px; color: #7C8A73; margin-top: 6px; line-height: 1.7;">{{ t.uploadSub }}</div>
+            <div style="margin-top:24px; color:#3E7C4F; font:11px monospace; letter-spacing:2px;">READY FOR SPECIMEN · DROP / PASTE / CLICK</div>
           </sc-if>
         </div>
-        <div style="border: 1px solid #E5DCC8; border-radius: 20px; padding: 32px; background: #FFFDF6;">
+        <div style="border: 1px solid #E5DCC8; border-radius: 24px; padding: 32px; background: rgba(255,253,246,.96); box-shadow:0 18px 45px rgba(35,55,43,.07);">
           <div style="font-weight: 700; font-size: 17px; margin-bottom: 12px;">{{ t.orType }}</div>
-          <input value="{{ query }}" onChange="{{ onQuery }}" onKeyDown="{{ onQueryKey }}" placeholder="{{ t.searchPlaceholder }}" style="width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 12px; border: 1.5px solid #C9BD9F; background: #FAF7EF; font-size: 15px; font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; outline: none; color: #23372B;">
+          <input value="{{ query }}" onChange="{{ onQuery }}" onKeyDown="{{ onQueryKey }}" placeholder="{{ t.searchPlaceholder }}" style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid #C9BD9F; background: #FAF7EF; font-size: 15px; outline: none; color: #23372B;">
           <div style="font-size: 13px; color: #7C8A73; margin: 16px 0 10px;">{{ t.libCovers }}</div>
           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
             <sc-for list="{{ chips }}" as="c" hint-placeholder-count="10">
-              <div onClick="{{ c.pick }}" style="padding: 7px 14px; border-radius: 16px; background: #EFE8D6; font-size: 14px; cursor: pointer; color: #4A5A4B;" style-hover="background: #DCE7D3; color: #2F5A3C;">{{ c.zh }}</div>
+              <div onClick="{{ c.pick }}" style="padding: 7px 14px; border-radius: 16px; background: #EFE8D6; border:1px solid #E1D6BE; font-size: 14px; cursor: pointer; color: #4A5A4B;" style-hover="background: #DCE7D3; color: #2F5A3C; border-color:#AFC6AD;">{{ c.zh }}</div>
             </sc-for>
           </div>
           <sc-if value="{{ queryMiss }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top: 14px; padding: 12px 16px; border-radius: 12px; background: #F6E8D8; color: #8C5A22; font-size: 13px; line-height: 1.7;">{{ t.missPre }}{{ query }}{{ t.missPost }}</div>
           </sc-if>
         </div>
-      </div>
+      </div></div>
     </div>
   </sc-if>
 
   <!-- ═══════════ RESULT ═══════════ -->
   <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
     <div style="flex: 1; max-width: 1080px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
-      <div style="display: flex; gap: 28px; align-items: center; padding: 28px 32px; border-radius: 20px; background: #FFFDF6; border: 1px solid #E5DCC8;">
-        <div style="width: 92px; height: 92px; border-radius: 18px; background: #EFE8D6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+      <div style="margin-bottom:12px;color:#3E7C4F;font:700 11px monospace;letter-spacing:3px;">INSIGHT LAB · {{ t.evidenceView }}</div>
+      <div style="display: flex; gap: 28px; align-items: center; flex-wrap:wrap; padding: 28px 32px; border-radius: 20px; background: #FFFDF6; border: 1px solid #E5DCC8; box-shadow:0 18px 45px rgba(35,55,43,.07);">
+        <div style="width: 320px; height: 320px; border-radius: 18px; background: #182D24; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; position:relative; border:1px solid #315644; box-shadow:inset 0 0 45px rgba(0,0,0,.18);">
           <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
-            <img src="{{ photo }}" alt="{{ t.photoAlt }}" style="width: 92px; height: 92px; object-fit: cover;">
+            <img src="{{ photo }}" alt="{{ t.photoAlt }}" style="width: 320px; height: 320px; object-fit: cover;">
+            <div style="position:absolute;left:12px;bottom:10px;padding:4px 7px;background:rgba(14,37,28,.82);color:#CFE5D8;font:700 9px monospace;letter-spacing:1px;">CAM / SPATIAL EVIDENCE</div>
+            <sc-if value="{{ hasDetectionBox }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:{{ boxLeft }}; top:{{ boxTop }}; width:{{ boxWidth }}; height:{{ boxHeight }}; border:3px solid #F0A04B; box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 16px rgba(240,160,75,.28), inset 0 0 24px rgba(240,160,75,.1); pointer-events:none;">
+                <div style="position:absolute; left:-3px; top:-3px; padding:5px 9px; background:#D97B29; color:white; font:700 11px/1.4 monospace; white-space:nowrap;">{{ clsLine }} · {{ confPct }}</div>
+              </div>
+            </sc-if>
           </sc-if>
           <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">
-            <svg width="56" height="56" viewBox="0 0 56 56"><rect x="20" y="14" width="16" height="34" rx="6" fill="#7FB0C9"></rect><rect x="23" y="8" width="10" height="8" rx="2" fill="#2B6CB0"></rect><rect x="20" y="24" width="16" height="12" fill="#FFF8ED"></rect></svg>
+            <svg width="112" height="112" viewBox="0 0 56 56"><rect x="20" y="14" width="16" height="34" rx="6" fill="#7FB0C9"></rect><rect x="23" y="8" width="10" height="8" rx="2" fill="#2B6CB0"></rect><rect x="20" y="24" width="16" height="12" fill="#FFF8ED"></rect></svg>
           </sc-if>
         </div>
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width:260px;">
           <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
             <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 32px;">{{ itemZh }}</div>
             <div style="font-size: 15px; color: #7C8A73;">{{ itemEn }}{{ t.modelSays }}{{ clsLine }}</div>
@@ -241,6 +266,15 @@
           <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
             <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">{{ t.blockMaterial }}</div>
             <p style="font-size: 15px; line-height: 1.9; color: #4A5A4B; margin: 0; text-wrap: pretty;">{{ material }}</p>
+            <div onClick="{{ toggleMicro }}" style="display:inline-flex; margin-top:16px; padding:9px 16px; border-radius:20px; background:#123A2E; color:#D9FFF0; font-size:13px; font-weight:700; cursor:pointer;">{{ t.microBtn }}</div>
+            <sc-if value="{{ showMicro }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px; border-radius:16px; padding:18px; color:#D9FFF0; background:#071B15; animation:fadeUp .35s ease both;">
+                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:12px;">
+                  <sc-for list="{{ molecules }}" as="mol" hint-placeholder-count="7"><div style="width:18px; height:18px; border-radius:50%; background:{{ mol.color }}; box-shadow:0 0 15px {{ mol.color }};"></div></sc-for>
+                </div>
+                <div style="font:12px/1.7 monospace; color:#8FCAB3; text-align:center;">{{ microCopy }}</div>
+              </div>
+            </sc-if>
           </div>
           <div style="padding: 24px 28px; border-radius: 18px; background: #FFFDF6; border: 1px solid #E5DCC8;">
             <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">{{ t.blockHistory }}</div>
@@ -279,9 +313,11 @@
 
   <!-- ═══════════ SIMULATOR ═══════════ -->
   <sc-if value="{{ isSimulator }}" hint-placeholder-val="{{ false }}">
-    <div style="flex: 1; max-width: 1080px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%;">
+    <div class="responsive-pad" style="flex: 1; padding: 56px 40px 80px; width: 100%; background:linear-gradient(135deg,#F7E8CF 0%,#FAF7EF 45%,#DDE8DF 100%);">
+      <div style="max-width:1080px;margin:0 auto;">
       <div style="text-align: center; margin-bottom: 32px;">
-        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.simTitle }}</h2>
+        <div style="font-size:12px;letter-spacing:4px;color:#B8641B;font-weight:700;">CHOOSE A TIMELINE / 02</div>
+        <h2 style="font-family: 'Noto Serif SC', Georgia, serif; font-weight: 900; font-size: 44px; margin: 8px 0 6px;">{{ t.simTitle }}</h2>
         <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Future Simulator, its future is your choice.</div></sc-if>
       </div>
 
@@ -317,6 +353,7 @@
           </sc-if>
 
           <div style="border-radius: 24px; background: {{ stageBg }}; border: 1px solid #E5DCC8; padding: 40px; display: flex; flex-direction: column; align-items: center; min-height: 380px; box-sizing: border-box; justify-content: center;">
+            <div style="font:700 12px monospace; letter-spacing:5px; color:{{ stageTitleColor }}; animation:timejump 2.6s ease both;">{{ timeJump }}</div>
             <div style="height: 210px; display: flex; align-items: center;">
               <sc-if value="{{ scBinGood }}" hint-placeholder-val="{{ true }}">
                 <svg width="240" height="200" viewBox="0 0 240 200"><rect x="70" y="70" width="100" height="110" rx="10" fill="{{ chosenBinColor }}"></rect><rect x="60" y="52" width="120" height="20" rx="8" fill="{{ chosenBinColor }}"></rect><g style="animation: drop 1.2s ease-out both;"><rect x="108" y="10" width="24" height="48" rx="8" fill="#7FB0C9"></rect><rect x="114" y="2" width="12" height="10" rx="3" fill="#2B6CB0"></rect></g><circle cx="50" cy="60" r="5" fill="#D97B29" style="animation: sparkle 2s ease-in-out infinite;"></circle><circle cx="196" cy="48" r="4" fill="#3E7C4F" style="animation: sparkle 2.4s ease-in-out 0.5s infinite;"></circle></svg>
@@ -359,7 +396,7 @@
 
       <sc-if value="{{ simDone }}" hint-placeholder-val="{{ false }}">
         <div style="max-width: 640px; margin: 0 auto; animation: fadeUp 0.6s ease both;">
-          <div style="border-radius: 24px; background: {{ msgBg }}; padding: 40px 44px; color: {{ msgFg }}; position: relative;">
+          <div style="border-radius: 4px; background: #FFFDF6; padding: 48px 52px; color: #3A403B; position: relative; box-shadow:0 22px 55px rgba(50,43,28,.22); animation:letterfall 1.1s cubic-bezier(.2,.8,.2,1) both; border:1px solid #DED1B9;">
             <div style="font-size: 12px; letter-spacing: 3px; opacity: 0.7;">{{ t.letterKicker }}</div>
             <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 26px; margin: 10px 0 14px;">{{ t.letterTitle }}</div>
             <p style="font-size: 16px; line-height: 2; margin: 0; text-wrap: pretty;">{{ futureMsg }}</p>
@@ -372,25 +409,32 @@
           <div style="text-align: center; font-size: 13px; color: #A9A183; margin-top: 14px;">{{ rewriteHint }}</div>
         </div>
       </sc-if>
-    </div>
+    </div></div>
   </sc-if>
 
   <!-- ═══════════ EXPLORE ═══════════ -->
   <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ false }}">
-    <div style="flex: 1; max-width: 1040px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
+    <div class="responsive-pad" style="flex: 1; padding: 0 40px 72px; width: 100%; animation: fadeUp 0.5s ease both; background:#F2EEE4;">
+      <div style="overflow:hidden; margin:0 -40px 48px; padding:24px 0; background:#151A18; color:#DCE7D3;">
+        <div style="display:flex; width:max-content; gap:38px; animation:museumdrift 28s linear infinite; font-family:'Noto Serif SC',serif; font-size:30px;">
+          <sc-for list="{{ museumObjects }}" as="mo" hint-placeholder-count="16"><span style="white-space:nowrap;">{{ mo.icon }} <small style="font-size:13px;color:#759486;letter-spacing:2px;">{{ mo.name }}</small></span></sc-for>
+        </div>
+      </div>
+      <div style="max-width:1100px;margin:0 auto;">
       <div style="text-align: center; margin-bottom: 36px;">
-        <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.exploreTitle }}</h2>
+        <div style="font-size:12px;letter-spacing:4px;color:#7C6A48;font-weight:700;">OPEN COLLECTION / 03</div>
+        <h2 style="font-family: 'Noto Serif SC', Georgia, serif; font-weight: 900; font-size: 46px; margin: 8px 0 6px;">{{ t.exploreTitle }}</h2>
         <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Exploration Space, one object a day, one story at a time.</div></sc-if>
       </div>
-      <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
-        <div style="padding: 30px 32px; border-radius: 20px; background: #1E3A2B; color: #FAF7EF;">
+      <div class="responsive-grid" style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
+        <div style="padding: 30px 32px; border-radius: 2px; background: #1E3A2B; color: #FAF7EF; box-shadow:0 22px 50px rgba(30,58,43,.18);">
           <div style="font-size: 12px; letter-spacing: 3px; color: #9DB8A0;">{{ t.dailyLabel }}{{ todayStr }}</div>
           <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 34px; margin: 12px 0 4px;">{{ dailyZh }}</div>
           <div style="font-size: 14px; color: #9DB8A0; font-style: italic;">{{ dailyEn }}</div>
           <p style="font-size: 15px; line-height: 1.9; color: #D9E4D6; margin: 16px 0 22px; text-wrap: pretty;">{{ dailyFact }}</p>
           <div onClick="{{ pickDaily }}" style="display: inline-block; padding: 11px 24px; border-radius: 22px; background: #D97B29; color: #FFF8ED; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: #E88C3C;">{{ t.meetIt }}</div>
         </div>
-        <div style="padding: 30px 32px; border-radius: 20px; background: #FFFDF6; border: 1px solid #E5DCC8;">
+        <div style="padding: 30px 32px; border-radius: 2px; background: #FFFDF6; border: 1px solid #D8CEB9;">
           <div style="font-weight: 700; font-size: 18px; margin-bottom: 4px;">{{ t.campusTitle }}</div>
           <div style="font-size: 13px; color: #7C8A73; margin-bottom: 18px;">{{ t.campusSub }}</div>
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
@@ -405,13 +449,23 @@
             </sc-for>
           </div>
           <p style="font-size: 13px; color: #7C8A73; line-height: 1.8; margin: 16px 0 0; text-wrap: pretty;">{{ t.cupNote }}</p>
+          <div onClick="{{ openDocumentary }}" style="margin-top:18px;padding:12px 18px;background:#191D1B;color:#FAF7EF;display:inline-flex;gap:10px;align-items:center;cursor:pointer;font-weight:700;font-size:14px;">▶ {{ t.watchStory }}</div>
         </div>
       </div>
       <div onClick="{{ goRecord }}" style="margin-top: 20px; padding: 20px 28px; border-radius: 18px; background: #EFE8D6; display: flex; align-items: center; gap: 14px; cursor: pointer;" style-hover="background: #E7DEC6;">
         <div style="font-weight: 700; font-size: 16px;">{{ t.myRecord }}</div>
         <div style="font-size: 14px; color: #7C8A73; flex: 1;">{{ t.recSummaryA }}{{ idCount }}{{ t.recSummaryB }}{{ simCount }}{{ t.recSummaryC }}</div>
         <div style="color: #A9A183; font-size: 20px;">→</div>
-      </div>
+      </div></div>
+      <sc-if value="{{ documentaryOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeDocumentary }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,8,7,.88);display:flex;align-items:center;justify-content:center;padding:24px;">
+          <div style="width:min(760px,100%);background:#111714;color:#EEF4F0;border:1px solid #3B5147;padding:34px;box-shadow:0 30px 100px #000;" onClick="{{ keepOpen }}">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font:12px monospace;letter-spacing:3px;color:#88A99A;">SHORT DOCUMENTARY · 01:24</div><div onClick="{{ closeDocumentary }}" style="cursor:pointer;font-size:22px;">×</div></div>
+            <div style="height:260px;margin:22px 0;background:linear-gradient(150deg,#7A573A,#1E3A2B);display:flex;align-items:center;justify-content:center;font-size:72px;">☕</div>
+            <div style="font-family:'Noto Serif SC',serif;font-size:24px;line-height:1.6;animation:fadeUp 1s ease both;">{{ t.documentaryText }}</div>
+          </div>
+        </div>
+      </sc-if>
     </div>
   </sc-if>
 
@@ -456,7 +510,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
 class Component extends DCLogic {
-  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, loaded: false };
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false };
 
   componentDidMount() {
     let lang = 'zh', records = [];
@@ -492,7 +546,7 @@ class Component extends DCLogic {
   ui() {
     const zh = {
       brand: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
-      navHome: '首页', navIdentify: '识别中心', navExplore: '探索空间', navRecord: '我的记录',
+      navHome: '首页', navIdentify: '洞察实验室', navExplore: '万物博物馆', navRecord: '我的记录',
       ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
       badge: '课程作品',
       kickerMinimal: '万物皆有新生 · 课程作品',
@@ -502,7 +556,7 @@ class Component extends DCLogic {
       accCaption: '验证集准确率（TTA）· TrashNet 六分类',
       mapTitle: '六个模型类别 → 四分类投放的透明映射',
       honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。模型只认识这六个类别，遇到明显不属于它们的照片时会如实提示"可能不属于这六类"，而不是硬猜。',
-      identTitle: 'AI 物品识别中心',
+      identTitle: '洞察实验室', labSubtitle: '放慢速度，像研究员一样观察一件物品。', microBtn: '查看微观结构', evidenceView: '模型视觉证据',
       analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
       uploadTitle: '拍照或上传图片', uploadSub: '点击或粘贴图片',
       orType: '或者，输入物品名称',
@@ -521,7 +575,7 @@ class Component extends DCLogic {
       probsTitle: '模型的完整判断（六类概率）',
       waitingA: '"这件物品正等待开启', waitingB: '下一段旅程。"',
       enterSim: '进入未来模拟器，为它做出选择',
-      simTitle: '未来模拟器',
+      simTitle: '命运分岔口',
       simPre: '这只', simPost: '正等待开启下一段旅程，它的未来，由你决定。',
       scanning: '扫描中', years450: '450 年，才能完全降解',
       letterKicker: '未来来信', letterTitle: '来自未来的信',
@@ -529,7 +583,7 @@ class Component extends DCLogic {
       rewriteBtn: '【改写它的未来】', doneBtn: '完成，看我的记录',
       rewriteToCorrect: '点击改写，看看如果当初选对了，它会经历什么。',
       rewriteToWrong: '点击改写，看看另一种选择会把它带向哪里。',
-      exploreTitle: 'AI 环境探索空间',
+      exploreTitle: '万物博物馆', watchStory: '观看微型纪录片', documentaryText: '一只咖啡杯的一天很短：被装满、陪伴一堂课，然后因为内壁的塑料淋膜，走向它诚实的归宿。真正更好的结局，是下一次带上自己的杯子。',
       dailyLabel: '今日物品 · ', meetIt: '认识它 →',
       campusTitle: '校园故事：一只咖啡杯的一天',
       campusSub: '一个真实的校园故事，结局同样诚实。',
@@ -548,7 +602,7 @@ class Component extends DCLogic {
     };
     const en = {
       brand: 'Second Life AI', brandA: 'Second', brandB: 'Life', brandC: 'AI',
-      navHome: 'Home', navIdentify: 'Identify', navExplore: 'Explore', navRecord: 'My Record',
+      navHome: 'Home', navIdentify: 'Insight Lab', navExplore: 'Museum', navRecord: 'My Record',
       ctaStart: 'Start exploring', ctaExplore: 'Start exploring', ctaBrowse: 'Browse the Exploration Space first',
       badge: 'Course project',
       kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
@@ -558,7 +612,7 @@ class Component extends DCLogic {
       accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
       honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports. The model knows only these six classes; when a photo clearly matches none of them, it says so instead of forcing a guess.',
-      identTitle: 'AI Recognition Center',
+      identTitle: 'Insight Lab', labSubtitle: 'Slow down and examine an object like a researcher.', microBtn: 'View microstructure', evidenceView: 'MODEL VISUAL EVIDENCE',
       analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
       uploadTitle: 'Take or upload a photo', uploadSub: 'Click or paste an image',
       orType: 'Or type the name of an item',
@@ -577,7 +631,7 @@ class Component extends DCLogic {
       probsTitle: 'The model\u2019s full judgement (six-class probabilities)',
       waitingA: '"This object is waiting to begin', waitingB: 'its next journey."',
       enterSim: 'Enter the Future Simulator and choose for it',
-      simTitle: 'Future Simulator',
+      simTitle: 'Fork in the Road',
       simPre: 'This ', simPost: ' is waiting to begin its next journey, its future is yours to decide.',
       scanning: 'SCANNING', years450: '450 years to fully degrade',
       letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: 'A letter from the future',
@@ -585,7 +639,7 @@ class Component extends DCLogic {
       rewriteBtn: 'Rewrite its future', doneBtn: 'Done, see my record',
       rewriteToCorrect: 'Tap rewrite to see what would have happened if you had chosen right.',
       rewriteToWrong: 'Tap rewrite to see where the other choice would have taken it.',
-      exploreTitle: 'AI Exploration Space',
+      exploreTitle: 'Museum of Everything', watchStory: 'Watch short documentary', documentaryText: 'A coffee cup lives a brief day: filled, carried through a class, then sent to its honest destination because of its plastic lining. The better ending begins by bringing your own cup next time.',
       dailyLabel: 'Object of the day · ', meetIt: 'Meet it →',
       campusTitle: 'A campus story: one day of a coffee cup',
       campusSub: 'An honest story, ending included.',
@@ -862,7 +916,7 @@ class Component extends DCLogic {
     this.setState({ itemKey: key, page: 'result', queryMiss: false, query: '', simPhase: 'choose', simStep: 0,
       live: !!o.live, photo: o.photo || null,
       liveConf: typeof o.conf === 'number' ? o.conf : null,
-      liveProbs: o.probs || null, liveUncertain: !!o.uncertain });
+      liveProbs: o.probs || null, liveUncertain: !!o.uncertain, liveBox: o.bbox || null });
     this.addRecord({ k: 'id', item: key, conf: o.conf || ITEMS[key].conf, live: !!o.live });
   }
 
@@ -894,9 +948,9 @@ class Component extends DCLogic {
       this.setState({ analyzing: true, photo: dataUrl });
       const fd = new FormData();
       fd.append('image', f);
-      const done = (key, conf, probs, live, uncertain) => {
+      const done = (key, conf, probs, live, uncertain, bbox) => {
         this.setState({ analyzing: false });
-        this.pick(key, { conf, probs, live, uncertain, photo: dataUrl });
+        this.pick(key, { conf, probs, live, uncertain, bbox, photo: dataUrl });
       };
       const fallback = () => setTimeout(() => done('bottle', null, null, false, false), 900);
       if (typeof fetch !== 'function' || window.location.protocol === 'file:') { fallback(); return; }
@@ -908,7 +962,7 @@ class Component extends DCLogic {
           // the class to a representative library item so the story blocks have
           // content, and carry the real conf + probs through to the display.
           const key = Object.keys(ITEMS).find(k => ITEMS[k].cls === d.cls) || 'bottle';
-          done(key, typeof d.conf === 'number' ? d.conf : null, d.probs || null, true, !!d.uncertain);
+          done(key, typeof d.conf === 'number' ? d.conf : null, d.probs || null, true, !!d.uncertain, d.bbox || null);
         })
         .catch(fallback);
     };
@@ -927,6 +981,7 @@ class Component extends DCLogic {
     // Live upload → the model's real numbers; text pick → the library item's.
     const shownConf = (st.live && typeof st.liveConf === 'number') ? st.liveConf : item.conf;
     const shownProbs = (st.live && st.liveProbs) ? st.liveProbs : item.probs;
+    const detectionBox = st.liveBox || { x: 0, y: 0, w: 0, h: 0 };
     const story = STORIES[item.cls];
     const steps = story[st.simPath];
     const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
@@ -941,9 +996,9 @@ class Component extends DCLogic {
     const navItems = navDefs.map(([p, label]) => ({ label, go: go(p), weight: st.page === p ? 700 : 400, color: st.page === p ? '#2F5A3C' : '#4A5A4B', bg: st.page === p ? '#DCE7D3' : 'transparent' }));
 
     const modules = [
-      { num: L('一', 'I'), title: L('AI 物品识别中心', 'AI Recognition Center'), sub: L('拍照或输入名称，真实模型告诉你它是什么、该去哪。', 'Photograph it or type its name; a real model tells you what it is and where it goes.'), tint: '#3E7C4F', go: go('identify') },
-      { num: L('二', 'II'), title: L('未来模拟器', 'Future Simulator'), sub: L('为它选择一个桶，见证两种截然不同的未来。', 'Choose a bin for it, and witness two very different futures.'), tint: '#D97B29', go: () => { this.setState({ page: 'simulator', simPhase: 'choose', simStep: 0 }); } },
-      { num: L('三', 'III'), title: L('AI 环境探索空间', 'AI Exploration Space'), sub: L('每日一物、校园故事，和属于你自己的记录。', 'An object a day, a campus story, and a record of your own.'), tint: '#7C8A73', go: go('explore') }
+      { num: L('一', 'I'), title: L('洞察实验室', 'Insight Lab'), sub: L('像研究员一样扫描、拆解并理解一件物品。', 'Scan, dissect and understand an object like a researcher.'), tint: '#3E7C4F', go: go('identify') },
+      { num: L('二', 'II'), title: L('命运分岔口', 'Fork in the Road'), sub: L('做出选择，跳向两条截然不同的时间线。', 'Make a choice and jump into two very different timelines.'), tint: '#D97B29', go: () => { this.setState({ page: 'simulator', simPhase: 'choose', simStep: 0 }); } },
+      { num: L('三', 'III'), title: L('万物博物馆', 'Museum of Everything'), sub: L('漫游藏品、材质家族与校园微型纪录片。', 'Wander through objects, material families and campus stories.'), tint: '#7C8A73', go: go('explore') }
     ];
 
     const binRecyclable = L('可回收物', 'Recyclable'), binOther = L('其他垃圾', 'Residual');
@@ -988,6 +1043,11 @@ class Component extends DCLogic {
       { t: L('12:30 抉择', '12:30 The choice'), s: L('因为内壁的塑料膜，它被诚实地投进其他垃圾。', 'Because of its plastic lining, honestly binned as residual waste.'), bg: '#E4E4E2', fill: '#6B7280', path: 'M12 24 L40 24 L40 54 L12 54 Z', fill2: '#4B5563', path2: 'M10 18 L42 18 L42 26 L10 26 Z' },
       { t: L('22:00 告别', '22:00 Farewell'), s: L('焚烧发电，它的热量点亮了今晚的路灯。', 'Waste-to-energy, its heat lights a street lamp tonight.'), bg: '#FBEFD9', fill: '#D97B29', path: 'M24 14 C 16 30 20 36 18 46 C 30 44 36 34 28 14 Z', fill2: '#F0B27A', path2: 'M40 40 a 6 6 0 1 1 -0.1 0 Z' }
     ];
+    const museumObjects = [...CHIP_ORDER, ...CHIP_ORDER].map((k, i) => ({
+      name: nameOf(k), icon: ['◇','○','▣','△','◉','⬡','□','◎'][i % 8]
+    }));
+    const molecules = ['#69D6AC','#7FB0C9','#D97B29','#69D6AC','#DCE7D3','#7FB0C9','#69D6AC'].map(color => ({ color }));
+    const timeJump = st.simStep === 0 ? L('+ 现在', '+ NOW') : st.simStep === 1 ? L('+ 3 个月', '+ 3 MONTHS') : st.simStep === 2 ? L('+ 12 年', '+ 12 YEARS') : (isWrong ? L('+ 450 年', '+ 450 YEARS') : L('+ 新的生命', '+ A SECOND LIFE'));
 
     const records = st.records.map(r => {
       const it = ITEMS[r.item] || ITEMS.bottle;
@@ -1022,6 +1082,9 @@ class Component extends DCLogic {
       analyzing: st.analyzing, notAnalyzing: !st.analyzing,
       onFile: e => this.onFile(e),
       photo: st.photo, hasPhoto: !!st.photo, noPhoto: !st.photo,
+      hasDetectionBox: !!(st.live && st.photo && st.liveBox),
+      boxLeft: (detectionBox.x * 100).toFixed(1) + '%', boxTop: (detectionBox.y * 100).toFixed(1) + '%',
+      boxWidth: (detectionBox.w * 100).toFixed(1) + '%', boxHeight: (detectionBox.h * 100).toFixed(1) + '%',
       isLive: st.live, isDemo: !st.live,
       isUncertain: st.live && st.liveUncertain,
       confNote: (st.live && st.liveUncertain) ? t.oodNote : (st.live ? t.confLive : t.confDemo),
@@ -1032,11 +1095,14 @@ class Component extends DCLogic {
       confPct: (shownConf * 100).toFixed(1) + '%',
       binZh: L(bin.zh, bin.en), binEn: '', binBg: bin.color,
       material: L(item.material, item.materialEn), history: L(item.history, item.historyEn),
+      showMicro: st.showMicro, toggleMicro: () => this.setState({ showMicro: !st.showMicro }), molecules,
+      microCopy: L('材料指纹 · 聚合物链与添加剂的简化示意', 'MATERIAL FINGERPRINT · simplified polymer chain and additives'),
       related: item.related.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) })),
       probs, binChoices,
       simChoosing: st.simPhase === 'choose', simPlaying: st.simPhase === 'playing', simDone: st.simPhase === 'done',
       styleJourney: !theater && st.simPhase === 'playing', styleTheater: theater && st.simPhase === 'playing',
       railSteps,
+      timeJump,
       stageBg: theater ? '#1E3A2B' : '#FFFDF6',
       stageTitleColor: theater ? '#F0B27A' : (isWrong ? '#6B7280' : '#2F5A3C'),
       stageSubColor: theater ? '#D9E4D6' : '#4A5A4B',
@@ -1054,7 +1120,11 @@ class Component extends DCLogic {
       dailyZh: L(daily.zh, daily.en), dailyEn: '',
       dailyFact: L(daily.history, daily.historyEn),
       pickDaily: () => this.pick(dailyKey),
-      storyPanels,
+      storyPanels, museumObjects,
+      documentaryOpen: st.documentaryOpen,
+      openDocumentary: () => this.setState({ documentaryOpen: true }),
+      closeDocumentary: () => this.setState({ documentaryOpen: false }),
+      keepOpen: e => e.stopPropagation(),
       idCount, simCount,
       records, hasRecords: records.length > 0, noRecords: records.length === 0,
       clearRecords: () => this.clearRecords()
