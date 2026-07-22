@@ -76,7 +76,6 @@
       <sc-if value="{{ homeStory }}" hint-placeholder-val="{{ true }}">
         <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding: 72px 72px 48px; max-width: 1280px; margin: 0 auto; box-sizing: border-box;">
           <div style="animation: fadeUp 0.7s ease both;">
-            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 16px; background: #DCE7D3; color: #2F5A3C; font-size: 13px; font-weight: 500;">{{ t.badge }}</div>
             <h1 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 56px; line-height: 1.22; margin: 22px 0 10px;">{{ t.heroA }}<br>{{ t.heroB }}</h1>
             <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 16px; letter-spacing: 1px; color: #7C8A73; font-style: italic;">Every object deserves a second life.</div></sc-if>
             <p style="font-size: 17px; line-height: 1.9; color: #4A5A4B; margin: 22px 0 30px; max-width: 520px; text-wrap: pretty;">{{ t.heroBody }}</p>
@@ -702,9 +701,8 @@ class Component extends DCLogic {
       brand: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
       navHome: '首页', navIdentify: '洞察实验室', navExplore: '万物博物馆', navRecord: '我的记录',
       ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
-      badge: '课程作品',
       demoBar: '演示版本 · 在线版的图片识别为示例数据，真实模型在本地运行。',
-      kickerMinimal: '万物皆有新生 · 课程作品',
+      kickerMinimal: '万物皆有新生',
       heroA: '每一件物品，', heroB: '都值得第二次生命',
       heroBody: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。在这里，垃圾分类不再是"该扔哪个桶"的查询，而是一次为物品选择命运的旅程：认识它 → 选择它的未来 → 见证结果。',
       heroBodyShort: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。认识它 → 选择它的未来 → 见证结果。',
@@ -766,9 +764,8 @@ class Component extends DCLogic {
       brand: 'Second Life AI', brandA: 'Second', brandB: 'Life', brandC: 'AI',
       navHome: 'Home', navIdentify: 'Insight Lab', navExplore: 'Museum', navRecord: 'My Record',
       ctaStart: 'Start exploring', ctaExplore: 'Start exploring', ctaBrowse: 'Browse the Exploration Space first',
-      badge: 'Course project',
       demoBar: 'Demo version · photo identification shows sample data online; the real model runs locally.',
-      kickerMinimal: 'SECOND LIFE AI · COURSE PROJECT',
+      kickerMinimal: 'SECOND LIFE AI',
       heroA: 'Every object deserves', heroB: 'a second life',
       heroBody: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup, "which bin?", and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
       heroBodyShort: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
