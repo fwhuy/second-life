@@ -246,6 +246,11 @@ def support_js():
     return send_from_directory(HERE, "support.js")
 
 
+@app.get("/documentary.mp4")
+def documentary_video():
+    return send_from_directory(HERE, "documentary.mp4", mimetype="video/mp4", conditional=True)
+
+
 @app.get("/vendor/<path:filename>")
 def vendor(filename):
     return send_from_directory(HERE / "vendor", filename)

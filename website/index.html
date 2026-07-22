@@ -34,6 +34,18 @@
   @keyframes timejump { 0% { opacity: 0; letter-spacing: 16px; } 25%,70% { opacity: 1; } 100% { opacity: 0; letter-spacing: 5px; } }
   @keyframes letterfall { from { transform: translateY(-80px) rotate(-2deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
   @keyframes museumdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes accuracyIn { from { opacity: 0; transform: translateY(14px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes mapRowIn { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes arrowFlow { 0%,100% { transform: translateX(0); opacity: .45; } 50% { transform: translateX(7px); opacity: 1; } }
+  @keyframes binIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(22px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .accuracy-number { animation: accuracyIn .7s cubic-bezier(.2,.8,.2,1) both; }
+  .map-row { animation: mapRowIn .55s cubic-bezier(.2,.8,.2,1) both; transition: transform .2s, box-shadow .2s; }
+  .map-row:hover { transform: translateX(5px); box-shadow: 0 5px 14px rgba(35,55,43,.08); }
+  .map-arrow { display:inline-block; animation: arrowFlow 1.7s ease-in-out infinite; }
+  .map-bin { animation: binIn .55s cubic-bezier(.2,.8,.2,1) both; }
+  .documentary-card { animation: modalIn .35s cubic-bezier(.2,.8,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) { .accuracy-number,.map-row,.map-arrow,.map-bin,.documentary-card { animation: none !important; } }
   * { box-sizing: border-box; }
   button, input { font: inherit; }
   @media (max-width: 760px) {
@@ -55,7 +67,7 @@
     <div onClick="{{ goHome }}" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
       <svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="#3E7C4F"></circle><path d="M17 8 C 23 8 26 13 25 18 C 20 17 15 14 17 8 Z" fill="#DCE7D3"></path><path d="M11 24 A 8 8 0 0 1 24 22" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path><path d="M24 22 l 2 -3 M24 22 l -3.4 -0.6" stroke="#FAF7EF" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
       <div>
-        <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 18px; line-height: 1;">{{ t.brand }}</div>
+        <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 18px; line-height: 1;">{{ t.brandTop }}</div>
         <div style="font-size: 11px; letter-spacing: 2px; color: #7C8A73; margin-top: 3px;">SECOND LIFE AI</div>
       </div>
     </div>
@@ -163,17 +175,17 @@
         <div style="border-radius: 20px; background: #EFE8D6; padding: 32px 36px;">
           <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
             <div style="min-width: 200px;">
-              <div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 42px; color: #2F5A3C;">94.93%</div>
+              <div class="accuracy-number" style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 42px; color: #2F5A3C;">94.93%</div>
               <div style="font-size: 13px; color: #7C8A73;">{{ t.accCaption }}</div>
             </div>
             <div style="flex: 1; min-width: 380px;">
               <div style="font-weight: 700; margin-bottom: 10px;">{{ t.mapTitle }}</div>
               <div class="responsive-grid" style="display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start;">
                 <div style="display:flex;flex-direction:column;gap:6px;">
-                  <sc-for list="{{ mapClasses }}" as="mc" hint-placeholder-count="6"><div onClick="{{ mc.select }}" style="display:grid;grid-template-columns:1fr 70px;align-items:center;padding:8px 12px;border-radius:10px;background:{{ mc.bg }};border:1px solid {{ mc.border }};cursor:pointer;font-size:13px;"><b>{{ mc.label }}</b><span style="text-align:right;color:{{ mc.color }};font-weight:900;">━━━━▶</span></div></sc-for>
+                  <sc-for list="{{ mapClasses }}" as="mc" hint-placeholder-count="6"><div class="map-row" onClick="{{ mc.select }}" style="display:grid;grid-template-columns:1fr 70px;align-items:center;padding:8px 12px;border-radius:10px;background:{{ mc.bg }};border:1px solid {{ mc.border }};cursor:pointer;font-size:13px;animation-delay:{{ mc.delay }};"><b>{{ mc.label }}</b><span class="map-arrow" style="text-align:right;color:{{ mc.color }};font-weight:900;">━━━━▶</span></div></sc-for>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:7px;">
-                  <sc-for list="{{ mapBins }}" as="mb" hint-placeholder-count="4"><div style="padding:9px 12px;border-radius:10px;background:{{ mb.bg }};border:2px solid {{ mb.border }};color:{{ mb.fg }};font-weight:800;font-size:13px;">{{ mb.label }}</div></sc-for>
+                  <sc-for list="{{ mapBins }}" as="mb" hint-placeholder-count="4"><div class="map-bin" style="padding:9px 12px;border-radius:10px;background:{{ mb.bg }};border:2px solid {{ mb.border }};color:{{ mb.fg }};font-weight:800;font-size:13px;animation-delay:{{ mb.delay }};">{{ mb.label }}</div></sc-for>
                 </div>
               </div>
               <div style="margin-top:12px;padding:12px 14px;border-radius:12px;background:#FFFDF6;border-left:4px solid {{ selectedMapColor }};font-size:13px;line-height:1.7;color:#4A5A4B;"><b>{{ selectedMapLabel }} → {{ selectedMapBin }}</b><br>{{ selectedMapWhy }}</div>
@@ -512,10 +524,12 @@
       </div></div>
       <sc-if value="{{ documentaryOpen }}" hint-placeholder-val="{{ false }}">
         <div onClick="{{ closeDocumentary }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,8,7,.88);display:flex;align-items:center;justify-content:center;padding:24px;">
-          <div style="width:min(760px,100%);background:#111714;color:#EEF4F0;border:1px solid #3B5147;padding:34px;box-shadow:0 30px 100px #000;" onClick="{{ keepOpen }}">
-            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font:12px monospace;letter-spacing:3px;color:#88A99A;">SHORT DOCUMENTARY · 01:24</div><div onClick="{{ closeDocumentary }}" style="cursor:pointer;font-size:22px;">×</div></div>
-            <div style="height:260px;margin:22px 0;background:linear-gradient(150deg,#7A573A,#1E3A2B);display:flex;align-items:center;justify-content:center;font-size:72px;">☕</div>
-            <div style="font-family:'Noto Serif SC',serif;font-size:24px;line-height:1.6;animation:fadeUp 1s ease both;">{{ t.documentaryText }}</div>
+          <div class="documentary-card" style="width:min(820px,100%);background:#111714;color:#EEF4F0;border:1px solid #3B5147;padding:28px;box-shadow:0 30px 100px #000;" onClick="{{ keepOpen }}">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font:12px monospace;letter-spacing:3px;color:#88A99A;">SHORT DOCUMENTARY · 00:24</div><div onClick="{{ closeDocumentary }}" style="cursor:pointer;font-size:22px;">×</div></div>
+            <video controls autoplay playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;margin:20px 0;background:#09100D;object-fit:contain;" onClick="{{ keepOpen }}">
+              <source src="./documentary.mp4" type="video/mp4">
+            </video>
+            <div style="font-family:'Noto Serif SC',serif;font-size:18px;line-height:1.6;animation:fadeUp 1s ease both;">{{ t.documentaryText }}</div>
           </div>
         </div>
       </sc-if>
@@ -698,7 +712,7 @@ class Component extends DCLogic {
      ───────────────────────────────────────────────────────── */
   ui() {
     const zh = {
-      brand: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
+      brand: '万物皆有新生', brandTop: '万物皆有新生', brandA: '万物', brandB: '皆有', brandC: '新生',
       navHome: '首页', navIdentify: '洞察实验室', navExplore: '万物博物馆', navRecord: '我的记录',
       ctaStart: '开始探索', ctaExplore: '【开始探索】', ctaBrowse: '先逛逛探索空间',
       demoBar: '演示版本 · 在线版的图片识别为示例数据，真实模型在本地运行。',
@@ -761,7 +775,7 @@ class Component extends DCLogic {
       photoAlt: '你上传的照片'
     };
     const en = {
-      brand: 'Second Life AI', brandA: 'Second', brandB: 'Life', brandC: 'AI',
+      brand: 'Second Life AI', brandTop: 'Second Life', brandA: 'Second', brandB: 'Life', brandC: 'AI',
       navHome: 'Home', navIdentify: 'Insight Lab', navExplore: 'Museum', navRecord: 'My Record',
       ctaStart: 'Start exploring', ctaExplore: 'Start exploring', ctaBrowse: 'Browse the Exploration Space first',
       demoBar: 'Demo version · photo identification shows sample data online; the real model runs locally.',
@@ -1217,12 +1231,13 @@ class Component extends DCLogic {
     };
     const selectedMapClass = st.selectedClass || 'plastic';
     const mapTarget = selectedMapClass === 'trash' ? 'other' : 'recyclable';
-    const mapClasses = ['cardboard','glass','metal','paper','plastic','trash'].map(cls => ({
+    const mapClasses = ['cardboard','glass','metal','paper','plastic','trash'].map((cls, index) => ({
       label: L(CLS[cls], CLS_EN[cls]), color: BINS[cls === 'trash' ? 'other' : 'recyclable'].color,
       bg: cls === selectedMapClass ? '#FFFFFF' : 'rgba(255,253,246,.55)', border: cls === selectedMapClass ? '#3E7C4F' : '#E5DCC8',
+      delay: (index * 70) + 'ms',
       select: () => this.setState({ selectedClass: cls })
     }));
-    const mapBins = ['recyclable','kitchen','hazard','other'].map(id => ({ label: L(BINS[id].zh, BINS[id].en), bg: id === mapTarget ? BINS[id].color : '#FFFDF6', border: id === mapTarget ? BINS[id].color : '#DDD4C3', fg: id === mapTarget ? '#FFFFFF' : '#7C8A73' }));
+    const mapBins = ['recyclable','kitchen','hazard','other'].map((id, index) => ({ label: L(BINS[id].zh, BINS[id].en), bg: id === mapTarget ? BINS[id].color : '#FFFDF6', border: id === mapTarget ? BINS[id].color : '#DDD4C3', fg: id === mapTarget ? '#FFFFFF' : '#7C8A73', delay: (180 + index * 90) + 'ms' }));
 
     const nameOf = k => L(ITEMS[k].zh, ITEMS[k].en);
     const chips = CHIP_ORDER.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) }));

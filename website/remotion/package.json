@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "render": "remotion render src/index.jsx CoffeeCup ../documentary.mp4 --codec=h264 --crf=20 --browser-executable='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --port=3210 --concurrency=1"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.340",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "remotion": "4.0.340"
+  }
+}
