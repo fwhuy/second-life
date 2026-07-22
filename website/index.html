@@ -526,7 +526,7 @@
         <div onClick="{{ closeDocumentary }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,8,7,.88);display:flex;align-items:center;justify-content:center;padding:24px;">
           <div class="documentary-card" style="width:min(820px,100%);background:#111714;color:#EEF4F0;border:1px solid #3B5147;padding:28px;box-shadow:0 30px 100px #000;" onClick="{{ keepOpen }}">
             <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font:12px monospace;letter-spacing:3px;color:#88A99A;">SHORT DOCUMENTARY · 00:24</div><div onClick="{{ closeDocumentary }}" style="cursor:pointer;font-size:22px;">×</div></div>
-            <video src="./documentary.mp4" poster="./documentary-poster.jpg" controls autoplay muted loop playsinline preload="auto" style="display:block;width:100%;aspect-ratio:16/9;margin:20px 0;background:#09100D;object-fit:contain;"></video>
+            <video id="second-life-documentary" src="./documentary.mp4" poster="./documentary-poster.jpg" controls autoplay muted loop playsinline preload="auto" style="display:block;width:100%;aspect-ratio:16/9;margin:20px 0;background:#09100D;object-fit:contain;"></video>
             <div style="font-family:'Noto Serif SC',serif;font-size:18px;line-height:1.6;animation:fadeUp 1s ease both;">{{ t.documentaryText }}</div>
           </div>
         </div>
@@ -640,6 +640,24 @@ class Component extends DCLogic {
   useUpload() {
     this.stopCamera();
     this.setState({ cameraActive: false, cameraError: '', cameraPrediction: null });
+  }
+
+  openDocumentary() {
+    this.setState({ documentaryOpen: true }, () => {
+      window.setTimeout(() => {
+        const video = document.getElementById('second-life-documentary');
+        if (!video) return;
+        video.muted = true;
+        const playback = video.play();
+        if (playback && typeof playback.catch === 'function') playback.catch(() => {});
+      }, 0);
+    });
+  }
+
+  closeDocumentary() {
+    const video = document.getElementById('second-life-documentary');
+    if (video) { video.pause(); video.currentTime = 0; }
+    this.setState({ documentaryOpen: false });
   }
 
   startCamera() {
@@ -1390,8 +1408,8 @@ class Component extends DCLogic {
       pickDaily: () => this.pick(dailyKey),
       storyPanels, museumObjects,
       documentaryOpen: st.documentaryOpen,
-      openDocumentary: () => this.setState({ documentaryOpen: true }),
-      closeDocumentary: () => this.setState({ documentaryOpen: false }),
+      openDocumentary: () => this.openDocumentary(),
+      closeDocumentary: () => this.closeDocumentary(),
       keepOpen: e => e.stopPropagation(),
       idCount, simCount,
       correctSorts: correctRecords.length, co2Saved: totalCo2.toFixed(2), energySaved: totalEnergy.toFixed(2), impactBars, impactAssumptions,
