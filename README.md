@@ -47,8 +47,7 @@ experiment decisions, failures, fixes, limitations, and paper/presentation guida
 │   ├── reports/             committed figures, metrics, and the TEST_SPENT guard
 │   ├── experiments.csv      append-only run log (every run, hashed + reproducible)
 │   ├── demo/                offline Gradio demo (photo → class + confidence + Grad-CAM)
-│   ├── tests/               split/leakage unit tests
-│   └── paper/               short paper + figures
+│   └── tests/               split/leakage unit tests
 └── website/             Implemented offline Second Life AI web app
 ```
 

@@ -72,18 +72,12 @@ methodological scrutiny.”
 │   └── FINAL_SUMMARY.md              Final report for the original TrashNet phase
 ├── website/                          Offline bilingual Second Life AI application
 ├── papers/                           Ignored drafts, references, figures, and final paper
-├── scripts/draft_poster.py           Poster draft generator
-└── handoff/                          Small training package for another computer
-    ├── README.md                     Setup and orientation for the receiving machine
-    ├── RULES.md                      Non-negotiable methodological constraints
-    ├── STATUS.md                     Living state and prioritised backlog
-    ├── CODEX_PROMPT.md               Paste-ready prompt for an autonomous agent
-    └── setup.py                      Cross-platform environment and corpus setup
+└── scripts/draft_poster.py           Poster draft generator
 ```
 
 The `model/` directory contains the original project and its measured TrashNet results.
-The `handoff/` directory contains the newer unified-corpus training package. These phases
-must be described separately because they use different datasets and splits.
+The unified-corpus phase that followed used the same code against a larger dataset and a
+separate set of splits, so the two phases are described separately below.
 
 ## 4. Phase 1: the original TrashNet experiment
 
@@ -835,8 +829,6 @@ reported.
 - Unified setup scripts: `model/scripts/`
 - Website documentation: `website/README.md`
 - Detailed development issues: `issues.md`
-- Transfer package instructions: `handoff/README.md`, `handoff/RULES.md`,
-  `handoff/STATUS.md`, and `handoff/CODEX_PROMPT.md`
 
 ## 17. Final project message
 

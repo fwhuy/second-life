@@ -64,3 +64,9 @@ nohup.out
 
 # splits ARE committed (data/splits/, data/splits_unified/), reports ARE committed
 issues.md
+
+# Deployment scratch: server setup notes and prompts, useful locally but not
+# part of the project record.
+/deploy/
+
+.superpowers/
