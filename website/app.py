@@ -34,6 +34,7 @@ from flask import Flask, jsonify, request, send_from_directory  # noqa: E402
 from PIL import Image  # noqa: E402
 
 from src.data import build_eval_transform  # noqa: E402
+from src.evaluate import tta_transforms  # noqa: E402
 from src.model import build_model  # noqa: E402
 from src.utils import CLASSES  # noqa: E402
 
@@ -168,20 +169,53 @@ def activation_box(features: torch.Tensor, model, class_index: int):
     }
 
 
-@torch.no_grad()
-def predict(img: Image.Image):
-    x = TRANSFORM(img.convert("RGB")).unsqueeze(0).to(DEVICE)
-    disp = torch.stack(
-        [torch.softmax(m(x).float() / TEMPERATURE, dim=1)[0] for m in MODELS]
-    ).mean(0)
-    probs = {c: float(p) for c, p in zip(CLASSES, disp)}
+def focus_crop(img: Image.Image, bbox: dict | None, padding: float = 0.12):
+    """Crop around class-activation evidence with some surrounding context.
 
+    This is a lightweight, depth-like foreground focus—not a true depth map.
+    Returning None leaves the original inference path unchanged.
+    """
+    if not bbox:
+        return None
+    width, height = img.size
+    x1 = max(0.0, bbox["x"] - padding)
+    y1 = max(0.0, bbox["y"] - padding)
+    x2 = min(1.0, bbox["x"] + bbox["w"] + padding)
+    y2 = min(1.0, bbox["y"] + bbox["h"] + padding)
+    # Avoid magnifying tiny/noisy activation islands.
+    if (x2 - x1) * (y2 - y1) < 0.12:
+        return None
+    return img.crop((round(x1 * width), round(y1 * height),
+                     round(x2 * width), round(y2 * height)))
+
+
+@torch.no_grad()
+def predict(img: Image.Image, accuracy_mode: bool = False, focus_filter: bool = False):
+    rgb = img.convert("RGB")
+    transforms = tta_transforms(CFG["img_size"]) if accuracy_mode else [TRANSFORM]
+    views = [tf(rgb).unsqueeze(0).to(DEVICE) for tf in transforms]
+    disp = torch.stack([
+        torch.softmax(m(x).float() / TEMPERATURE, dim=1)[0]
+        for x in views for m in MODELS
+    ]).mean(0)
     # Feature-space out-of-distribution distance, from the reference model (the
     # bank was built with MODELS[0]); None/off when no bank is loaded.
     uncertain, ood_dist = False, None
     ref = MODELS[0]
+    x = views[0]  # localization/OOD use the canonical view for stable geometry
     ref_features = ref.forward_features(x)
     bbox = activation_box(ref_features, ref, int(disp.argmax()))
+    focused = focus_crop(rgb, bbox) if focus_filter else None
+    if focused is not None:
+        focus_x = TRANSFORM(focused).unsqueeze(0).to(DEVICE)
+        focus_disp = torch.stack([
+            torch.softmax(m(focus_x).float() / TEMPERATURE, dim=1)[0]
+            for m in MODELS
+        ]).mean(0)
+        # Keep the original view dominant because this filter is experimental
+        # and the model was trained on full images, not CAM-derived crops.
+        disp = 0.65 * disp + 0.35 * focus_disp
+    probs = {c: float(p) for c, p in zip(CLASSES, disp)}
     if OOD_BANK is not None:
         feat = torch.nn.functional.normalize(
             ref.forward_head(ref_features, pre_logits=True), dim=1)[0]
@@ -223,10 +257,15 @@ def api_identify():
     img = _image_from_request()
     if img is None:
         return jsonify(error="No image received."), 400
-    probs, uncertain, ood_dist, bbox = predict(img)
+    accuracy_mode = str(request.form.get("accuracy_mode", request.args.get("accuracy_mode", "0"))).lower() in {"1", "true", "yes", "on"}
+    focus_filter = str(request.form.get("focus_filter", request.args.get("focus_filter", "0"))).lower() in {"1", "true", "yes", "on"}
+    probs, uncertain, ood_dist, bbox = predict(
+        img, accuracy_mode=accuracy_mode, focus_filter=focus_filter)
     top = max(probs, key=probs.get)
     # frontend reads cls + conf; `uncertain` triggers the "not one of my six" note
     return jsonify(cls=top, conf=probs[top], probs=probs, uncertain=uncertain, bbox=bbox,
+                   accuracy_mode=accuracy_mode, focus_filter=focus_filter,
+                   views=(4 if accuracy_mode else 1) + (1 if focus_filter else 0),
                    ood_distance=None if ood_dist is None else round(ood_dist, 4))
 
 

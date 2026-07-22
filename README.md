@@ -10,9 +10,13 @@ The trained model is the engine behind **Second Life AI**, a planned demo web ap
 that identifies a piece of trash, tells you how to dispose of it, and imagines the
 object's "second life."
 
+For the complete development story—including every major pipeline and website change,
+experiment decisions, failures, fixes, limitations, and paper/presentation guidance—see
+**[`PROJECT_PROCESS_README.md`](PROJECT_PROCESS_README.md)**.
+
 - **Classes (2,527 images):** paper (594), glass (501), plastic (482), metal (410), cardboard (403), trash (137)
 - **Current best:** 94.93% validation accuracy (ResNet-50 + 4-view TTA), leakage-free by construction
-- **Status:** model pipeline complete and reproducible; stronger backbone + ensemble run and the website are next
+- **Status:** model pipeline complete and reproducible; stronger backbone + ensemble run are next, and the offline website is implemented
 
 ## Results
 
@@ -45,7 +49,7 @@ object's "second life."
 │   ├── demo/                offline Gradio demo (photo → class + confidence + Grad-CAM)
 │   ├── tests/               split/leakage unit tests
 │   └── paper/               short paper + figures
-└── website/             Second Life AI web app (planned — not yet built)
+└── website/             Implemented offline Second Life AI web app
 ```
 
 ## Methodology — the rules enforced at runtime
@@ -98,8 +102,8 @@ Grad-CAM overlay. Fully offline, safe to run in front of judges.
 - **Poster experiments.** A leakage demo (honest split-first vs. leaky
   augment-then-split, same model), a cleanlab + manual label audit, and Grad-CAM
   figures.
-- **The website.** Second Life AI — serve the trained model behind a friendly
-  offline web app (identify → disposal guidance → the object's "second life").
+- **The website.** Integrate the final trained ensemble into the implemented offline app
+  (identify → disposal guidance → the object's "second life").
 
 ## Notes for the team
 

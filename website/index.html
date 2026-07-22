@@ -169,12 +169,16 @@
             </div>
             <div style="flex: 1; min-width: 380px;">
               <div style="font-weight: 700; margin-bottom: 10px;">{{ t.mapTitle }}</div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <sc-for list="{{ mappingChips }}" as="mc" hint-placeholder-count="6">
-                  <div style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 14px; background: #FFFDF6; border: 1px solid #E5DCC8; font-size: 13px;"><span>{{ mc.cls }}</span><span style="color: #C9BD9F;">→</span><span style="color: {{ mc.color }}; font-weight: 700;">{{ mc.bin }}</span></div>
-                </sc-for>
+              <div class="responsive-grid" style="display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <sc-for list="{{ mapClasses }}" as="mc" hint-placeholder-count="6"><div onClick="{{ mc.select }}" style="display:grid;grid-template-columns:1fr 70px;align-items:center;padding:8px 12px;border-radius:10px;background:{{ mc.bg }};border:1px solid {{ mc.border }};cursor:pointer;font-size:13px;"><b>{{ mc.label }}</b><span style="text-align:right;color:{{ mc.color }};font-weight:900;">━━━━▶</span></div></sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:7px;">
+                  <sc-for list="{{ mapBins }}" as="mb" hint-placeholder-count="4"><div style="padding:9px 12px;border-radius:10px;background:{{ mb.bg }};border:2px solid {{ mb.border }};color:{{ mb.fg }};font-weight:800;font-size:13px;">{{ mb.label }}</div></sc-for>
+                </div>
               </div>
-              <p style="font-size: 13px; color: #7C8A73; line-height: 1.8; margin: 12px 0 0;">{{ t.honest }}</p>
+              <div style="margin-top:12px;padding:12px 14px;border-radius:12px;background:#FFFDF6;border-left:4px solid {{ selectedMapColor }};font-size:13px;line-height:1.7;color:#4A5A4B;"><b>{{ selectedMapLabel }} → {{ selectedMapBin }}</b><br>{{ selectedMapWhy }}</div>
+              <p style="font-size: 12px; color: #7C8A73; line-height: 1.7; margin: 10px 0 0;">{{ t.mapCaveat }}</p>
             </div>
           </div>
         </div>
@@ -192,8 +196,16 @@
         <div style="color:#7C8A73; font-size:14px;">{{ t.labSubtitle }}</div>
         <sc-if value="{{ english }}" hint-placeholder-val="{{ true }}"><div style="font-size: 14px; color: #7C8A73; font-style: italic;">Recognition Center, meet the object before choosing its future.</div></sc-if>
       </div>
+      <div style="display:flex;justify-content:center;gap:8px;margin:-16px 0 24px;">
+        <div onClick="{{ useUpload }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ uploadModeBg }};color:{{ uploadModeFg }};border:1px solid #B8C6B5;">{{ t.uploadMode }}</div>
+        <div onClick="{{ startCamera }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ cameraModeBg }};color:{{ cameraModeFg }};border:1px solid #B8C6B5;">◉ {{ t.cameraMode }}</div>
+        <div onClick="{{ toggleAccuracy }}" title="{{ t.accuracyHint }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ accuracyBg }};color:{{ accuracyFg }};border:1px solid #B8C6B5;">{{ accuracyMark }} {{ t.accuracyMode }}</div>
+        <div onClick="{{ toggleFocus }}" title="{{ t.focusHint }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ focusBg }};color:{{ focusFg }};border:1px solid #B8C6B5;">{{ focusMark }} {{ t.focusMode }}</div>
+      </div>
+      <sc-if value="{{ cameraError }}" hint-placeholder-val="{{ false }}"><div style="max-width:680px;margin:-10px auto 20px;padding:11px 15px;border-radius:12px;background:#F6E8D8;color:#8C5A22;font-size:13px;text-align:center;">{{ cameraErrorText }}</div></sc-if>
       <div class="responsive-grid" style="display: grid; grid-template-columns: 1.12fr .88fr; gap: 24px;">
         <div style="position: relative; overflow: hidden; border: 1.5px dashed #8FA58C; border-radius: 24px; padding: 70px 32px; text-align: center; cursor: pointer; background: rgba(255,253,246,.94); box-shadow: inset 0 0 60px rgba(62,124,79,.045), 0 18px 45px rgba(35,55,43,.09);" style-hover="border-color: #3E7C4F; background:#FFFFFF;">
+          <sc-if value="{{ notCamera }}" hint-placeholder-val="{{ true }}">
           <input type="file" accept="image/*" onChange="{{ onFile }}" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;">
           <sc-if value="{{ analyzing }}" hint-placeholder-val="{{ false }}">
             <div style="position:absolute; left:5%; right:5%; height:2px; top:8%; background:#D97B29; box-shadow:0 0 14px rgba(217,123,41,.65); animation:scanline 1.15s linear infinite;"></div>
@@ -206,6 +218,18 @@
             <div style="font-weight: 700; font-size: 18px; margin-top: 16px;">{{ t.uploadTitle }}</div>
             <div style="font-size: 13px; color: #7C8A73; margin-top: 6px; line-height: 1.7;">{{ t.uploadSub }}</div>
             <div style="margin-top:24px; color:#3E7C4F; font:11px monospace; letter-spacing:2px;">READY FOR SPECIMEN · DROP / PASTE / CLICK</div>
+          </sc-if>
+          </sc-if>
+          <sc-if value="{{ cameraActive }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:-54px -16px;position:relative;height:310px;border-radius:16px;overflow:hidden;background:#14241D;">
+              <video id="insight-camera" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
+              <div style="position:absolute;left:{{ cameraBoxLeft }};top:{{ cameraBoxTop }};width:{{ cameraBoxWidth }};height:{{ cameraBoxHeight }};border:2px solid #F0A04B;box-shadow:0 0 14px rgba(240,160,75,.4);">
+                <div style="position:absolute;left:-2px;top:-24px;background:#D97B29;color:white;padding:4px 7px;font:700 10px monospace;white-space:nowrap;">{{ cameraReadout }}</div>
+              </div>
+              <div style="position:absolute;left:0;right:0;bottom:0;padding:15px;background:linear-gradient(transparent,rgba(5,16,11,.86));display:flex;justify-content:center;">
+                <div onClick="{{ captureCamera }}" style="position:relative;z-index:4;padding:11px 24px;border-radius:24px;background:#FFFDF6;color:#23372B;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);">● {{ t.capture }}</div>
+              </div>
+            </div>
           </sc-if>
         </div>
         <div style="border: 1px solid #E5DCC8; border-radius: 24px; padding: 32px; background: rgba(255,253,246,.96); box-shadow:0 18px 45px rgba(35,55,43,.07);">
@@ -261,8 +285,23 @@
         </div>
       </div>
 
-      <sc-if value="{{ isUncertain }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ isOOD }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top: 16px; padding: 16px 20px; border-radius: 14px; background: #FBE7D3; border: 1px solid #E9C48A; color: #8A5316; font-size: 14px; line-height: 1.7;">{{ t.oodBanner }}</div>
+      </sc-if>
+      <sc-if value="{{ isLowConf }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top: 16px; padding: 16px 20px; border-radius: 14px; background: #FBF0DD; border: 1px solid #E7D3A6; color: #7A5A22; font-size: 14px; line-height: 1.7;">{{ t.lowConfBanner }}</div>
+      </sc-if>
+      <sc-if value="{{ showDecisionHelp }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:12px;padding:24px 26px;border-radius:18px;background:#FFFDF6;border:1px solid #E5DCC8;">
+          <div style="font:700 11px monospace;letter-spacing:2px;color:#B8641B;margin-bottom:10px;">{{ t.decisionKicker }}</div>
+          <sc-if value="{{ decisionAsking }}" hint-placeholder-val="{{ true }}">
+            <div style="font-family:'Noto Serif SC',serif;font-size:20px;font-weight:700;line-height:1.6;">{{ decisionQuestion }}</div>
+            <div style="display:flex;gap:10px;margin-top:16px;"><div onClick="{{ decisionYes }}" style="padding:10px 22px;border-radius:22px;background:#3E7C4F;color:white;font-weight:700;cursor:pointer;">{{ t.yes }}</div><div onClick="{{ decisionNo }}" style="padding:10px 22px;border-radius:22px;background:#EFE8D6;color:#4A5A4B;font-weight:700;cursor:pointer;">{{ t.no }}</div></div>
+          </sc-if>
+          <sc-if value="{{ decisionFinished }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;"><div style="padding:12px 20px;border-radius:14px;background:{{ decisionBinColor }};color:white;font-weight:900;font-size:18px;">{{ decisionBin }}</div><div style="flex:1;min-width:240px;color:#4A5A4B;line-height:1.7;">{{ decisionWhy }}</div><div onClick="{{ resetDecision }}" style="font-size:12px;color:#7C8A73;text-decoration:underline;cursor:pointer;">{{ t.restartQuestions }}</div></div>
+          </sc-if>
+        </div>
       </sc-if>
 
       <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; margin-top: 20px;">
@@ -342,6 +381,17 @@
 
       <sc-if value="{{ simPlaying }}" hint-placeholder-val="{{ false }}">
         <div style="animation: fadeUp 0.4s ease both;">
+          <div style="text-align:center;margin-bottom:14px;font:700 11px monospace;letter-spacing:3px;color:#8C6A3E;">{{ t.splitTitle }}</div>
+          <div class="responsive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
+            <div style="padding:22px;border-radius:20px;background:#F1F7EE;border:1px solid #BFD2B9;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:10px;height:10px;border-radius:50%;background:#3E7C4F;"></span><b>{{ t.correctTimeline }}</b></div>
+              <sc-for list="{{ correctTimeline }}" as="tl" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:28px 1fr;gap:8px;padding:9px 0;border-top:1px solid #D7E4D3;opacity:{{ tl.opacity }};"><div style="font-size:20px;">{{ tl.icon }}</div><div><div style="font-size:13px;font-weight:700;color:#2F5A3C;">{{ tl.title }}</div><div style="font-size:11.5px;color:#647565;line-height:1.5;">{{ tl.sub }}</div></div></div></sc-for>
+            </div>
+            <div style="padding:22px;border-radius:20px;background:#EEEDEB;border:1px solid #CDCCC8;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;"><span style="width:10px;height:10px;border-radius:50%;background:#6B7280;"></span><b>{{ t.wrongTimeline }}</b></div>
+              <sc-for list="{{ wrongTimeline }}" as="tl" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:28px 1fr;gap:8px;padding:9px 0;border-top:1px solid #D8D6D1;opacity:{{ tl.opacity }};"><div style="font-size:20px;">{{ tl.icon }}</div><div><div style="font-size:13px;font-weight:700;color:#525760;">{{ tl.title }}</div><div style="font-size:11.5px;color:#777B82;line-height:1.5;">{{ tl.sub }}</div></div></div></sc-for>
+            </div>
+          </div>
           <sc-if value="{{ styleJourney }}" hint-placeholder-val="{{ true }}">
             <div style="display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 26px;">
               <sc-for list="{{ railSteps }}" as="rs" hint-placeholder-count="4">
@@ -478,6 +528,21 @@
     <div style="flex: 1; max-width: 760px; margin: 0 auto; padding: 48px 40px; box-sizing: border-box; width: 100%; animation: fadeUp 0.5s ease both;">
       <div style="text-align: center; margin-bottom: 32px;">
         <h2 style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 36px; margin: 0 0 6px;">{{ t.myRecord }}</h2>
+        <div style="color:#7C8A73;font-size:14px;">{{ t.impactSubtitle }}</div>
+      </div>
+      <div style="padding:26px;border-radius:22px;background:#1E3A2B;color:#FAF7EF;margin-bottom:18px;">
+        <div class="responsive-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+          <div><div style="font:900 34px 'Noto Serif SC',serif;">{{ correctSorts }}</div><div style="font-size:12px;color:#B9CEBC;">{{ t.correctSorts }}</div></div>
+          <div><div style="font:900 34px 'Noto Serif SC',serif;">{{ co2Saved }}</div><div style="font-size:12px;color:#B9CEBC;">{{ t.co2Saved }}</div></div>
+          <div><div style="font:900 34px 'Noto Serif SC',serif;">{{ energySaved }}</div><div style="font-size:12px;color:#B9CEBC;">{{ t.energySaved }}</div></div>
+        </div>
+        <div style="height:72px;display:flex;align-items:flex-end;gap:5px;margin-top:20px;border-bottom:1px solid #57715F;">
+          <sc-for list="{{ impactBars }}" as="ib" hint-placeholder-count="10"><div style="flex:1;min-width:5px;height:{{ ib.h }};background:{{ ib.color }};border-radius:4px 4px 0 0;"></div></sc-for>
+        </div>
+        <div style="font-size:11px;color:#9DB8A0;margin-top:9px;">{{ t.growthNote }}</div>
+      </div>
+      <div style="padding:15px 18px;border-radius:14px;background:#EFE8D6;margin-bottom:22px;font-size:11.5px;color:#65705F;line-height:1.7;">
+        <b>{{ t.assumptions }}</b> {{ impactAssumptions }}
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
         <div style="padding: 22px; border-radius: 16px; background: #FFFDF6; border: 1px solid #E5DCC8; text-align: center;"><div style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 38px; color: #2F5A3C;">{{ idCount }}</div><div style="font-size: 13px; color: #7C8A73;">{{ t.recIdCount }}</div></div>
@@ -514,7 +579,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
 class Component extends DCLogic {
-  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false, backendUp: true };
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false, backendUp: true, cameraActive: false, cameraError: '', cameraPrediction: null, decisionNode: 'root', decisionDone: null, selectedClass: 'plastic', accuracyMode: false, focusMode: false };
 
   componentDidMount() {
     let lang = 'zh', records = [];
@@ -540,6 +605,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     clearInterval(this._timer);
+    this.stopCamera();
     if (this._onPaste) window.removeEventListener('paste', this._onPaste);
   }
 
@@ -550,6 +616,81 @@ class Component extends DCLogic {
   setLang(lang) {
     this.persist('lang', lang);
     this.setState({ lang });
+  }
+
+  stopCamera() {
+    clearInterval(this._cameraTimer);
+    this._cameraTimer = null;
+    this._cameraBusy = false;
+    if (this._cameraStream) this._cameraStream.getTracks().forEach(track => track.stop());
+    this._cameraStream = null;
+  }
+
+  useUpload() {
+    this.stopCamera();
+    this.setState({ cameraActive: false, cameraError: '', cameraPrediction: null });
+  }
+
+  startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.setState({ cameraActive: false, cameraError: 'unavailable' });
+      return;
+    }
+    this.stopCamera();
+    this.setState({ cameraActive: true, cameraError: '', cameraPrediction: null });
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
+      .then(stream => {
+        this._cameraStream = stream;
+        const attach = () => {
+          if (!this.state.cameraActive || this._cameraStream !== stream) return;
+          const video = document.getElementById('insight-camera');
+          if (!video) { setTimeout(attach, 60); return; }
+          video.srcObject = stream;
+          video.play().catch(() => {});
+          this._cameraTimer = setInterval(() => this.scanCameraFrame(), 1500);
+          setTimeout(() => this.scanCameraFrame(), 700);
+        };
+        attach();
+      })
+      .catch(() => {
+        this.stopCamera();
+        this.setState({ cameraActive: false, cameraError: 'denied', cameraPrediction: null });
+      });
+  }
+
+  cameraBlob(callback) {
+    const video = document.getElementById('insight-camera');
+    if (!video || !video.videoWidth) { callback(null); return; }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(callback, 'image/jpeg', .9);
+  }
+
+  scanCameraFrame() {
+    if (this._cameraBusy || !this.state.cameraActive || typeof fetch !== 'function') return;
+    this._cameraBusy = true;
+    this.cameraBlob(blob => {
+      if (!blob) { this._cameraBusy = false; return; }
+      const fd = new FormData(); fd.append('image', blob, 'camera.jpg');
+      fd.append('accuracy_mode', this.state.accuracyMode ? '1' : '0');
+      fd.append('focus_filter', this.state.focusMode ? '1' : '0');
+      fetch('/api/identify', { method: 'POST', body: fd })
+        .then(r => { if (!r.ok) throw new Error('camera inference failed'); return r.json(); })
+        .then(d => this.setState({ cameraPrediction: d, cameraError: '' }))
+        .catch(() => this.setState({ cameraError: 'backend' }))
+        .finally(() => { this._cameraBusy = false; });
+    });
+  }
+
+  captureCamera() {
+    this.cameraBlob(blob => {
+      if (!blob) return;
+      const file = typeof File === 'function' ? new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' }) : blob;
+      this.stopCamera();
+      this.setState({ cameraActive: false, cameraError: '' });
+      this.identifyFile(file);
+    });
   }
 
   /* ─────────────────────────────────────────────────────────
@@ -569,10 +710,12 @@ class Component extends DCLogic {
       heroBodyShort: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。认识它 → 选择它的未来 → 见证结果。',
       accCaption: '验证集准确率（TTA）· TrashNet 六分类',
       mapTitle: '六个模型类别 → 四分类投放的透明映射',
+      mapCaveat: '数据集没有厨余垃圾与有害垃圾图像类别，因此模型不会从照片预测这两类；它们只由文字内容库与上方材质问答补充。',
       honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。模型只认识这六个类别，遇到明显不属于它们的照片时会如实提示"可能不属于这六类"，而不是硬猜。',
       identTitle: '洞察实验室', labSubtitle: '放慢速度，像研究员一样观察一件物品。', microBtn: '查看微观结构', evidenceView: '模型视觉证据', boxLive: '模型定位', boxApprox: '估算区域',
       analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
       uploadTitle: '拍照或上传图片', uploadSub: '点击或粘贴图片',
+      uploadMode: '上传 / 粘贴', cameraMode: '使用相机', accuracyMode: '准确模式', accuracyHint: '使用四视图测试时增强，速度较慢；验证集从 93.09% 提升至 94.93%，但不保证每张图都更准。', focusMode: '景深聚焦', focusHint: '实验功能：根据模型关注区域弱化背景并再次识别。物体较小时可能有帮助，但尚未在验证集上证明。', capture: '拍摄并分析', cameraReady: '正在寻找物品…', cameraDenied: '无法使用相机，已切回上传模式。请检查浏览器权限，或继续上传/粘贴图片。', cameraBackend: '实时识别需要从本地网站启动；相机仍可拍摄，随后会使用演示结果。',
       orType: '或者，输入物品名称',
       searchPlaceholder: '例如：塑料瓶、咖啡杯、快递纸箱…',
       libCovers: '内容库覆盖的常见物品：',
@@ -582,6 +725,9 @@ class Component extends DCLogic {
       confDemo: '⚠ 演示数据 · 后端未连接，此数字非模型实时输出',
       oodNote: '低置信度 · 可能不属于这六类',
       oodBanner: '⚠ 置信度偏低：这可能不属于模型认识的六个类别。模型只有六个"桶"，softmax 必须把它归入其中之一，所以遇到陌生物体（比如一只猫），它只能勉强猜一个。下面的结果请当作不确定的猜测来看。',
+      lowConfNote: '置信度偏低',
+      lowConfBanner: '模型对这次判断把握不大。它很可能仍属于这六类之一，只是这张照片较难判断；你可以用下面的材质问答再核对一次。',
+      decisionKicker: '不确定？用材质而不是模型做决定', yes: '是', no: '不是', restartQuestions: '重新回答',
       putInto: '应投入',
       blockMaterial: '③ 它是什么做的',
       blockHistory: '④ 它的小小历史',
@@ -590,6 +736,7 @@ class Component extends DCLogic {
       waitingA: '"这件物品正等待开启', waitingB: '下一段旅程。"',
       enterSim: '进入未来模拟器，为它做出选择',
       simTitle: '命运分岔口',
+      splitTitle: '两条时间线 · 同时发生', correctTimeline: '正确投放后的未来', wrongTimeline: '错误投放后的未来',
       simPre: '这只', simPost: '正等待开启下一段旅程，它的未来，由你决定。',
       scanning: '扫描中', years450: '450 年，才能完全降解',
       letterKicker: '未来来信', letterTitle: '来自未来的信',
@@ -603,6 +750,7 @@ class Component extends DCLogic {
       campusSub: '一个真实的校园故事，结局同样诚实。',
       cupNote: '诚实的小注脚：多数一次性咖啡杯内壁有塑料淋膜，很难当纸回收，所以它属于其他垃圾。自带杯子，是给它更好的未来。',
       myRecord: '我的记录',
+      impactSubtitle: '每一次正确投放，累积成可见的影响。', correctSorts: '次正确投放', co2Saved: 'kg CO₂e 估算节省', energySaved: 'kWh 估算节省', growthNote: '柱高表示已记录的正确投放累积增长；错误路线与仅识别记录不计入节省。', assumptions: '示意性估算，非实测数据 · 假设与口径：',
       recSummaryA: '这台浏览器已完成 ', recSummaryB: ' 次识别、', recSummaryC: ' 次未来模拟',
       recIdCount: '次物品识别', recSimCount: '次未来模拟',
       recEmpty: '这里还是空的，去识别一件物品，为它选择未来吧。',
@@ -626,10 +774,12 @@ class Component extends DCLogic {
       heroBodyShort: 'Being thrown away is not the end of an object\u2019s story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
       accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
+      mapCaveat: 'The image dataset has no food-waste or hazardous classes, so the model never predicts those from a photo. They are covered only by text search and the material decision flow.',
       honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports. The model knows only these six classes; when a photo clearly matches none of them, it says so instead of forcing a guess.',
       identTitle: 'Insight Lab', labSubtitle: 'Slow down and examine an object like a researcher.', microBtn: 'View microstructure', evidenceView: 'MODEL VISUAL EVIDENCE', boxLive: 'MODEL CAM', boxApprox: 'SCAN REGION',
       analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
       uploadTitle: 'Take or upload a photo', uploadSub: 'Click or paste an image',
+      uploadMode: 'Upload / paste', cameraMode: 'Use camera', accuracyMode: 'Accuracy mode', accuracyHint: 'Uses four-view test-time augmentation and is slower. It improved validation from 93.09% to 94.93%, but cannot guarantee every image improves.', focusMode: 'Depth focus', focusHint: 'Experimental: focuses on the model\'s activation region and classifies again with less background. It may help small objects but is not yet validation-proven.', capture: 'Capture & analyze', cameraReady: 'Looking for an object…', cameraDenied: 'Camera unavailable or denied. Upload/paste remains available; check browser permissions to retry.', cameraBackend: 'Live recognition needs the local website server. You can still capture a frame and continue with demo results.',
       orType: 'Or type the name of an item',
       searchPlaceholder: 'e.g. plastic bottle, coffee cup, parcel box…',
       libCovers: 'Common items in the content library:',
@@ -639,6 +789,9 @@ class Component extends DCLogic {
       confDemo: '⚠ Demo data · backend not connected, this is not live model output',
       oodNote: 'Low confidence · may not be one of the six',
       oodBanner: '⚠ Low confidence: this may not be one of the six classes the model knows. The model has only six bins and softmax must pick one, so for an unfamiliar object (say, a cat) it can only make a weak guess. Treat the result below as an uncertain guess.',
+      lowConfNote: 'Low confidence',
+      lowConfBanner: 'The model isn’t very confident about this one. It is most likely still one of the six classes, just a hard photo to read; you can double-check by material below.',
+      decisionKicker: 'UNCERTAIN? DECIDE BY MATERIAL, NOT THE MODEL', yes: 'Yes', no: 'No', restartQuestions: 'Start again',
       putInto: 'Put it in',
       blockMaterial: '③ What it is made of · Material',
       blockHistory: '④ A short history · History',
@@ -647,6 +800,7 @@ class Component extends DCLogic {
       waitingA: '"This object is waiting to begin', waitingB: 'its next journey."',
       enterSim: 'Enter the Future Simulator and choose for it',
       simTitle: 'Fork in the Road',
+      splitTitle: 'TWO TIMELINES · UNFOLDING TOGETHER', correctTimeline: 'Future after the right sort', wrongTimeline: 'Future after the wrong sort',
       simPre: 'This ', simPost: ' is waiting to begin its next journey, its future is yours to decide.',
       scanning: 'SCANNING', years450: '450 years to fully degrade',
       letterKicker: 'A MESSAGE FROM THE FUTURE', letterTitle: 'A letter from the future',
@@ -660,6 +814,7 @@ class Component extends DCLogic {
       campusSub: 'An honest story, ending included.',
       cupNote: 'An honest footnote: most disposable coffee cups are lined with plastic film inside, which makes them very hard to recycle as paper, so they belong in residual waste. Bringing your own cup is the better future for it.',
       myRecord: 'My Record',
+      impactSubtitle: 'Every correct sort accumulates into visible impact.', correctSorts: 'correct sorts', co2Saved: 'kg CO₂e estimated saved', energySaved: 'kWh estimated saved', growthNote: 'Bar height shows cumulative recorded correct sorts; wrong paths and identification-only records receive no savings credit.', assumptions: 'Illustrative estimates, not measured data · assumptions and basis:',
       recSummaryA: 'This browser has completed ', recSummaryB: ' identifications and ', recSummaryC: ' future simulations',
       recIdCount: 'identifications', recSimCount: 'future simulations',
       recEmpty: 'Nothing here yet, go identify an object and choose a future for it.',
@@ -881,7 +1036,28 @@ class Component extends DCLogic {
       }
     };
     const CHIP_ORDER = ['bottle', 'cup', 'box', 'jar', 'can', 'newspaper', 'bag', 'milkbox', 'book', 'printerpaper', 'foam', 'spoon', 'jar2', 'papercup', 'lunchbox'];
-    return { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER };
+    const DECISIONS = {
+      root: { q: '它是否有防水/防油内衬（例如纸杯内的塑料膜）？', qe: 'Does it have a waterproof or grease-proof lining, like a paper cup?', yes: { bin: 'other', why: '复合内衬通常无法在普通纸类回收中分离。', whye: 'Mixed waterproof linings usually cannot be separated in ordinary paper recycling.' }, no: 'soft' },
+      soft: { q: '它是柔软薄膜、容易缠绕，或沾有明显油污吗？', qe: 'Is it soft film that tangles easily, or visibly contaminated with food or grease?', yes: { bin: 'other', why: '薄膜与污染物会干扰常规分拣；不确定时保守投入其他垃圾。', whye: 'Film and contamination disrupt ordinary sorting; residual waste is the conservative uncertain choice.' }, no: 'material' },
+      material: { q: '它是干净、单一材质的玻璃、金属、硬塑料、纸或纸板吗？', qe: 'Is it clean and made from one material: glass, metal, rigid plastic, paper, or cardboard?', yes: { bin: 'recyclable', why: '干净的单一材质最有机会被稳定分拣和再生。', whye: 'Clean single-material items have the best chance of reliable sorting and recovery.' }, no: { bin: 'other', why: '材质仍不明确；不把未知物混入回收流是更诚实的选择。', whye: 'The material remains unclear; keeping unknowns out of recycling is the more honest choice.' } }
+    };
+    const IMPACT = {
+      plastic: { co2: .06, energy: .65, source: '保守估算：每件按 20g PET，回收替代效益下调后计算', sourceEn: 'Conservative assumption: 20g PET item with discounted substitution benefit' },
+      glass: { co2: .02, energy: .12, source: '保守估算：每件按 200g 玻璃容器', sourceEn: 'Conservative assumption: one 200g glass container' },
+      metal: { co2: .12, energy: 1.5, source: '保守估算：每件按 15g 铝罐', sourceEn: 'Conservative assumption: one 15g aluminium can' },
+      paper: { co2: .015, energy: .08, source: '保守估算：每件按 50g 纸张', sourceEn: 'Conservative assumption: one 50g paper item' },
+      cardboard: { co2: .04, energy: .18, source: '保守估算：每件按 150g 纸板', sourceEn: 'Conservative assumption: one 150g cardboard item' },
+      trash: { co2: 0, energy: 0, source: '其他垃圾不计入回收节省，避免夸大', sourceEn: 'Residual waste receives no recycling credit to avoid overclaiming' }
+    };
+    return { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER, DECISIONS, IMPACT };
+  }
+
+  answerDecision(answer) {
+    const { DECISIONS } = this.lib();
+    const node = DECISIONS[this.state.decisionNode] || DECISIONS.root;
+    const next = node[answer ? 'yes' : 'no'];
+    if (typeof next === 'string') this.setState({ decisionNode: next });
+    else this.setState({ decisionDone: next });
   }
 
   /* Records are stored as structured data (not rendered text) so that they
@@ -924,6 +1100,7 @@ class Component extends DCLogic {
   }
 
   pick(key, opts) {
+    this.stopCamera();
     const o = opts || {};
     const { ITEMS } = this.lib();
     // Live picks (photo upload) carry the model's real conf + full probs; text
@@ -931,7 +1108,7 @@ class Component extends DCLogic {
     this.setState({ itemKey: key, page: 'result', queryMiss: false, query: '', simPhase: 'choose', simStep: 0,
       live: !!o.live, photo: o.photo || null,
       liveConf: typeof o.conf === 'number' ? o.conf : null,
-      liveProbs: o.probs || null, liveUncertain: !!o.uncertain, liveBox: o.bbox || null });
+      liveProbs: o.probs || null, liveUncertain: !!o.uncertain, liveBox: o.bbox || null, decisionNode: 'root', decisionDone: null });
     this.addRecord({ k: 'id', item: key, conf: o.conf || ITEMS[key].conf, live: !!o.live });
   }
 
@@ -963,6 +1140,8 @@ class Component extends DCLogic {
       this.setState({ analyzing: true, photo: dataUrl });
       const fd = new FormData();
       fd.append('image', f);
+      fd.append('accuracy_mode', this.state.accuracyMode ? '1' : '0');
+      fd.append('focus_filter', this.state.focusMode ? '1' : '0');
       const done = (key, conf, probs, live, uncertain, bbox) => {
         this.setState({ analyzing: false });
         this.pick(key, { conf, probs, live, uncertain, bbox, photo: dataUrl });
@@ -986,7 +1165,7 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    const { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER } = this.lib();
+    const { BINS, CLS, CLS_EN, ITEMS, STORIES, CHIP_ORDER, DECISIONS, IMPACT } = this.lib();
     const t = this.ui();
     const st = this.state;
     const isEn = st.lang === 'en';
@@ -996,13 +1175,19 @@ class Component extends DCLogic {
     // Live upload → the model's real numbers; text pick → the library item's.
     const shownConf = (st.live && typeof st.liveConf === 'number') ? st.liveConf : item.conf;
     const shownProbs = (st.live && st.liveProbs) ? st.liveProbs : item.probs;
+    const lowConfidence = st.live && shownConf < .50;
     // Older cached backends and file:// demo mode do not return localization.
     // Keep the overlay visible as an explicitly approximate scan region; a live
     // updated backend replaces this with its model-derived activation box.
     const detectionBox = st.liveBox || (st.photo ? { x: .14, y: .12, w: .72, h: .76 } : { x: 0, y: 0, w: 0, h: 0 });
+    const cameraBox = (st.cameraPrediction && st.cameraPrediction.bbox) || { x: .18, y: .16, w: .64, h: .68 };
+    const cameraCls = st.cameraPrediction && st.cameraPrediction.cls;
+    const cameraReadout = cameraCls ? (L(CLS[cameraCls], CLS_EN[cameraCls]) + ' · ' + (st.cameraPrediction.conf * 100).toFixed(1) + '%') : t.cameraReady;
+    const decisionNode = DECISIONS[st.decisionNode] || DECISIONS.root;
+    const decisionResult = st.decisionDone;
     const story = STORIES[item.cls];
     const steps = story[st.simPath];
-    const go = p => () => { clearInterval(this._timer); this.setState({ page: p, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
+    const go = p => () => { clearInterval(this._timer); this.stopCamera(); this.setState({ page: p, cameraActive: false, simPhase: p === 'simulator' ? 'choose' : st.simPhase, simStep: 0 }); };
     // Monolingual modes: each language stands alone, so the old English-under-
     // Chinese italic subtitles are always off. (English mode already reads in
     // English; Chinese mode stays pure Chinese.)
@@ -1025,6 +1210,22 @@ class Component extends DCLogic {
       { cls: L('金属', 'metal'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('纸类', 'paper'), bin: binRecyclable, color: '#2B6CB0' },
       { cls: L('塑料', 'plastic'), bin: binRecyclable, color: '#2B6CB0' }, { cls: L('其他', 'trash'), bin: binOther, color: '#6B7280' }
     ];
+    const mapReasons = {
+      cardboard: L('干燥、压平的纸板纤维可进入纸类回收流。', 'Dry, flattened cardboard fibre can enter the paper recovery stream.'),
+      glass: L('干净玻璃容器可按材质分选并反复熔融。', 'Clean glass containers can be material-sorted and remelted repeatedly.'),
+      metal: L('金属价值高，磁选或涡流分选后可高效再生。', 'Metal has high recovery value and can be separated by magnets or eddy currents.'),
+      paper: L('干净、未覆膜的纸纤维可重新制浆。', 'Clean, unlined paper fibre can be repulped.'),
+      plastic: L('模型的塑料类别映射到可回收物；实际投放仍需干净、硬质且符合本地规则。', 'The model maps plastic to recycling; the real item should still be clean, rigid, and accepted locally.'),
+      trash: L('模型的其他类别代表不可稳定回收的残余物。', 'The model’s trash class represents residual material without a reliable recovery route.')
+    };
+    const selectedMapClass = st.selectedClass || 'plastic';
+    const mapTarget = selectedMapClass === 'trash' ? 'other' : 'recyclable';
+    const mapClasses = ['cardboard','glass','metal','paper','plastic','trash'].map(cls => ({
+      label: L(CLS[cls], CLS_EN[cls]), color: BINS[cls === 'trash' ? 'other' : 'recyclable'].color,
+      bg: cls === selectedMapClass ? '#FFFFFF' : 'rgba(255,253,246,.55)', border: cls === selectedMapClass ? '#3E7C4F' : '#E5DCC8',
+      select: () => this.setState({ selectedClass: cls })
+    }));
+    const mapBins = ['recyclable','kitchen','hazard','other'].map(id => ({ label: L(BINS[id].zh, BINS[id].en), bg: id === mapTarget ? BINS[id].color : '#FFFDF6', border: id === mapTarget ? BINS[id].color : '#DDD4C3', fg: id === mapTarget ? '#FFFFFF' : '#7C8A73' }));
 
     const nameOf = k => L(ITEMS[k].zh, ITEMS[k].en);
     const chips = CHIP_ORDER.map(k => ({ zh: nameOf(k), pick: () => this.pick(k) }));
@@ -1046,6 +1247,8 @@ class Component extends DCLogic {
         labelColor: active ? '#23372B' : '#A9A183', labelWeight: active ? 700 : 400, linkBg: done ? railColorDone : '#E5DCC8' };
     });
     const cur = steps[Math.min(st.simStep, steps.length - 1)];
+    const sceneIcons = { binGood: '♻', sort: '⌁', transform: '◌', reborn: '✦', binBad: '↘', mix: '≋', landfill: '⌛', energy: '☼' };
+    const timelineOf = path => story[path].map((s2, i) => ({ title: L(s2.t, s2.te), sub: L(s2.s, s2.e), icon: sceneIcons[s2.scene] || '•', opacity: i <= st.simStep ? 1 : .38 }));
     const theater = simStyle === 'theater';
     const sc = name => st.simPhase === 'playing' && cur.scene === name;
 
@@ -1079,6 +1282,20 @@ class Component extends DCLogic {
     });
     const idCount = st.records.filter(r => r.k === 'id').length;
     const simCount = st.records.filter(r => r.k === 'sim').length;
+    const correctRecords = st.records.filter(r => r.k === 'sim' && r.path === 'correct').reverse();
+    let totalCo2 = 0, totalEnergy = 0;
+    const usedImpact = new Set();
+    correctRecords.forEach(r => {
+      const recItem = ITEMS[r.item] || ITEMS.bottle;
+      const factor = IMPACT[recItem.cls] || IMPACT.trash;
+      totalCo2 += factor.co2; totalEnergy += factor.energy; usedImpact.add(recItem.cls);
+    });
+    const barCount = Math.max(10, correctRecords.length);
+    const impactBars = Array.from({ length: barCount }, (_, i) => ({
+      h: ((i < correctRecords.length ? ((i + 1) / Math.max(1, correctRecords.length)) * 100 : 5)) + '%',
+      color: i < correctRecords.length ? (i === correctRecords.length - 1 ? '#F0B27A' : '#7FAA87') : '#395343'
+    }));
+    const impactAssumptions = (usedImpact.size ? Array.from(usedImpact) : ['trash']).map(cls => L(IMPACT[cls].source, IMPACT[cls].sourceEn)).join('； ');
 
     return {
       t, english, isEn,
@@ -1089,7 +1306,8 @@ class Component extends DCLogic {
       homeStory: layout === 'story', homeSplit: layout === 'split', homeMinimal: layout === 'minimal',
       goHome: go('home'), goIdentify: go('identify'), goExplore: go('explore'), goRecord: go('record'),
       goSimulator: () => this.setState({ page: 'simulator', simPhase: 'choose', simStep: 0 }),
-      navItems, modules, mappingChips, chips, marqueeItems,
+      navItems, modules, mappingChips, chips, marqueeItems, mapClasses, mapBins,
+      selectedMapLabel: L(CLS[selectedMapClass], CLS_EN[selectedMapClass]), selectedMapBin: L(BINS[mapTarget].zh, BINS[mapTarget].en), selectedMapWhy: mapReasons[selectedMapClass], selectedMapColor: BINS[mapTarget].color,
       query: st.query, queryMiss: st.queryMiss,
       onQuery: e => this.setState({ query: e.target.value, queryMiss: false }),
       onQueryKey: e => {
@@ -1100,15 +1318,34 @@ class Component extends DCLogic {
       },
       analyzing: st.analyzing, notAnalyzing: !st.analyzing,
       onFile: e => this.onFile(e),
+      cameraActive: st.cameraActive, notCamera: !st.cameraActive,
+      startCamera: () => this.startCamera(), useUpload: () => this.useUpload(), captureCamera: () => this.captureCamera(),
+      cameraError: !!st.cameraError, cameraErrorText: st.cameraError === 'backend' ? t.cameraBackend : t.cameraDenied,
+      uploadModeBg: st.cameraActive ? '#FFFDF6' : '#3E7C4F', uploadModeFg: st.cameraActive ? '#4A5A4B' : '#FFFFFF',
+      cameraModeBg: st.cameraActive ? '#3E7C4F' : '#FFFDF6', cameraModeFg: st.cameraActive ? '#FFFFFF' : '#4A5A4B',
+      toggleAccuracy: () => this.setState({ accuracyMode: !st.accuracyMode }), accuracyMark: st.accuracyMode ? '✓' : '○',
+      accuracyBg: st.accuracyMode ? '#D97B29' : '#FFFDF6', accuracyFg: st.accuracyMode ? '#FFFFFF' : '#4A5A4B',
+      toggleFocus: () => this.setState({ focusMode: !st.focusMode }), focusMark: st.focusMode ? '✓' : '○',
+      focusBg: st.focusMode ? '#6B5B95' : '#FFFDF6', focusFg: st.focusMode ? '#FFFFFF' : '#4A5A4B',
+      cameraReadout,
+      cameraBoxLeft: (cameraBox.x * 100).toFixed(1) + '%', cameraBoxTop: (cameraBox.y * 100).toFixed(1) + '%',
+      cameraBoxWidth: (cameraBox.w * 100).toFixed(1) + '%', cameraBoxHeight: (cameraBox.h * 100).toFixed(1) + '%',
       photo: st.photo, hasPhoto: !!st.photo, noPhoto: !st.photo,
       hasDetectionBox: !!st.photo,
       boxLeft: (detectionBox.x * 100).toFixed(1) + '%', boxTop: (detectionBox.y * 100).toFixed(1) + '%',
       boxWidth: (detectionBox.w * 100).toFixed(1) + '%', boxHeight: (detectionBox.h * 100).toFixed(1) + '%',
       boxMode: st.liveBox ? t.boxLive : t.boxApprox,
       isLive: st.live, isDemo: !st.live,
-      isUncertain: st.live && st.liveUncertain,
-      confNote: (st.live && st.liveUncertain) ? t.oodNote : (st.live ? t.confLive : t.confDemo),
-      confNoteColor: (st.live && st.liveUncertain) ? '#B8641B' : (st.live ? '#A9A183' : '#B8641B'),
+      isOOD: st.live && st.liveUncertain,
+      isLowConf: st.live && !st.liveUncertain && lowConfidence,
+      showDecisionHelp: st.live && (st.liveUncertain || lowConfidence),
+      decisionAsking: !decisionResult, decisionFinished: !!decisionResult,
+      decisionQuestion: L(decisionNode.q, decisionNode.qe), decisionYes: () => this.answerDecision(true), decisionNo: () => this.answerDecision(false),
+      decisionBin: decisionResult ? L(BINS[decisionResult.bin].zh, BINS[decisionResult.bin].en) : '',
+      decisionBinColor: decisionResult ? BINS[decisionResult.bin].color : '#6B7280', decisionWhy: decisionResult ? L(decisionResult.why, decisionResult.whye) : '',
+      resetDecision: () => this.setState({ decisionNode: 'root', decisionDone: null }),
+      confNote: (st.live && st.liveUncertain) ? t.oodNote : ((st.live && lowConfidence) ? t.lowConfNote : (st.live ? t.confLive : t.confDemo)),
+      confNoteColor: (st.live && (st.liveUncertain || lowConfidence)) ? '#B8641B' : (st.live ? '#A9A183' : '#B8641B'),
       itemZh: L(item.zh, item.en), itemEn: '',
       clsZh: L(CLS[item.cls], CLS_EN[item.cls]), clsEn: item.cls,
       clsLine: L(CLS[item.cls], CLS_EN[item.cls]),
@@ -1122,6 +1359,7 @@ class Component extends DCLogic {
       simChoosing: st.simPhase === 'choose', simPlaying: st.simPhase === 'playing', simDone: st.simPhase === 'done',
       styleJourney: !theater && st.simPhase === 'playing', styleTheater: theater && st.simPhase === 'playing',
       railSteps,
+      correctTimeline: timelineOf('correct'), wrongTimeline: timelineOf('wrong'),
       timeJump,
       stageBg: theater ? '#1E3A2B' : '#FFFDF6',
       stageTitleColor: theater ? '#F0B27A' : (isWrong ? '#6B7280' : '#2F5A3C'),
@@ -1146,6 +1384,7 @@ class Component extends DCLogic {
       closeDocumentary: () => this.setState({ documentaryOpen: false }),
       keepOpen: e => e.stopPropagation(),
       idCount, simCount,
+      correctSorts: correctRecords.length, co2Saved: totalCo2.toFixed(2), energySaved: totalEnergy.toFixed(2), impactBars, impactAssumptions,
       records, hasRecords: records.length > 0, noRecords: records.length === 0,
       clearRecords: () => this.clearRecords()
     };

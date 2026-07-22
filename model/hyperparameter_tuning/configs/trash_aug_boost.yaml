@@ -1,0 +1,32 @@
+# baseline_reference + a harder train transform for the `trash` class only.
+# Controlled A/B: the ONLY delta vs tune_baseline_reference is aug_boost_classes.
+# Read against baseline's trash recall, not against overall accuracy — trash is
+# 23 images in val fold 0, so one image is 4.3 points of recall.
+run_name: tune_trash_aug_boost
+seed: 42
+model: resnet50.tv2_in1k
+img_size: 224
+batch_size: 32
+num_workers: 4
+epochs_head: 5
+epochs_ft: 40
+lr_head: 1.0e-3
+lr_backbone: 1.0e-5
+weight_decay: 0.05
+label_smoothing: 0.1
+warmup_epochs: 3
+ema: true
+ema_decay: 0.9998
+amp: true
+early_stop_patience: 10
+class_weighting: weighted_sampler
+aug: basic
+# wider crop scale, 2x rotation, vflip, perspective, blur, random erasing —
+# train-side only, and only for these classes
+aug_boost_classes: [trash]
+mixup: 0.0
+cutmix: 0.0
+random_erasing: 0.0
+init_checkpoint: null
+data_dir: data/raw
+splits_dir: data/splits

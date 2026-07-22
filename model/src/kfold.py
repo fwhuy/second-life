@@ -31,7 +31,8 @@ def main():
         results.append(train_run(cfg, val_fold=fold, resume=True))
 
     accs = np.array([r["best_val_acc"] for r in results])
-    rel_ckpts = [str(Path(r["checkpoint"]).resolve().relative_to(REPO_ROOT)) for r in results]
+    rel_ckpts = [Path(r["checkpoint"]).resolve().relative_to(REPO_ROOT).as_posix()
+                 for r in results]
 
     manifest_path = REPO_ROOT / "checkpoints" / cfg["run_name"] / "ensemble.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)

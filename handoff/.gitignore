@@ -1,0 +1,12 @@
+# Keeps the return trip small — see CODEX_PROMPT.md "When I stop you".
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+checkpoints/
+*.pth
+reports/logs/*.log
+data/.hf_cache/
+data/unified_waste/included/
+data/unified_waste/excluded/

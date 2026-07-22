@@ -1,0 +1,41 @@
+# M1 baseline: ResNet50, two-phase fine-tune, basic augmentation.
+# Every other experiment is measured against this row in experiments.csv.
+run_name: baseline_resnet50
+seed: 42
+# timm name for torchvision IMAGENET1K_V2 weights. setup_env.sh verifies this
+# name exists on the installed timm before anything trains.
+model: resnet50.tv2_in1k
+img_size: 224
+batch_size: 32
+num_workers: 4
+
+# Two-phase schedule: freeze backbone + train head, then unfreeze everything
+# at a low discriminative LR (backbone LR << head LR).
+epochs_head: 5
+epochs_ft: 40
+lr_head: 1.0e-3
+lr_backbone: 1.0e-5
+weight_decay: 0.05
+label_smoothing: 0.1
+warmup_epochs: 3
+
+ema: true
+ema_decay: 0.9998
+amp: true
+early_stop_patience: 10
+
+# 'weighted_sampler' | 'loss_weights' | 'none' — for the small "trash" class
+class_weighting: weighted_sampler
+
+# 'basic' = RandomResizedCrop + hflip + rotation + color jitter
+# 'modern' = TrivialAugmentWide (+ random_erasing below)
+aug: basic
+mixup: 0.0
+cutmix: 0.0
+random_erasing: 0.0
+
+# Path to a checkpoint to warm-start from (progressive resizing uses this)
+init_checkpoint: null
+
+data_dir: data/raw
+splits_dir: data/splits
