@@ -298,7 +298,10 @@ def main():
     global MODELS, CFG, TRANSFORM, DEVICE, TEMPERATURE, FEATURE_OOD_THRESHOLD
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--checkpoint", default=None)
-    ap.add_argument("--port", type=int, default=5001)
+    # Hosted containers (Hugging Face Spaces, Fly, Render) inject PORT and need
+    # the server bound to all interfaces; locally both stay loopback-only.
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", 5001)))
+    ap.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     ap.add_argument("--device", default="cpu", choices=["cpu", "cuda", "mps"])
     ap.add_argument("--temperature", type=float, default=TEMPERATURE,
                     help="calibration temperature; <1 sharpens confidence (0=off -> raw)")
@@ -315,8 +318,9 @@ def main():
     MODELS, CFG, TRANSFORM = load_predictor(checkpoint, DEVICE)
     load_ood_bank(Path(args.ood_bank), DEVICE)
     tag = f"{len(MODELS)}-model ensemble" if len(MODELS) > 1 else CFG["model"]
-    print(f"[Second Life AI] {tag} · {DEVICE} · http://127.0.0.1:{args.port}")
-    app.run(host="127.0.0.1", port=args.port, debug=False)
+    shown = "127.0.0.1" if args.host in {"127.0.0.1", "localhost"} else args.host
+    print(f"[Second Life AI] {tag} · {DEVICE} · http://{shown}:{args.port}")
+    app.run(host=args.host, port=args.port, debug=False)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,19 @@
+# Inference-only subset of model/requirements.lock.txt, pinned to the same
+# versions the model was trained and evaluated under. Training-only packages
+# (matplotlib, cleanlab, grad-cam, gradio, kagglehub, imagehash, pytest) are
+# deliberately absent — nothing in app.py's import path touches them.
+#
+# CPU wheels only: the CUDA build of torch is ~2.5GB and would blow the Space's
+# image budget for no benefit on a GPU-less tier.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.13.0
+torchvision==0.28.0
+timm==1.0.28
+numpy==2.4.6
+pandas==3.0.3
+scikit-learn==1.9.0
+scipy==1.17.1
+pillow==12.3.0
+PyYAML==6.0.3
+flask==3.1.0
