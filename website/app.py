@@ -251,6 +251,11 @@ def documentary_video():
     return send_from_directory(HERE, "documentary.mp4", mimetype="video/mp4", conditional=True)
 
 
+@app.get("/documentary-poster.jpg")
+def documentary_poster():
+    return send_from_directory(HERE, "documentary-poster.jpg", mimetype="image/jpeg")
+
+
 @app.get("/vendor/<path:filename>")
 def vendor(filename):
     return send_from_directory(HERE / "vendor", filename)
