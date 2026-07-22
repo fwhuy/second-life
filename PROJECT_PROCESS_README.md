@@ -69,9 +69,9 @@ methodological scrutiny.”
 │   ├── tests/                        Leakage, split, and augmentation tests
 │   ├── reports/                      Metrics, figures, guards, and audit artifacts
 │   ├── experiments.csv               Append-only machine-readable experiment log
-│   ├── FINAL_SUMMARY.md              Final report for the original TrashNet phase
-│   └── paper/outline.md              Earlier paper/poster outline
+│   └── FINAL_SUMMARY.md              Final report for the original TrashNet phase
 ├── website/                          Offline bilingual Second Life AI application
+├── papers/                           Ignored drafts, references, figures, and final paper
 ├── scripts/draft_poster.py           Poster draft generator
 └── handoff/                          Small training package for another computer
     ├── README.md                     Setup and orientation for the receiving machine

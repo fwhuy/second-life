@@ -25,8 +25,10 @@ gradio_cached_examples/
 # Local test inputs and course/design reference files
 /bottle.jpeg
 /cat.jpg
-/new version.docx
-/Project Outline (1).pdf
+
+# Paper drafts, references, generated figures, and final document are local course
+# deliverables collected outside the model and website trees.
+/papers/
 
 # Archives are build outputs, not sources. The handoff zip is rebuilt by copying
 # handoff/ into a staging folder and zipping it; hyperparameter_tuning.zip is a
@@ -41,6 +43,7 @@ gradio_cached_examples/
 **/paper/*.tmp.pdf
 
 # Common local tooling output
+/tmp/
 .pytest_cache/
 .coverage
 htmlcov/

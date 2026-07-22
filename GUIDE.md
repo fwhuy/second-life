@@ -116,5 +116,5 @@ Differences under ~1.5% (≈5 images) are noise — don't chase them.
 - **Val accuracy collapses after unfreeze** → your `lr_backbone` is too high; the
   configs' values are safe, don't raise them.
 
-Background reading in the repo: `paper/outline.md` for the story the numbers
+Background reading in the repo: `../papers/research/model-paper/outline.md` for the story the numbers
 feed into.
