@@ -17,6 +17,12 @@ tested, and working — **your job is to improve accuracy, not to rebuild it.**
 Goal: maximise validation macro-F1 under one hard constraint — the pretrained backbone must
 be ≤30M parameters.
 
+**Budget: about 13 hours of GPU time.** That is binding. Train ONE model well —
+**ConvNeXtV2 Tiny** (`configs/unified_convnextv2_tiny_224.yaml`), then progressively
+fine-tune it at 384px. Do **not** run the four-model bake-off, full 5-fold CV, an
+ensemble, new datasets, or manual label cleaning; all are sound and none fits. The
+schedule and the reasoning are in STATUS.md — follow it rather than re-planning.
+
 ## Read these two files first, then stop reading
 
 1. `RULES.md` — non-negotiable constraints. Violating them invalidates every result.

@@ -402,6 +402,81 @@ def fig_split_composition():
     save(fig, "fig7_split_composition.png")
 
 
+# ---------------------------------------------------------------------------
+# Figure 8 - training curves for the adopted run
+# ---------------------------------------------------------------------------
+
+def fig_training_curves():
+    h = pd.read_csv(MODEL / "reports" / "baseline_resnet50" / "history_fold0.csv")
+    head_epochs = int((h.phase == "head").sum())
+
+    fig, ax = plt.subplots(figsize=(7.2, 2.9))
+    ax.plot(h.epoch, h.train_loss, color=BLUE, lw=2, label="train loss")
+    ax.plot(h.epoch, h.val_loss, color=ORANGE, lw=2, label="validation loss")
+
+    # Phase labels sit in the empty band under the train curve, clear of the
+    # start-of-run value labels at the top left.
+    ax.axvline(head_epochs - 0.5, color=MUTED, lw=1.0, ls=":")
+    ax.text(head_epochs - 0.2, 0.35, "backbone unfrozen", fontsize=7.5, color=INK2)
+    ax.text(0.2, 0.35, "head only", fontsize=7.5, color=INK2, ha="left")
+
+    for series, colour in ((h.train_loss, BLUE), (h.val_loss, ORANGE)):
+        ax.scatter([h.epoch.iloc[-1]], [series.iloc[-1]], s=22, color=colour, zorder=3)
+        ax.text(h.epoch.iloc[-1] + 0.7, series.iloc[-1], f"{series.iloc[-1]:.2f}",
+                fontsize=7.5, color=colour, va="center", weight="bold")
+    ax.text(0.4, h.train_loss.iloc[0] + 0.06, f"{h.train_loss.iloc[0]:.2f}",
+            fontsize=7.5, color=BLUE, weight="bold")
+    ax.text(0.4, h.val_loss.iloc[0] + 0.06, f"{h.val_loss.iloc[0]:.2f}",
+            fontsize=7.5, color=ORANGE, weight="bold")
+
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("loss")
+    ax.set_xlim(-1, len(h) + 2)
+    ax.set_ylim(0.3, 2.0)
+    ax.legend(loc="upper right")
+    tidy(ax, ygrid=True)
+    ax.set_title("Figure 8. Training curves, adopted ResNet-50 run (45 epochs)\n"
+                 "Validation loss is still falling at the end — the run stopped on the "
+                 "epoch budget, not on early stopping", loc="left")
+    save(fig, "fig8_training_curves.png")
+
+
+# ---------------------------------------------------------------------------
+# Figure 9 - confusion matrix for the adopted configuration
+# ---------------------------------------------------------------------------
+
+def fig_confusion_matrix():
+    preds = pd.read_csv(MODEL / "reports" / "locked_baseline" / "tta4" / "predictions.csv")
+    cm = pd.crosstab(preds.label, preds.predicted).reindex(
+        index=CLASSES, columns=CLASSES, fill_value=0)
+    recall = cm.to_numpy().diagonal() / cm.sum(axis=1).to_numpy()
+
+    fig, ax = plt.subplots(figsize=(5.4, 4.4))
+    norm = cm.to_numpy() / cm.sum(axis=1).to_numpy()[:, None]
+    ax.imshow(norm, cmap="Blues", vmin=0, vmax=1)
+
+    for i in range(len(CLASSES)):
+        for j in range(len(CLASSES)):
+            n = cm.iat[i, j]
+            if n == 0:
+                continue
+            ax.text(j, i, str(n), ha="center", va="center", fontsize=8.5,
+                    color="white" if norm[i, j] > 0.55 else INK,
+                    weight="bold" if i == j else "normal")
+
+    ax.set_xticks(range(len(CLASSES)), CLASSES, rotation=35, ha="right")
+    ax.set_yticks(range(len(CLASSES)),
+                  [f"{c}  ({r:.0%})" for c, r in zip(CLASSES, recall)])
+    ax.set_xlabel("predicted")
+    ax.set_ylabel("true class  (recall)")
+    for side in ("top", "right", "left", "bottom"):
+        ax.spines[side].set_visible(False)
+    ax.tick_params(length=0)
+    ax.set_title("Figure 9. Confusion matrix, fold-0 validation\n"
+                 "ResNet-50 + four-view TTA, 412/434 correct", loc="left", pad=10)
+    save(fig, "fig9_confusion_matrix.png")
+
+
 if __name__ == "__main__":
     print("Generating figures from committed data:")
     fig_leakage_schematic()
@@ -411,4 +486,6 @@ if __name__ == "__main__":
     fig_phase1_results()
     fig_per_class_recall()
     fig_split_composition()
+    fig_training_curves()
+    fig_confusion_matrix()
     print("Done.")

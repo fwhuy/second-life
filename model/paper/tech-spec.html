@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Second Life AI — Technical Specification</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  :root {
+    --ink: #101010; --ink2: #3d3c39; --muted: #6b6a64; --rule: #d8d7d2;
+    --blue: #2a78d6; --orange: #eb6834; --red: #c9302c; --green: #0a7a46;
+    --panel: #f4f4f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 9.4pt; line-height: 1.5; color: var(--ink); margin: 0;
+  }
+
+  .head { border-bottom: 1.5pt solid var(--ink); padding-bottom: 8pt; margin-bottom: 14pt; }
+  h1 { font-size: 17pt; margin: 0 0 4pt; font-weight: normal; }
+  .head .meta { font-size: 8.4pt; color: var(--muted); }
+
+  h2 {
+    font-family: Helvetica, Arial, sans-serif; font-size: 11pt;
+    margin: 18pt 0 8pt; padding-bottom: 3pt;
+    border-bottom: 0.75pt solid var(--rule); break-after: avoid;
+  }
+  h3 {
+    font-family: Helvetica, Arial, sans-serif; font-size: 9.4pt;
+    margin: 12pt 0 4pt; color: var(--ink); break-after: avoid;
+  }
+  h3 .q { color: var(--blue); }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 6pt; padding-left: 15pt; }
+  li { margin-bottom: 2pt; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 8.4pt;
+    font-family: Helvetica, Arial, sans-serif; break-inside: avoid;
+  }
+  th {
+    text-align: left; padding: 4pt 6pt; border-bottom: 1pt solid var(--ink);
+    font-size: 7.8pt; text-transform: uppercase; letter-spacing: 0.4pt;
+  }
+  td { padding: 3.2pt 6pt; border-bottom: 0.5pt solid var(--rule); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.k { width: 34%; font-weight: bold; }
+  tr.total td { border-top: 0.8pt solid var(--ink2); font-weight: bold; border-bottom: none; }
+  caption {
+    caption-side: top; text-align: left; font-size: 8pt; color: var(--ink2);
+    margin-bottom: 3pt; font-family: Georgia, serif;
+  }
+
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.86em;
+    background: var(--panel); padding: 0.5pt 2.5pt; border-radius: 2pt;
+  }
+
+  .note {
+    border-left: 2.5pt solid var(--orange); background: #fdf4ef;
+    padding: 7pt 11pt; margin: 9pt 0; font-size: 8.8pt; break-inside: avoid;
+  }
+  .note.warn { border-left-color: var(--red); background: #fdf1f1; }
+  .note.ok { border-left-color: var(--green); background: #f0f8f3; }
+  .note .lbl {
+    font-family: Helvetica, Arial, sans-serif; font-size: 7.2pt;
+    letter-spacing: 0.8pt; text-transform: uppercase; font-weight: bold;
+    display: block; margin-bottom: 2pt; color: var(--orange);
+  }
+  .note.warn .lbl { color: var(--red); }
+  .note.ok .lbl { color: var(--green); }
+  .note p:last-child { margin-bottom: 0; }
+
+  figure { margin: 10pt 0; break-inside: avoid; }
+  figure img { width: 100%; height: auto; }
+  figure.half img { width: 68%; display: block; margin: 0 auto; }
+  figcaption { font-size: 8pt; color: var(--ink2); margin-top: 4pt; line-height: 1.4; }
+
+  .break-before { break-before: page; }
+  .footnote {
+    font-size: 8pt; color: var(--muted); border-top: 0.5pt solid var(--rule);
+    padding-top: 6pt; margin-top: 14pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>Second Life AI — Technical Specification</h1>
+  <div class="meta">Six-class waste image classification &middot; NYU Shanghai &middot; 22 July 2026 &middot; Answers to the technical questionnaire</div>
+</div>
+
+<div class="note warn">
+  <span class="lbl">Read this first — which model these numbers describe</span>
+  <p>The project has two phases. <b>Every measured number in this document comes from Phase 1</b>: a ResNet-50 trained on the 2,527-image TrashNet corpus. That is the model currently deployed in the website and the only one that has been trained.</p>
+  <p>Phase 2 is a larger five-source corpus under a 30M-parameter competition cap. Its data pipeline is built and verified, but <b>it has not been trained yet</b>, so no accuracy figure exists for it. Where Phase 2 appears below it is labelled as planned, not measured.</p>
+</div>
+
+<h2>I. Dataset and Preprocessing</h2>
+
+<h3><span class="q">I.1</span> &nbsp;Train / test split ratio and image counts</h3>
+
+<p>There is a validation set, and it is separate from the test set. We use <b>three</b> partitions, not two, and the split is made <b>by near-duplicate group rather than by image</b> — see the note below, because this changes what the ratio means.</p>
+
+<table>
+  <caption><b>Table 1.</b> Phase 1 — TrashNet, the trained model. Verified in <code>reports/locked_baseline/split_arithmetic.json</code>.</caption>
+  <tr><th>Partition</th><th class="num">Images</th><th class="num">Share</th><th>Purpose</th></tr>
+  <tr><td>Fold-0 training</td><td class="num">1,732</td><td class="num">68.5%</td><td>Gradient updates</td></tr>
+  <tr><td>Fold-0 validation</td><td class="num">434</td><td class="num">17.2%</td><td>Model selection, early stopping</td></tr>
+  <tr><td>Test (quarantined)</td><td class="num">361</td><td class="num">14.3%</td><td>Used <b>exactly once</b></td></tr>
+  <tr class="total"><td>Total inventory</td><td class="num">2,527</td><td class="num">100%</td><td></td></tr>
+</table>
+
+<p>The 2,166 non-test images carry a fold label 0–4, so the same data supports five-fold cross-validation; validation fold sizes are 434, 433, 433, 433 and 433. All reported single-run results use fold 0 as validation.</p>
+
+<div class="note">
+  <span class="lbl">Why this is not a plain 80/20 split</span>
+  <p>TrashNet contains many photographs of the same physical object. A random image-level split can put one view of a bottle in training and another view in validation, so the model scores by recognising the object rather than the material. We therefore detect near-duplicates — 64-bit perceptual hash at Hamming distance ≤ 6, plus ResNet-18 embedding cosine similarity ≥ 0.96 — merge them into groups with union-find, and assign <i>groups</i> to partitions using <code>StratifiedGroupKFold</code>. No group spans two partitions, which is asserted in code at every load.</p>
+</div>
+
+<table>
+  <caption><b>Table 2.</b> Phase 2 — unified corpus. Built and verified; <b>not yet trained on</b>. The training machine downloads five sources and rebuilds, so the final totals will be larger.</caption>
+  <tr><th>Partition</th><th class="num">Images</th><th class="num">Share</th></tr>
+  <tr><td>Train + validation (5 folds of 1,912)</td><td class="num">9,560</td><td class="num">84.6%</td></tr>
+  <tr><td>Test (quarantined)</td><td class="num">1,739</td><td class="num">15.4%</td></tr>
+  <tr class="total"><td>Total after filtering</td><td class="num">11,299</td><td class="num">100%</td></tr>
+</table>
+
+<h3><span class="q">I.2</span> &nbsp;Preprocessing and data augmentation</h3>
+
+<p>Augmentation is applied <b>only</b> to training images, and <b>only after</b> the split is decided — it lives inside the training dataset object, so an evaluation dataset structurally cannot receive it. Implemented in <code>model/src/data.py</code>.</p>
+
+<table>
+  <caption><b>Table 3.</b> Training transform, <code>aug: basic</code> — the configuration used by the trained model. Order is exactly as applied.</caption>
+  <tr><th>#</th><th>Operation</th><th>Parameters</th></tr>
+  <tr><td class="num">1</td><td class="mono">RandomResizedCrop</td><td>size 224, scale (0.6, 1.0)</td></tr>
+  <tr><td class="num">2</td><td class="mono">RandomHorizontalFlip</td><td>p = 0.5</td></tr>
+  <tr><td class="num">3</td><td class="mono">RandomRotation</td><td>±15°</td></tr>
+  <tr><td class="num">4</td><td class="mono">ColorJitter</td><td>brightness 0.2, contrast 0.2, saturation 0.2, hue 0.05</td></tr>
+  <tr><td class="num">5</td><td class="mono">ToTensor</td><td>—</td></tr>
+  <tr><td class="num">6</td><td class="mono">Normalize</td><td>ImageNet mean (0.485, 0.456, 0.406), std (0.229, 0.224, 0.225)</td></tr>
+  <tr><td class="num">7</td><td class="mono">RandomErasing</td><td>p = 0.0 in this config — <b>present in code but inactive</b></td></tr>
+</table>
+
+<table>
+  <caption><b>Table 4.</b> Validation and test transform — deterministic, no randomness.</caption>
+  <tr><th>#</th><th>Operation</th><th>Parameters</th></tr>
+  <tr><td class="num">1</td><td class="mono">Resize</td><td>255 &nbsp;(= 224 × 1.14, the standard 256/224 crop ratio)</td></tr>
+  <tr><td class="num">2</td><td class="mono">CenterCrop</td><td>224</td></tr>
+  <tr><td class="num">3</td><td class="mono">ToTensor</td><td>—</td></tr>
+  <tr><td class="num">4</td><td class="mono">Normalize</td><td>ImageNet mean / std, as above</td></tr>
+</table>
+
+<p><b>Test-time augmentation (adopted).</b> At inference the softmax is averaged over four deterministic views: (1) the standard eval transform; (2) the same with a horizontal flip; (3) the full image resized to 224 × 224 with no crop; (4) resize to 302 then centre-crop 224. This is the single change that passed our acceptance gate, worth +1.84 percentage points.</p>
+
+<p><b>Other augmentation modes implemented but not used by the trained model:</b> <code>aug: modern</code> replaces steps 1–4 with <code>RandomResizedCrop</code> + <code>RandomHorizontalFlip</code> + <code>TrivialAugmentWide</code>; Mixup and CutMix are wired up but set to 0.0; a per-class "boost" transform for minority classes exists and is disabled by default. The Phase 2 configs enable <code>modern</code>, mixup 0.2, cutmix 0.2 and random erasing 0.25, on the reasoning that these were marginal at 2.5k images and should pay off at four times the data.</p>
+
+<h2 class="break-before">II. Model Architecture and Training Parameters</h2>
+
+<h3><span class="q">II.1</span> &nbsp;Final network architecture</h3>
+
+<p><b>ResNet-50</b>, loaded through <code>timm</code> as <code>resnet50.tv2_in1k</code> (the torchvision IMAGENET1K_V2 weights). The 1000-class ImageNet classifier is replaced with a fresh 6-class linear layer; the convolutional trunk is unchanged. Measured parameter count: <b>23.5M</b>, which is under the competition's 30M cap.</p>
+
+<p><b>The intended final model is ConvNeXtV2 Tiny</b> (<code>convnextv2_tiny.fcmae_ft_in22k_in1k</code>, 27.9M parameters). Three alternatives are configured and verified to build — CAFormer-S18 (24.3M), DINOv2 ViT-S/14 (22.1M), EfficientNetV2-S (20.2M) — but we do not plan to run them; see §V.4 for the reasoning. The cap is enforced in code: <code>build_model</code> counts parameters and raises before training starts, so an ineligible configuration fails in the first second rather than after hours.</p>
+
+<p>ConvNeXtV2 Tiny is chosen as the <i>safest</i> option rather than the theoretically best one. It has strong pretrained features from FCMAE pre-training plus ImageNet-22k fine-tuning, it sits comfortably under the 30M cap with headroom, and it is a well-understood convolutional architecture that behaves predictably on a fixed budget. With only 13 hours of rented GPU time, reliability is worth more than the chance of a marginally better architecture.</p>
+
+<h3><span class="q">II.2</span> &nbsp;Transfer learning: what was frozen, what was fine-tuned</h3>
+
+<p>Yes — ImageNet pre-trained weights, fine-tuned in two phases. <b>No layer is permanently frozen.</b></p>
+
+<table>
+  <tr><th>Phase</th><th class="num">Epochs</th><th>Trainable</th><th>Learning rate</th></tr>
+  <tr>
+    <td><b>1 — head only</b></td><td class="num">5</td>
+    <td>Backbone frozen (<code>requires_grad = False</code> on every non-classifier parameter); only the new 6-class head trains</td>
+    <td>head 1×10⁻³, constant</td>
+  </tr>
+  <tr>
+    <td><b>2 — full fine-tune</b></td><td class="num">40</td>
+    <td>Entire network unfrozen, in two parameter groups</td>
+    <td>backbone 1×10⁻⁵, head 1×10⁻³ &nbsp;(<b>100× ratio</b>)</td>
+  </tr>
+</table>
+
+<p>The head phase exists so the randomly initialised classifier does not send large, meaningless gradients back through pre-trained features on the first steps. The 100× discriminative learning-rate ratio in phase 2 is deliberate: in our experience on this dataset, too high a backbone learning rate is the single most common cause of a collapse from ~93% to ~75%.</p>
+
+<h3><span class="q">II.3</span> &nbsp;Core hyperparameters</h3>
+
+<table>
+  <caption><b>Table 5.</b> Complete configuration of the trained model. Source: <code>configs/baseline.yaml</code>, reproduced in the <code>config_json</code> column of <code>experiments.csv</code> under hash <code>ab586f1a72</code>.</caption>
+  <tr><th>Setting</th><th>Value</th></tr>
+  <tr><td class="k">Optimizer</td><td><b>AdamW</b></td></tr>
+  <tr><td class="k">Initial learning rate</td><td>Head <b>1×10⁻³</b>; backbone <b>1×10⁻⁵</b> (separate parameter groups)</td></tr>
+  <tr><td class="k">LR scheduler</td><td><code>LambdaLR</code> implementing <b>3-epoch linear warmup, then cosine decay</b> across the 40 fine-tune epochs. Constant (×1.0) during the 5 head epochs.</td></tr>
+  <tr><td class="k">Loss function</td><td><b><code>CrossEntropyLoss</code> with <code>label_smoothing = 0.1</code></b>. No class weights in the loss — imbalance is handled by the sampler instead (see below). Validation loss uses plain <code>CrossEntropyLoss</code> with no smoothing, so it stays comparable across configs.</td></tr>
+  <tr><td class="k">Batch size</td><td><b>32</b></td></tr>
+  <tr><td class="k">Total epochs</td><td><b>45</b> &nbsp;(5 head + 40 fine-tune). All 45 ran; early stopping was never triggered.</td></tr>
+  <tr><td class="k">Weight decay</td><td><b>0.05</b>, applied to both parameter groups</td></tr>
+  <tr><td class="k">Dropout</td><td><b>None added.</b> ResNet-50 has no dropout layer, and we did not insert one — regularization comes from weight decay, label smoothing, augmentation and EMA.</td></tr>
+  <tr><td class="k">Class imbalance</td><td><code>WeightedRandomSampler</code> with inverse-frequency weights, so the 137-image <i>trash</i> class is replayed roughly 4× per epoch</td></tr>
+  <tr><td class="k">EMA</td><td>Enabled, decay 0.9998 (see the note below — it did not help)</td></tr>
+  <tr><td class="k">Early stopping</td><td>Patience 10 epochs on validation accuracy (not reached)</td></tr>
+  <tr><td class="k">Mixed precision</td><td>Enabled (AMP)</td></tr>
+  <tr><td class="k">Random seed</td><td>42, set across Python, NumPy and PyTorch</td></tr>
+</table>
+
+<div class="note">
+  <span class="lbl">A result worth reporting: EMA hurt</span>
+  <p>We kept an exponential moving average of the weights, which is normally a free improvement. Here it was not. The EMA weights reached <b>88.94%</b> validation accuracy while the raw weights from the same run reached <b>93.09%</b> — a 4.15-point gap in the wrong direction, most likely because the decay of 0.9998 averages over a horizon far longer than a 45-epoch run on 1,732 images. The adopted checkpoint is the <b>raw</b> one. This is the kind of default that is worth checking rather than assuming.</p>
+</div>
+
+<h2>III. Experimental Results and Evaluation</h2>
+
+<h3><span class="q">III.1</span> &nbsp;Accuracy on the independent test set</h3>
+
+<div class="note warn">
+  <span class="lbl">Single-use measurement — this caption must travel with the number</span>
+  <p><b>322 / 361 = 89.20%</b> on the held-out TrashNet test set. Measured <b>once</b>, before the later tuning experiments, and never used for model selection. It is <b>not</b> the score of the final optimized model, and it cannot be re-measured — the test set is spent, and a guard file now blocks a second evaluation programmatically.</p>
+</div>
+
+<table>
+  <caption><b>Table 6.</b> All measured results, fold-0 validation (434 images) unless stated.</caption>
+  <tr><th>Configuration</th><th class="num">Accuracy</th><th class="num">Correct</th><th class="num">Macro-F1</th><th>Status</th></tr>
+  <tr><td>ResNet-50, single view</td><td class="num">93.09%</td><td class="num">404/434</td><td class="num">0.9196</td><td>Starting point</td></tr>
+  <tr><td><b>ResNet-50 + 4-view TTA</b></td><td class="num"><b>94.93%</b></td><td class="num">412/434</td><td class="num">0.9414</td><td><b>Adopted</b></td></tr>
+  <tr><td>Progressive resize 384px + TTA</td><td class="num">94.93%</td><td class="num">412/434</td><td class="num">0.9442</td><td>Rejected</td></tr>
+  <tr><td>Modern augmentation + TTA</td><td class="num">95.62%</td><td class="num">415/434</td><td class="num">0.9421</td><td>Rejected</td></tr>
+  <tr><td>Weight decay 0.10 + TTA</td><td class="num">94.70%</td><td class="num">411/434</td><td class="num">0.9390</td><td>Rejected</td></tr>
+  <tr class="total"><td>Test set, adopted model</td><td class="num">89.20%</td><td class="num">322/361</td><td class="num">—</td><td>Spent</td></tr>
+</table>
+
+<p>Three configurations that raised or held accuracy were rejected. We fixed an acceptance rule <i>before</i> running them: a change is adopted only if it gains at least seven validation images, loses no macro-F1, and costs no class more than five points of recall. Modern augmentation had the highest raw accuracy we ever measured and still failed, because <i>trash</i> recall fell from 20/23 to 18/23 — the model got worse at the class it was already worst at.</p>
+
+<h3><span class="q">III.2</span> &nbsp;Confusion matrix, precision, recall and F1</h3>
+
+<table>
+  <caption><b>Table 7.</b> Per-class metrics for the adopted configuration (ResNet-50 + 4-view TTA, fold-0 validation). Source: <code>reports/baseline_resnet50/report_baseline_resnet50_val_fold0_tta.txt</code>.</caption>
+  <tr><th>Class</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">Support</th></tr>
+  <tr><td>cardboard</td><td class="num">1.0000</td><td class="num">0.9275</td><td class="num">0.9624</td><td class="num">69</td></tr>
+  <tr><td>glass</td><td class="num">0.9750</td><td class="num">0.9070</td><td class="num">0.9398</td><td class="num">86</td></tr>
+  <tr><td>metal</td><td class="num">0.9437</td><td class="num">0.9437</td><td class="num">0.9437</td><td class="num">71</td></tr>
+  <tr><td>paper</td><td class="num">0.9528</td><td class="num">0.9902</td><td class="num">0.9712</td><td class="num">102</td></tr>
+  <tr><td>plastic</td><td class="num">0.9011</td><td class="num">0.9880</td><td class="num">0.9425</td><td class="num">83</td></tr>
+  <tr><td>trash</td><td class="num">0.9091</td><td class="num">0.8696</td><td class="num">0.8889</td><td class="num">23</td></tr>
+  <tr class="total"><td>Macro average</td><td class="num">0.9469</td><td class="num">0.9376</td><td class="num">0.9414</td><td class="num">434</td></tr>
+  <tr><td>Weighted average</td><td class="num">0.9510</td><td class="num">0.9493</td><td class="num">0.9492</td><td class="num">434</td></tr>
+</table>
+
+<figure class="half">
+  <img src="figures/fig9_confusion_matrix.png" alt="Confusion matrix for the adopted configuration">
+  <figcaption><b>Figure 1.</b> Confusion matrix, fold-0 validation. The dominant error is <b>glass → plastic</b> (4 images) with <b>glass → metal</b> (3) next — transparent and reflective surfaces, which is the expected failure mode. <i>trash</i> is the weakest class at 87% recall on only 23 images, so each error there moves its recall by 4.3 points.</figcaption>
+</figure>
+
+<h3><span class="q">III.3</span> &nbsp;Training loss curve</h3>
+
+<table>
+  <caption><b>Table 8.</b> Loss trajectory over the 45 epochs. Source: <code>reports/baseline_resnet50/history_fold0.csv</code>.</caption>
+  <tr><th>Phase</th><th class="num">Epochs</th><th class="num">Training loss</th><th class="num">Validation loss</th></tr>
+  <tr><td>Head only (backbone frozen)</td><td class="num">0–4</td><td class="num">1.42 → 0.83</td><td class="num">1.80 → 1.71</td></tr>
+  <tr><td>Full fine-tune</td><td class="num">5–44</td><td class="num">0.82 → 0.49</td><td class="num">1.68 → 0.97</td></tr>
+  <tr class="total"><td>Whole run</td><td class="num">45</td><td class="num">1.42 → 0.49</td><td class="num">1.80 → 0.97</td></tr>
+</table>
+
+<figure>
+  <img src="figures/fig8_training_curves.png" alt="Training and validation loss curves across 45 epochs">
+  <figcaption><b>Figure 2.</b> Both curves fall monotonically and neither turns upward, so this run shows <b>no overfitting signature</b> — the gap between them is roughly constant after epoch 20 rather than widening. Note that validation loss was <i>still decreasing</i> at epoch 44: the run ended because it hit its epoch budget, not because it converged. The absolute values are inflated by label smoothing, which puts a floor under the cross-entropy, so they should be read as a trend and not compared against runs trained without it.</figcaption>
+</figure>
+
+<h2>IV. Backend Deployment and Tech Stack</h2>
+
+<h3><span class="q">IV.1</span> &nbsp;Backend service framework</h3>
+
+<p><b>Flask 3.1.3</b> (<code>website/app.py</code>), serving both the API and the frontend from one process. It calls the repository's real inference code — <code>src.model</code>, <code>src.data</code>, <code>src.evaluate</code> — rather than a reimplementation, so what the site serves is exactly what was evaluated.</p>
+
+<table>
+  <tr><th>Component</th><th>Choice</th></tr>
+  <tr><td class="k">Framework</td><td>Flask 3.1.3, built-in development server, <code>127.0.0.1:5001</code> by default</td></tr>
+  <tr><td class="k">Inference</td><td>PyTorch 2.13.0 + timm 1.0.28; device selectable <code>cpu</code> / <code>cuda</code> / <code>mps</code>, <b>default CPU</b></td></tr>
+  <tr><td class="k">Endpoints</td><td><code>POST /api/identify</code> — multipart file or base64 JSON, returns class, calibrated confidence, all six probabilities, an OOD flag and an attention bounding box.<br><code>GET /api/model</code> — served checkpoint, image size, device, calibration state.</td></tr>
+  <tr><td class="k">Frontend</td><td>Static <code>index.html</code> + <code>support.js</code>, React 18 UMD vendored locally under <code>website/vendor/</code> so the site runs with <b>no network access</b></td></tr>
+  <tr><td class="k">Model loading</td><td>Once at startup; accepts a single <code>best.pth</code> or an <code>ensemble.json</code> manifest</td></tr>
+</table>
+
+<h3><span class="q">IV.2</span> &nbsp;Measured inference and API response time</h3>
+
+<p>The figures below were <b>measured, not estimated</b>: 12 real HTTP requests per mode against the running server after warm-up, plus 30 direct model calls, on the development machine (Apple Silicon, PyTorch 2.13.0, 4 threads).</p>
+
+<table>
+  <caption><b>Table 9.</b> End-to-end <code>POST /api/identify</code> latency, including HTTP, JPEG decode, preprocessing, inference, calibration, the out-of-distribution check and the attention box.</caption>
+  <tr><th>Mode</th><th class="num">Median</th><th class="num">Min</th><th class="num">Max</th><th>Notes</th></tr>
+  <tr><td>Standard (1 view)</td><td class="num"><b>46 ms</b></td><td class="num">44 ms</td><td class="num">50 ms</td><td>Default path</td></tr>
+  <tr><td>Accuracy mode (4-view TTA)</td><td class="num"><b>120 ms</b></td><td class="num">113 ms</td><td class="num">137 ms</td><td>~2.6× the work</td></tr>
+</table>
+
+<table>
+  <caption><b>Table 10.</b> Model-only latency (preprocessing + forward pass + softmax), excluding HTTP and the OOD/attention extras.</caption>
+  <tr><th>Device</th><th class="num">Single view</th><th class="num">4-view TTA</th></tr>
+  <tr><td>CPU (deployment default)</td><td class="num">19.4 ms</td><td class="num">60.2 ms</td></tr>
+  <tr><td>Apple GPU (MPS)</td><td class="num">8.2 ms</td><td class="num">24.3 ms</td></tr>
+</table>
+
+<p>The difference between Tables 9 and 10 — roughly 26 ms — is the honest cost of everything that is not the neural network: HTTP handling, JPEG decoding, the feature-space out-of-distribution comparison against a 2,166-embedding bank, and computing the class-activation bounding box.</p>
+
+<div class="note ok">
+  <span class="lbl">Interpretation</span>
+  <p>Both modes are comfortably interactive; the standard path is well under the ~100 ms threshold at which a user perceives a response as instantaneous. Two caveats for honesty: this is the Flask <b>development</b> server, which handles one request at a time and is not a production deployment, and these timings are from the development machine rather than the presentation laptop.</p>
+</div>
+
+<h2 class="break-before">V. Difficulties, Improvements, and Future Work</h2>
+
+<h3>V.1 &nbsp;The main difficulty: a benchmark hidden inside another public dataset</h3>
+
+<p>While expanding the corpus we discovered that <code>omasteam/waste-garbage-management-dataset</code> silently <b>contains TrashNet</b>. Because our downloader collapses exact pixel duplicates, 2,218 of the 2,527 TrashNet images ended up stored under <code>garbage_classification__*.jpg</code> filenames — including <b>all 361 images of our already-spent test set</b>, 318 of them under the disguised names. Training on the corpus as downloaded would have meant training on 100% of the test set.</p>
+
+<p>It was recoverable exactly. The import routine walked <code>sorted(zip members)</code>, so each image's index is a deterministic function of its original filename; reconstructing that ordering and joining on the index matched <b>2,527 / 2,527</b> rows with complete label agreement. Every affected near-duplicate group is now forced into the test split, and an assertion re-checks it on every load.</p>
+
+<h3>V.2 &nbsp;Other difficulties and what they taught us</h3>
+
+<table>
+  <tr><th>Difficulty</th><th>Resolution and lesson</th></tr>
+  <tr>
+    <td><b>Accuracy improved while the minority class got worse</b></td>
+    <td>Modern augmentation gained 3 images overall and lost 2 of 23 <i>trash</i> images. Per-class recall became part of the acceptance gate, not a post-hoc observation.</td>
+  </tr>
+  <tr>
+    <td><b>A guard that guarded nothing</b></td>
+    <td>Our documentation claimed a file "physically blocks re-running the final evaluation". Searching the source found no code reading it. Single-use evaluation is now genuinely enforced. <b>A documented guarantee is not an implemented one.</b></td>
+  </tr>
+  <tr>
+    <td><b>Ignore rules that ignored nothing</b></td>
+    <td><code>.gitignore</code> patterns were root-anchored and never matched the real directories, so files we believed were deliberately excluded simply were not. Verified afterwards with <code>git check-ignore</code>.</td>
+  </tr>
+  <tr>
+    <td><b>A test whose name overstated it</b></td>
+    <td>A unit test named for a fallback never reached that code path. It passed, and its name was false. A test name is a claim about coverage.</td>
+  </tr>
+  <tr>
+    <td><b>Confidence was not correctness</b></td>
+    <td>Label smoothing left the model badly under-confident. The NLL-optimal temperature (0.22) made some <i>wrong</i> answers look 95% certain, so we chose a conservative 0.65 instead.</td>
+  </tr>
+  <tr>
+    <td><b>The closed-set problem</b></td>
+    <td>A six-class softmax must assign a photo of a cat to one of six classes. Margin, entropy and energy guards all failed — one real bottle looked more uncertain than the cat. Replaced with feature-space nearest-neighbour distance (threshold 0.70).</td>
+  </tr>
+  <tr>
+    <td><b>Scaling the duplicate search</b></td>
+    <td>Pairwise similarity built dense (N, N) matrices — fine at N = 2,527, about 0.52 GB each at N = 11,359. Rewritten to process in row-blocks.</td>
+  </tr>
+  <tr>
+    <td><b>Cross-platform paths</b></td>
+    <td>Four sites serialised paths in a way that would emit backslashes on Windows and break the manifest joins — on the exact machine where training was to run. Found by inspection before it failed.</td>
+  </tr>
+</table>
+
+<h3>V.3 &nbsp;Improvements already implemented</h3>
+
+<ul>
+  <li><b>Corpus expansion</b> from 2,527 to 11,299 images across three domains, with the <i>trash</i> class rising from 137 to 1,033 — the minority-class problem addressed by data rather than by technique.</li>
+  <li><b>Parameter cap enforced in code</b>, so an ineligible backbone fails immediately instead of after hours of training.</li>
+  <li><b>Automatic GPU utilisation</b> on CUDA: TF32, cuDNN autotuning, channels-last memory format, and bfloat16 autocast on Ampere or newer. Enabling bfloat16 exposed a real defect — the loop keyed autocast off "a gradient scaler exists", which is wrong for bfloat16 and would have silently disabled mixed precision.</li>
+  <li><b>Batch-size autotuning</b> that probes real training steps until the GPU runs out of memory, applies the linear learning-rate scaling rule, and refuses to scale past 4×.</li>
+  <li><b>Preflight verification</b> that blocks training unless split arithmetic, disjointness, quarantine containment and model eligibility all pass.</li>
+  <li><b>Full resumability</b> — model, optimizer, scheduler, phase, EMA and early-stopping counter are all checkpointed, so an interrupted run loses at most one epoch.</li>
+</ul>
+
+<h3>V.4 &nbsp;The planned final run — a 13-hour budget</h3>
+
+<p>Remote GPU time is limited to roughly <b>13 hours</b>, which is the binding constraint on everything below. The plan is deliberately narrow: <b>one strong ConvNeXtV2 Tiny model</b>, trained well, rather than a broad comparison that produces four mediocre ones.</p>
+
+<table>
+  <caption><b>Table 11.</b> Planned schedule. Every stage is resumable, so an interruption costs at most one epoch.</caption>
+  <tr><th>Stage</th><th class="num">Budget</th><th>Purpose</th></tr>
+  <tr><td>Setup, corpus download, split rebuild, preflight</td><td class="num">30–90 min</td><td>Must exit 0 before anything trains</td></tr>
+  <tr><td>GPU batch-size autotune</td><td class="num">5–15 min</td><td>Every later stage runs faster; pays for itself immediately</td></tr>
+  <tr><td><b>ConvNeXtV2 Tiny at 224px</b></td><td class="num">2–4 h</td><td>The primary model. A usable checkpoint exists from here on.</td></tr>
+  <tr><td>Progressive fine-tune at 384px</td><td class="num">3–6 h</td><td>Warm-started from the 224px checkpoint; historically the largest single gain</td></tr>
+  <tr><td>Spare capacity — one extra fold, or TTA and validation checks</td><td class="num">remainder</td><td>Absorbs overruns; only used if the earlier stages finish early</td></tr>
+  <tr><td>Champion update, packaging, transfer</td><td class="num">15–30 min</td><td>Reserved, not optional</td></tr>
+  <tr class="total"><td>Total</td><td class="num">≈ 7–12 h</td><td>Leaves deliberate slack inside the 13-hour window</td></tr>
+</table>
+
+<p><b>Deliberately skipped, and why.</b> Each of these is methodologically sound and does not fit the budget:</p>
+
+<table>
+  <tr><th>Skipped</th><th>Reason</th></tr>
+  <tr><td>Four-model backbone bake-off</td><td>Would consume most of the budget selecting an architecture instead of training one properly. The three alternative configs stay in the repository for anyone with more time.</td></tr>
+  <tr><td>Full five-fold cross-validation</td><td>Five times the training cost. It will not fit safely, so results will be single-fold and must be reported as such.</td></tr>
+  <tr><td>Two-architecture ensemble</td><td>Requires the bake-off first. Also raises an interpretation question about the 30M cap that we would rather not depend on.</td></tr>
+  <tr><td>Additional datasets</td><td>Five sources are already configured and pinned; more would mean re-downloading and re-splitting.</td></tr>
+  <tr><td>Manual label-noise cleaning</td><td>Needs out-of-fold predictions across all five folds before the audit can even begin.</td></tr>
+</table>
+
+<div class="note">
+  <span class="lbl">What this means for how results must be reported</span>
+  <p>Because five-fold training is being skipped, the Phase 2 number will be a <b>single-fold validation result</b>, not a mean with a standard deviation. It should be captioned that way. On a 1,912-image validation fold, a difference of under roughly 0.5 macro-F1 points is noise and should not be claimed as an improvement.</p>
+</div>
+
+<h3>V.5 &nbsp;Longer-term work, beyond this budget</h3>
+
+<ol>
+  <li><b>Five-fold cross-validation and ensembling</b>, for a mean and standard deviation rather than a single fold, and for averaged predictions across folds.</li>
+  <li><b>Label-noise cleaning.</b> An earlier audit found roughly half of the worst errors were mislabeled or genuinely ambiguous, and we have already proved that three image pairs carry contradictory labels across sources. Ranking out-of-fold predictions by loss and auditing the worst ~300 would give a measurable before/after delta — a good result in its own right.</li>
+  <li><b>Cross-source overlap audit.</b> We proved TrashNet's overlap only because its import ordering made exact recovery possible. We have <i>no</i> equivalent guarantee about the other four sources, and given what we found once, this is the most likely place for another surprise.</li>
+  <li><b>A production server</b> (Gunicorn or Uvicorn) if the site is ever exposed beyond a laptop, and a proper out-of-distribution benchmark instead of a single cat photograph.</li>
+</ol>
+
+<div class="footnote">
+  <p><b>Provenance of these numbers.</b> Accuracy, precision, recall, F1 and the loss trajectory are read from <code>experiments.csv</code> and the files under <code>model/reports/</code>. Split counts are recomputed from the committed CSVs. Hyperparameters are quoted from <code>configs/baseline.yaml</code> and the logged <code>config_json</code>. Latency was measured on 22 July 2026 against the running server. Figures are generated by <code>model/paper/make_figures.py</code>. Nothing in this document is a recalled or estimated value.</p>
+</div>
+
+</body>
+</html>
