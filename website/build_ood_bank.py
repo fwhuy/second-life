@@ -1,4 +1,8 @@
-"""Build the out-of-distribution reference bank for the closed-set guard.
+"""Legacy ResNet out-of-distribution bank builder.
+
+The current ConvNeXt V2 and Swin-B loaders intentionally keep this bank off:
+embeddings from different architectures are not comparable. This script remains
+only to document and reproduce the retired ResNet guard.
 
 The site flags a photo as "not one of my six classes" when the image's
 penultimate (pre-logits) embedding is far from every in-distribution cluster in
@@ -8,9 +12,8 @@ precomputes it once so the running site needs only the small bank file, not the
 
   python build_ood_bank.py [--checkpoint PATH] [--root MODEL_REPO] [--out ood_bank.npz]
 
-Re-run this whenever the served checkpoint changes (the embeddings are
-model-specific). It prints the in-distribution distance distribution so the
-threshold in app.py (FEATURE_OOD_THRESHOLD) can be sanity-checked.
+The embeddings are model-specific; do not use its output with either current
+model.
 """
 import argparse
 import sys

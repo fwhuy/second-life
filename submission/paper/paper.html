@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Second Life AI — Scaling Past a 2,527-Image Benchmark for Waste Classification</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm 18mm 18mm; }
+
+  :root {
+    --ink: #101010;
+    --ink2: #3d3c39;
+    --muted: #6b6a64;
+    --rule: #d8d7d2;
+    --blue: #2a78d6;
+    --orange: #eb6834;
+    --red: #c9302c;
+    --panel: #f4f4f1;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 9.6pt;
+    line-height: 1.52;
+    color: var(--ink);
+    margin: 0;
+    hyphens: auto;
+    text-align: justify;
+  }
+
+  /* ---------- title block ---------- */
+  .title-block { text-align: center; margin-bottom: 20pt; }
+  h1.title {
+    font-size: 19pt; line-height: 1.24; margin: 0 0 8pt;
+    font-weight: normal; letter-spacing: -0.2pt;
+  }
+  .subtitle { font-size: 11pt; color: var(--ink2); font-style: italic; margin-bottom: 12pt; }
+  .authors { font-size: 10pt; margin-bottom: 3pt; }
+  .affil { font-size: 8.6pt; color: var(--muted); }
+
+  /* ---------- abstract ---------- */
+  .abstract {
+    background: var(--panel);
+    border-left: 2.5pt solid var(--blue);
+    padding: 10pt 13pt;
+    margin: 0 0 16pt;
+    font-size: 9.1pt;
+    line-height: 1.5;
+  }
+  .abstract h2 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 8pt; letter-spacing: 1pt; text-transform: uppercase;
+    margin: 0 0 5pt; color: var(--muted); font-weight: bold;
+  }
+  .abstract p { margin: 0 0 6pt; }
+  .abstract p:last-child { margin-bottom: 0; }
+
+  /* ---------- headings ---------- */
+  h2 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11.5pt; margin: 20pt 0 7pt; color: var(--ink);
+    break-after: avoid;
+  }
+  h3 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9.6pt; margin: 13pt 0 4pt; color: var(--ink2);
+    break-after: avoid;
+  }
+  h2 + p, h3 + p { margin-top: 0; }
+  p { margin: 0 0 7pt; }
+
+  /* ---------- figures ---------- */
+  figure {
+    margin: 13pt 0; break-inside: avoid; text-align: center;
+  }
+  figure img { width: 100%; height: auto; }
+  figcaption {
+    font-size: 8.2pt; color: var(--ink2); text-align: left;
+    margin-top: 5pt; line-height: 1.42;
+  }
+  figcaption b { color: var(--ink); }
+
+  /* ---------- tables ---------- */
+  table {
+    width: 100%; border-collapse: collapse; margin: 10pt 0;
+    font-size: 8.5pt; break-inside: avoid;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  caption {
+    caption-side: top; text-align: left; font-size: 8.2pt;
+    color: var(--ink2); margin-bottom: 4pt; font-family: Georgia, serif;
+  }
+  caption b { color: var(--ink); }
+  th {
+    text-align: left; font-weight: bold; padding: 4pt 6pt;
+    border-bottom: 1pt solid var(--ink); font-size: 8pt;
+  }
+  td { padding: 3.4pt 6pt; border-bottom: 0.5pt solid var(--rule); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { border-top: 0.8pt solid var(--ink2); font-weight: bold; border-bottom: none; }
+
+  /* ---------- callouts ---------- */
+  .finding {
+    border-left: 2.5pt solid var(--orange);
+    background: #fdf4ef;
+    padding: 8pt 12pt; margin: 11pt 0; font-size: 9.1pt;
+    break-inside: avoid;
+  }
+  .finding .lbl {
+    font-family: Helvetica, Arial, sans-serif; font-size: 7.4pt;
+    letter-spacing: 0.8pt; text-transform: uppercase; color: var(--orange);
+    display: block; margin-bottom: 3pt; font-weight: bold;
+  }
+  .warn { border-left-color: var(--red); background: #fdf1f1; }
+  .warn .lbl { color: var(--red); }
+  .finding p:last-child { margin-bottom: 0; }
+
+  ul, ol { margin: 0 0 7pt; padding-left: 15pt; }
+  li { margin-bottom: 2.5pt; }
+
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.87em; background: var(--panel); padding: 0.5pt 2.5pt;
+    border-radius: 2pt;
+  }
+
+  .lead-in { font-variant: small-caps; letter-spacing: 0.3pt; }
+
+  hr.sec { border: none; border-top: 0.5pt solid var(--rule); margin: 18pt 0 0; }
+
+  .footnote {
+    font-size: 8pt; color: var(--muted); border-top: 0.5pt solid var(--rule);
+    padding-top: 6pt; margin-top: 14pt;
+  }
+
+  .break-before { break-before: page; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1 class="title">Second Life AI: Scaling Past a 2,527-Image Benchmark<br>for Six-Class Waste Classification</h1>
+  <div class="subtitle">How much does a waste classifier need to see before it works on a real photograph?</div>
+  <div class="authors">Second Life AI Team</div>
+  <div class="affil">NYU Shanghai &middot; Introduction to Artificial Intelligence &middot; 22 July 2026</div>
+</div>
+
+<div class="abstract">
+  <h2>Abstract</h2>
+  <p>We were given TrashNet, a six-class waste benchmark of 2,527 photographs, and asked to build a classifier that works on a phone camera. It is not enough data. Every image is shot against the same clean studio backdrop, and the <i>trash</i> class — the one a sorting product most needs to get right — contains 137 examples. A carefully tuned ImageNet-pretrained ResNet-50 plateaus at <b>94.93%</b> fold-0 validation accuracy and a single, never-repeated test measurement of <b>89.20%</b>, with <i>trash</i> recall stuck near 78%.</p>
+  <p>We then spent our effort on data rather than on technique. Pooling five public waste datasets into one six-class corpus raises the inventory to roughly 19,500 images across many backgrounds, cameras and framings, and lifts <i>trash</i> from 137 examples to 1,033. Under a competition constraint capping the pretrained backbone at 30 million parameters, we pair that corpus with ConvNeXt V2-Tiny (27.9M) rather than a larger model.</p>
+  <p>Our central claim is about where the binding constraint sits. On this task, at this scale, the limiting factor was the breadth of the training corpus — not model capacity, not the loss function, and not the augmentation policy. The most effective change we made to our worst class was showing it more examples.</p>
+</div>
+
+<h2>1. Introduction</h2>
+
+<p>Municipal waste sorting fails at the point of disposal: a person holding an object often does not know which bin it belongs in, and the cost of guessing wrong is contamination of an entire recycling stream. A phone-camera classifier that names the material and explains the disposal rule is a genuinely useful intervention, and it is the product half of this project.</p>
+
+<p>The research half began with a ceiling. Our starting dataset, TrashNet, is the standard six-class waste benchmark: 2,527 images spanning cardboard, glass, metal, paper, plastic and trash. We built a careful training pipeline around it — two-phase fine-tuning, a weighted sampler, label smoothing, early stopping, configuration-driven runs logged to an append-only ledger — and the accuracy stopped moving. Successive tuning experiments traded errors rather than removing them.</p>
+
+<p>Two properties of the dataset explain why. First, it is small: 2,527 images across six classes, with a fold-0 training set of 1,732. Second, it is narrow. Every photograph is taken against the same white backdrop under similar lighting, so the model never sees a bottle on a pavement, in a hand, or under warm indoor light — which is every photograph a user will actually take. And the class distribution is severely imbalanced: <i>trash</i>, the catch-all category that a sorting product most needs to handle, has 137 images against paper's 594.</p>
+
+<p>This reframed the project. The question stopped being <i>which training trick closes the gap</i> and became:</p>
+
+<div class="finding">
+  <span class="lbl">Research question</span>
+  <p>When a six-class waste classifier plateaus, is the binding constraint the model and its training recipe, or the size and breadth of the corpus it is trained on?</p>
+</div>
+
+<p>We report the work in two phases. Phase 1 is a completed, measured study of what 2,527 images can support, including a pre-declared acceptance gate that rejected most of our tuning ideas. Phase 2 builds a five-source corpus roughly eight times larger and selects a backbone under the parameter cap; its data pipeline is built and verified. We are explicit throughout about which statements are measurements and which are not.</p>
+
+<h2>2. Phase 1: what 2,527 images can and cannot support</h2>
+
+<h3>2.1 Protocol</h3>
+
+<p>The reference model is an ImageNet-pretrained ResNet-50, fine-tuned in two phases: first the replacement classification head with the backbone frozen, then the full network with a much smaller backbone learning rate. The pipeline fixes a random seed and uses ImageNet normalization, a weighted sampler for class imbalance, label smoothing, AdamW, learning-rate warmup and decay, early stopping, per-epoch checkpointing, and append-only experiment logging. Every run is configuration-driven, so model, resolution, learning rates, augmentation, weight decay, seed, and split identity are all recoverable from <code>experiments.csv</code>.</p>
+
+<table>
+  <caption><b>Table 1.</b> Split arithmetic for the TrashNet phase. The five validation folds contain 434, 433, 433, 433 and 433 images.</caption>
+  <tr><th>Quantity</th><th class="num">Images</th></tr>
+  <tr><td>Complete TrashNet inventory</td><td class="num">2,527</td></tr>
+  <tr><td>Fold-0 training set</td><td class="num">1,732</td></tr>
+  <tr><td>Fold-0 validation set</td><td class="num">434</td></tr>
+  <tr><td>Held-out test set</td><td class="num">361</td></tr>
+  <tr class="total"><td>Train + validation pool</td><td class="num">2,166</td></tr>
+</table>
+
+<h3>2.2 A gate declared before the experiments</h3>
+
+<p>Before running variants we fixed an acceptance rule: a change is adopted only if it gains at least seven validation images, loses no macro-F1, and costs no class more than five percentage points of recall. On a 434-image fold, seven images is roughly 1.6 percentage points — chosen so that ordinary run-to-run variation could not be reported as progress.</p>
+
+<figure>
+  <img src="figures/fig5_phase1_results.png" alt="Bar chart of fold-0 validation accuracy for five configurations against the acceptance gate">
+  <figcaption><b>Figure 5.</b> Only deterministic four-view test-time augmentation cleared the gate. Progressive resizing to 384px, modern augmentation, and increased weight decay all failed it. The best accepted configuration remained the raw ResNet-50 epoch-44 checkpoint with four-view TTA.</figcaption>
+</figure>
+
+<p>The rejected experiments are the substance of this phase. Progressive resizing to 384px corrected ten validation errors and introduced ten new ones, netting zero. Increased weight decay lost one image and lowered macro-F1. Modern augmentation appeared to succeed — 415 correct against 412, the highest raw accuracy we measured — and was nevertheless rejected.</p>
+
+<figure>
+  <img src="figures/fig6_per_class_recall.png" alt="Grouped bar chart of per-class recall for baseline versus modern augmentation">
+  <figcaption><b>Figure 6.</b> Why the highest-accuracy run was rejected. Modern augmentation gained three images overall while <i>trash</i> recall fell from 20/23 to 18/23. Aggregate accuracy improved; the model got worse at the class it was already worst at, and the class that matters most for a sorting product.</figcaption>
+</figure>
+
+<div class="finding">
+  <span class="lbl">Finding</span>
+  <p>A single aggregate metric can move in the opposite direction from the minority class underneath it. On a six-class problem with a 137-image minority, accuracy alone is not a sufficient selection criterion — per-class recall has to be part of the gate, not part of the post-hoc discussion.</p>
+</div>
+
+<p>Taken together, five tuning experiments moved fold-0 accuracy by less than two percentage points and none of them improved <i>trash</i>. That pattern — technique after technique trading errors rather than eliminating them, while the smallest class refuses to move — is what a data ceiling looks like from the inside.</p>
+
+<h3>2.3 The test measurement</h3>
+
+<div class="finding warn">
+  <span class="lbl">Single-use measurement</span>
+  <p><b>322 / 361 = 89.20% test accuracy</b>, measured once, before the later tuning experiments, and never used for model selection.</p>
+</div>
+
+<p>This caption travels with the number. It is not the score of a final optimized model; it is an honest snapshot taken at one point in the project, and we do not re-measure it, because a test set consulted repeatedly stops being a test set. A guard file blocks a second evaluation programmatically (&sect;5.3).</p>
+
+<h2 class="break-before">3. Phase 2: building a corpus that is large enough</h2>
+
+<p>The competition scope permits unlimited training data under a single constraint: the pretrained backbone must not exceed 30 million parameters. That combination points in an obvious direction. If we cannot buy accuracy with parameters, we buy it with examples.</p>
+
+<p>We assembled a multi-source corpus from five public datasets, mapping only labels that correspond honestly to the six target classes. Batteries, biological waste, clothing, shoes, composite items such as takeaway cups, and polystyrene straddle the recyclable boundary depending on the local scheme, so they are archived in an excluded directory rather than forced into a class — folding them into <i>trash</i> would corrupt the very class we are trying to improve.</p>
+
+<table>
+  <caption><b>Table 2.</b> Source datasets. All upstream revisions are pinned to exact hashes so the corpus regenerates byte-identically on another machine.</caption>
+  <tr><th>Internal name</th><th>Repository</th><th>Role</th></tr>
+  <tr><td>garbage_classification</td><td class="mono">omasteam/waste-garbage-management-dataset</td><td>Six compatible labels, large</td></tr>
+  <tr><td>realwaste</td><td class="mono">shahzaibvohra/realwaste</td><td>Landfill photography, different domain</td></tr>
+  <tr><td>trashnet</td><td class="mono">garythung/trashnet</td><td>The original benchmark</td></tr>
+  <tr><td>garbage_v2</td><td class="mono">steveharianto/waste-garbage-management-dataset</td><td>Larger ten-label source</td></tr>
+  <tr><td>recycling11</td><td class="mono">viola77data/recycling-dataset</td><td>Material-level examples</td></tr>
+</table>
+
+<h3>3.1 Method: deduplicating before splitting</h3>
+
+<p>Public waste datasets overlap: the same photograph is redistributed across more than one collection, so a naive pool would contain many copies of a single image. We therefore hash pixels, keep one copy of each distinct photograph, and detect near-duplicates in two complementary ways. A 64-bit perceptual hash with a Hamming distance threshold of 6 catches re-encodings, crops, and small photometric changes; a ResNet-18 embedding with cosine similarity at or above 0.96 catches different exposures of the same object that hashing misses. Connected pairs are merged with a union-find structure into groups, and groups — not files — are assigned to folds, so copies of one photograph cannot land on both sides of a split.</p>
+
+<p>This is a reproducibility detail rather than a headline result, but it is asserted in code rather than documented as an intention: a runtime check re-verifies group disjointness on every load, and the split builder fails loudly if it is violated.</p>
+
+<h3>3.2 The resulting corpus</h3>
+
+<p>The build described here uses the first three sources; the training machine downloads all five and rebuilds deterministically. The figures below are measurements of the data, not of any model.</p>
+
+<table>
+  <caption><b>Table 3.</b> Three-source build. The 60 exclusions are 54 images with a shorter side below 128 pixels and 6 images forming three pixel-identical pairs with contradictory labels.</caption>
+  <tr><th>Quantity</th><th class="num">Images</th></tr>
+  <tr><td>Files scanned</td><td class="num">11,359</td></tr>
+  <tr><td>Excluded by quality and consistency filters</td><td class="num">60</td></tr>
+  <tr><td>Inventory entering the splits</td><td class="num">11,299</td></tr>
+  <tr><td>Near-duplicate groups formed</td><td class="num">11,042</td></tr>
+  <tr><td>Held-out test set</td><td class="num">1,739 &nbsp;(15.4%)</td></tr>
+  <tr class="total"><td>Train + validation pool (5 folds of 1,912)</td><td class="num">9,560</td></tr>
+</table>
+
+<figure>
+  <img src="figures/fig2_class_distribution.png" alt="Grouped horizontal bars comparing per-class counts in TrashNet and the unified corpus">
+  <figcaption><b>Figure 2.</b> The central result of this project. The minority-class problem that dominated Phase 1 is dissolved by data rather than by technique: <i>trash</i> rises from 137 images to 1,033, a 7.5&times; increase, and every other class grows with it. The most effective fix for our worst class was not a better loss function or a cleverer augmentation policy, but more examples.</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/fig4_fold_source_balance.png" alt="Stacked bars showing source composition of each fold and the test set">
+  <figcaption><b>Figure 4.</b> Folds are stratified on a combined <span class="mono">label &times; source</span> stratum, so no fold can become single-domain. This is what buys generalization: a model trained on one fold still sees studio shots, landfill photography, and in-the-wild images together, rather than learning a single backdrop.</figcaption>
+</figure>
+
+<div class="finding">
+  <span class="lbl">Data quality note</span>
+  <p>Three pixel-identical pairs carry contradictory labels across sources — two are <i>glass</i> in one dataset and <i>plastic</i> in another, and one is <i>glass</i> in one place and <i>metal</i> in another within a single dataset. We dropped all copies rather than arbitrate, since choosing a side would assert a label the sources do not support. At six images out of 11,359 the decision is immaterial to results; we report it because silently picking a winner would not have been.</p>
+</div>
+
+<h2>4. Model constraints and training system</h2>
+
+<h3>4.1 The parameter cap, enforced in code</h3>
+
+<p>The competition limits the pretrained backbone to 30 million parameters. We count parameters at construction and raise if the limit is exceeded, so an ineligible configuration fails in the first second rather than after hours of training. Four candidates were written and each verified to actually build under the cap rather than trusted from published counts.</p>
+
+<table>
+  <caption><b>Table 4.</b> Candidate backbones, all verified against the installed timm release. A fifth candidate was dropped when its assumed pretrained tag turned out not to exist.</caption>
+  <tr><th>Backbone</th><th class="num">Parameters</th><th>Note</th></tr>
+  <tr><td class="mono">convnextv2_tiny.fcmae_ft_in22k_in1k</td><td class="num">27.9M</td><td>Strongest all-rounder; current recommendation</td></tr>
+  <tr><td class="mono">caformer_s18.sail_in22k_ft_in1k</td><td class="num">24.3M</td><td>Best accuracy per parameter in this class</td></tr>
+  <tr><td class="mono">vit_small_patch14_reg4_dinov2.lvd142m</td><td class="num">22.1M</td><td>Different features — best ensemble partner</td></tr>
+  <tr><td class="mono">tf_efficientnetv2_s.in21k_ft_in1k</td><td class="num">20.2M</td><td>Fastest, most headroom</td></tr>
+</table>
+
+<p>The cap constrains the <i>pretrained</i> backbone, not the deployed system, so an ensemble of several compliant backbones remains eligible even though its combined size exceeds 30M. Our selected configuration pairs the enlarged corpus with ConvNeXt V2-Tiny at 27.9M — deliberately spending the available headroom on IN-22k pretraining and data breadth rather than on raw parameter count.</p>
+
+<h3>4.2 Throughput is not accuracy</h3>
+
+<p>Training runs on rented GPU time, so throughput matters. TF32 matrix multiplication, cuDNN kernel benchmarking, channels-last memory format, and bfloat16 autocast are enabled automatically on CUDA. Enabling bfloat16 required correcting a real defect: the loop previously decided whether to autocast based on whether a gradient scaler existed, which is wrong for bfloat16 — it has fp32's exponent range and must <i>not</i> be scaled, whereas fp16 must. Left uncorrected, switching to bfloat16 would have silently disabled mixed precision entirely.</p>
+
+<p>Batch size cannot be set automatically, since activation memory depends on architecture, so a tuning script probes real forward, backward, and optimizer steps until the GPU runs out of memory. We are deliberate about how its output is interpreted:</p>
+
+<div class="finding">
+  <span class="lbl">Method note</span>
+  <p>A larger batch is a <b>throughput</b> change, not an accuracy improvement. It means fewer and less noisy gradient steps per epoch, and holding the learning rate fixed while quadrupling the batch systematically underfits — the ordinary explanation for "we filled the GPU and accuracy fell". Our script applies the linear scaling rule, lengthens warmup, and refuses by default to scale past 4&times; baseline; the tuned configuration is still treated as an experiment to be compared on macro-F1, not as a free win.</p>
+</div>
+
+<p>We also declined to increase system-memory utilization. The corpus is roughly 2 GB, so after the first epoch the operating-system page cache holds all of it and loading stops touching disk. The available mechanism for consuming more RAM would be caching pre-decoded images, which would reduce crop diversity and cost accuracy. Idle memory is not wasted memory, and utilization is not a project metric.</p>
+
+<h2>5. Making guarantees executable</h2>
+
+<p>A recurring theme of this project is that a documented guarantee is not an implemented one. Three examples, all discovered by looking for the code rather than re-reading the prose:</p>
+
+<h3>5.1 An ignore rule that ignored nothing</h3>
+<p>Version-control ignore patterns such as <code>data/raw/</code> anchor to the repository root and therefore never matched the real directories nested under <code>model/</code>. The rules appeared to protect the repository and did nothing. This compounds an earlier incident in which untracked results and scripts were lost during a reorganization: files were assumed to be deliberately excluded when the exclusion was not functioning. The patterns were rewritten and each was confirmed with <code>git check-ignore</code>.</p>
+
+<h3>5.2 A test whose name overstated it</h3>
+<p>A unit test named for a stratification fallback did not exercise the fallback — scikit-learn warns rather than raises in that situation, so the path was never reached. The test passed and its name was false. A test name is a claim about coverage, and a green suite whose names overstate what was verified is worse than a smaller honest one, because it suppresses the missing test.</p>
+
+<h3>5.3 A guard file that guarded nothing</h3>
+<p>Project documentation stated that a guard file "physically blocks re-running the final evaluation". Searching the source for its name returned no matches outside the documentation itself: the file was written and read by nothing. Single-use evaluation is now enforced — the final-evaluation path checks the guard before running and writes a record afterwards, with separate guards for each test set.</p>
+
+<h3>5.4 Preflight</h3>
+<p>A preflight script blocks training unless dependencies, accelerator, split arithmetic, path and group disjointness, fold integrity, corpus file existence, and model eligibility all pass. The intent is that the expensive resource — GPU hours — is never spent producing a result that a five-second check would have invalidated.</p>
+
+<h2>6. Deployment</h2>
+
+<p>The classifier is deployed as an offline bilingual web application that runs the repository's real inference code. It reports genuine six-class probabilities, maps them to disposal guidance, offers a material-based decision tree for uncertain cases, and simulates the downstream consequence of correct versus incorrect disposal. It is designed to work with no network access during presentation.</p>
+
+<h3>6.1 The closed-set problem</h3>
+<p>A six-class softmax must assign an unfamiliar image — a cat, say — to one of its six classes. Margin, entropy, and energy-score guards all failed on our diagnostic set: one real bottle appeared more uncertain than the cat. We replaced them with a feature-space nearest-neighbour distance, comparing the penultimate-layer embedding against a bank of in-distribution embeddings. Real images sat at or below 0.63 cosine distance, the bottle at 0.30, the cat at 0.78; a threshold of 0.70 separated them.</p>
+
+<p>We report this as a limitation rather than a solved result. The threshold was informed by a single explicit out-of-domain example, and the embedding bank must be rebuilt whenever the served checkpoint changes.</p>
+
+<h2>7. Limitations</h2>
+
+<ul>
+  <li>Phase 1 results rest on one 434-image validation fold; each image is worth 0.23 percentage points. The 361-image test is coarser still, at 0.277 points per image.</li>
+  <li>Duplicate detection is thresholded, not exhaustive. A visually similar pair below the cutoff will still be split apart.</li>
+  <li>We have not audited whether the five sources overlap one another exhaustively; our deduplication removes exact and near-duplicate copies but we cannot prove none survive.</li>
+  <li>Dataset labels contain ambiguous and apparently incorrect examples; our error audit examined the highest-loss subset, not every error.</li>
+  <li>The out-of-distribution threshold has not been validated on a large, diverse benchmark.</li>
+  <li>Disposal rules vary by municipality; the impact figures in the application are illustrative assumptions, not measured outcomes.</li>
+  <li><b>The unified corpus has been built and verified but not yet trained to completion.</b> Every Phase 2 statement in this paper concerns data, code, or method. None concerns performance.</li>
+</ul>
+
+<h2>8. Conclusion</h2>
+
+<p>We were given 2,527 photographs and asked to build something that works on a phone. The honest finding of this project is that the dataset, not the model, was the binding constraint. Five tuning experiments on TrashNet moved validation accuracy by less than two points and left the worst class untouched; expanding the corpus raised that class from 137 examples to 1,033 in a single step.</p>
+
+<p>This is not an argument that technique does not matter. The two-phase fine-tuning schedule, the pre-declared acceptance gate, the per-class recall requirement, and the parameter-capped backbone selection all shaped the result. It is an argument about ordering. When a model plateaus and successive clever ideas trade errors instead of removing them, the next thing to examine is what the model has been allowed to see — and for a classifier meant to work on a photograph taken at a bin, 2,527 studio images against a white backdrop was never going to be enough.</p>
+
+<div class="footnote">
+  <p><b>Reproducibility.</b> Every figure in this paper is generated by <code>model/paper/make_figures.py</code> directly from committed split metadata and <code>experiments.csv</code>; none is drawn from transcribed numbers. Upstream dataset revisions are pinned to exact hashes. The full development record, including the experiments that failed and the defects found along the way, is in <code>PROJECT_PROCESS_README.md</code>.</p>
+</div>
+
+</body>
+</html>

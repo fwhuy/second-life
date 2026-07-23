@@ -175,7 +175,7 @@
         <div style="border-radius: 20px; background: #EFE8D6; padding: 32px 36px;">
           <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
             <div style="min-width: 200px;">
-              <div class="accuracy-number" style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 42px; color: #2F5A3C;">94.93%</div>
+              <div class="accuracy-number" style="font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', Georgia, serif; font-weight: 900; font-size: 42px; color: #2F5A3C;">98.30%</div>
               <div style="font-size: 13px; color: #7C8A73;">{{ t.accCaption }}</div>
             </div>
             <div style="flex: 1; min-width: 380px;">
@@ -210,8 +210,7 @@
       <div style="display:flex;justify-content:center;gap:8px;margin:-16px 0 24px;">
         <div onClick="{{ useUpload }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ uploadModeBg }};color:{{ uploadModeFg }};border:1px solid #B8C6B5;">{{ t.uploadMode }}</div>
         <div onClick="{{ startCamera }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ cameraModeBg }};color:{{ cameraModeFg }};border:1px solid #B8C6B5;">◉ {{ t.cameraMode }}</div>
-        <div onClick="{{ toggleAccuracy }}" title="{{ t.accuracyHint }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ accuracyBg }};color:{{ accuracyFg }};border:1px solid #B8C6B5;">{{ accuracyMark }} {{ t.accuracyMode }}</div>
-        <div onClick="{{ toggleFocus }}" title="{{ t.focusHint }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ focusBg }};color:{{ focusFg }};border:1px solid #B8C6B5;">{{ focusMark }} {{ t.focusMode }}</div>
+        <div onClick="{{ toggleModel }}" title="{{ t.modelHint }}" style="padding:9px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;background:{{ modelBg }};color:{{ modelFg }};border:1px solid #B8C6B5;">{{ modelMark }} {{ modelLabel }}</div>
       </div>
       <sc-if value="{{ cameraError }}" hint-placeholder-val="{{ false }}"><div style="max-width:680px;margin:-10px auto 20px;padding:11px 15px;border-radius:12px;background:#F6E8D8;color:#8C5A22;font-size:13px;text-align:center;">{{ cameraErrorText }}</div></sc-if>
       <div class="responsive-grid" style="display: grid; grid-template-columns: 1.12fr .88fr; gap: 24px;">
@@ -590,7 +589,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;homeLayout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;story&quot;, &quot;options&quot;: [&quot;story&quot;, &quot;split&quot;, &quot;minimal&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;首页布局 Home layout&quot;}, &quot;simulatorStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;journey&quot;, &quot;options&quot;: [&quot;journey&quot;, &quot;theater&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;模拟器视觉 Simulator style&quot;}, &quot;showEnglish&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;语言 Language&quot;}}">
 class Component extends DCLogic {
-  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false, backendUp: true, cameraActive: false, cameraError: '', cameraPrediction: null, decisionNode: 'root', decisionDone: null, selectedClass: 'plastic', accuracyMode: false, focusMode: false };
+  state = { page: 'home', itemKey: 'bottle', query: '', queryMiss: false, analyzing: false, simPhase: 'choose', simPath: 'correct', simStep: 0, chosenBin: null, records: [], lang: 'zh', photo: null, live: false, liveConf: null, liveProbs: null, liveUncertain: false, liveBox: null, loaded: false, showMicro: false, documentaryOpen: false, backendUp: true, cameraActive: false, cameraError: '', cameraPrediction: null, decisionNode: 'root', decisionDone: null, selectedClass: 'plastic', modelChoice: 'convnet' };
 
   componentDidMount() {
     let lang = 'zh', records = [];
@@ -702,8 +701,7 @@ class Component extends DCLogic {
     this.cameraBlob(blob => {
       if (!blob) { this._cameraBusy = false; return; }
       const fd = new FormData(); fd.append('image', blob, 'camera.jpg');
-      fd.append('accuracy_mode', this.state.accuracyMode ? '1' : '0');
-      fd.append('focus_filter', this.state.focusMode ? '1' : '0');
+      fd.append('model', this.state.modelChoice);
       fetch('/api/identify', { method: 'POST', body: fd })
         .then(r => { if (!r.ok) throw new Error('camera inference failed'); return r.json(); })
         .then(d => this.setState({ cameraPrediction: d, cameraError: '' }))
@@ -736,20 +734,20 @@ class Component extends DCLogic {
       heroA: '每一件物品，', heroB: '都值得第二次生命',
       heroBody: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。在这里，垃圾分类不再是"该扔哪个桶"的查询，而是一次为物品选择命运的旅程：认识它 → 选择它的未来 → 见证结果。',
       heroBodyShort: '丢弃，不是一个物品故事的终点。每一次分类的选择，都在为它书写不同的未来。认识它 → 选择它的未来 → 见证结果。',
-      accCaption: '验证集准确率（TTA）· TrashNet 六分类',
+      accCaption: '验证集准确率 · ConvNeXt V2-Tiny ConvNet · 六分类',
       mapTitle: '六个模型类别 → 四分类投放的透明映射',
       mapCaveat: '数据集没有厨余垃圾与有害垃圾图像类别，因此模型不会从照片预测这两类；它们只由文字内容库与上方材质问答补充。',
-      honest: '诚实说明：我们的数据集不含厨余与有害垃圾类别，模型无法通过照片识别它们；文字搜索的内容库可以补充覆盖这些物品。照片的置信度经过温度缩放校准，绝不超出验证集支持的范围。模型只认识这六个类别，遇到明显不属于它们的照片时会如实提示"可能不属于这六类"，而不是硬猜。',
+      honest: '诚实说明：两个模型只比较共同的六个类别，不含厨余与有害垃圾。照片显示模型的原始 softmax 概率；低置信度会提示复核，但不等同于可靠的开放集检测。文字搜索的内容库可补充模型未覆盖的物品。',
       identTitle: '洞察实验室', labSubtitle: '放慢速度，像研究员一样观察一件物品。', microBtn: '查看微观结构', evidenceView: '模型视觉证据', boxLive: '模型定位', boxApprox: '估算区域',
-      analyzing: '模型推理中…', analyzingSub: 'ResNet 正在读取图片（本地推理，无需联网）',
+      analyzing: '模型推理中…', analyzingSub: '所选模型正在读取图片（本地推理，无需联网）',
       uploadTitle: '拍照或上传图片', uploadSub: '点击或粘贴图片',
-      uploadMode: '上传 / 粘贴', cameraMode: '使用相机', accuracyMode: '准确模式', accuracyHint: '使用四视图测试时增强，速度较慢；验证集从 93.09% 提升至 94.93%，但不保证每张图都更准。', focusMode: '景深聚焦', focusHint: '实验功能：根据模型关注区域弱化背景并再次识别。物体较小时可能有帮助，但尚未在验证集上证明。', capture: '拍摄并分析', cameraReady: '正在寻找物品…', cameraDenied: '无法使用相机，已切回上传模式。请检查浏览器权限，或继续上传/粘贴图片。', cameraBackend: '实时识别需要从本地网站启动；相机仍可拍摄，随后会使用演示结果。',
+      uploadMode: '上传 / 粘贴', cameraMode: '使用相机', modelOurs: 'ConvNet · ConvNeXt V2', modelSwin: 'Transformer · Swin-B', modelHint: '在两个新模型间切换。ConvNet 是 384px ConvNeXt V2-Tiny（27.9M 参数、六分类）；Transformer 是 224px Swin-B（86.7M 参数、十分类），此处仅比较共有的六类。', capture: '拍摄并分析', cameraReady: '正在寻找物品…', cameraDenied: '无法使用相机，已切回上传模式。请检查浏览器权限，或继续上传/粘贴图片。', cameraBackend: '实时识别需要从本地网站启动；相机仍可拍摄，随后会使用演示结果。',
       orType: '或者，输入物品名称',
       searchPlaceholder: '例如：塑料瓶、咖啡杯、快递纸箱…',
       libCovers: '内容库覆盖的常见物品：',
       missPre: '内容库暂时没有「', missPost: '」的条目。它可能不属于模型的六个类别，试试上面的常见物品，或上传一张照片。',
       modelSays: '模型判定：', confidence: '置信度',
-      confLive: '温度缩放校准后的置信度（原始模型偏保守）',
+      confLive: '所选模型的原始 softmax 置信度',
       confDemo: '⚠ 演示数据 · 后端未连接，此数字非模型实时输出',
       oodNote: '低置信度 · 可能不属于这六类',
       oodBanner: '⚠ 置信度偏低：这可能不属于模型认识的六个类别。模型只有六个"桶"，softmax 必须把它归入其中之一，所以遇到陌生物体（比如一只猫），它只能勉强猜一个。下面的结果请当作不确定的猜测来看。',
@@ -785,7 +783,7 @@ class Component extends DCLogic {
       goIdent: '去识别中心 →', clearBtn: '清空本机记录',
       recId: '识别 · 置信度 ', recIdDemo: '识别（演示） · 置信度 ',
       recSimGood: '选择了正确的未来', recSimBad: '见证了另一种结局',
-      footNote: 'TrashNet 六分类 · 验证准确率 94.93%（TTA）· 全站离线运行 · 无外部 API',
+      footNote: 'ConvNeXt V2-Tiny ConvNet + Swin-B Transformer · 共享六分类 · 全站离线运行 · 无外部 API',
       footBrand: 'Second Life AI · 万物皆有新生',
       langLabel: 'EN', langTitle: 'Switch to English',
       photoAlt: '你上传的照片'
@@ -799,20 +797,20 @@ class Component extends DCLogic {
       heroA: 'Every object deserves', heroB: 'a second life',
       heroBody: 'Being thrown away is not the end of an object\u2019s\u00A0story. Every sorting choice writes a different future for it. Here, waste sorting stops being a lookup, "which bin?", and becomes a journey in which you choose an object\u2019s fate: meet it → choose its future → see what happens.',
       heroBodyShort: 'Being thrown away is not the end of an object\u2019s\u00A0story. Every sorting choice writes a different future for it. Meet it → choose its future → see what happens.',
-      accCaption: 'Validation accuracy (TTA) · TrashNet, six classes',
+      accCaption: 'Validation accuracy · ConvNeXt V2-Tiny ConvNet · six classes',
       mapTitle: 'Six model classes → four bins, mapped transparently',
       mapCaveat: 'The image dataset has no food-waste or hazardous classes, so the model never predicts those from a photo. They are covered only by text search and the material decision flow.',
-      honest: 'Honest note: our dataset contains no food-waste or hazardous classes, so the model cannot recognize them from a photo; the text-search content library covers those items instead. Confidence for a photo is temperature-scaled to correct the model’s under-confidence, never inflated past what validation supports. The model knows only these six classes; when a photo clearly matches none of them, it says so instead of forcing a guess.',
+      honest: 'Honest note: the two models are compared only on their six shared classes; neither photo output covers food waste or hazardous waste. The site shows raw softmax probabilities. Low confidence prompts a manual check, but is not a reliable open-set detector. Text search covers additional items.',
       identTitle: 'Insight Lab', labSubtitle: 'Slow down and examine an object like a researcher.', microBtn: 'View microstructure', evidenceView: 'MODEL VISUAL EVIDENCE', boxLive: 'MODEL CAM', boxApprox: 'SCAN REGION',
-      analyzing: 'Model is running…', analyzingSub: 'ResNet is reading the image (local inference, no internet needed)',
+      analyzing: 'Model is running…', analyzingSub: 'The selected model is reading the image (local inference, no internet needed)',
       uploadTitle: 'Take or upload a photo', uploadSub: 'Click or paste an image',
-      uploadMode: 'Upload / paste', cameraMode: 'Use camera', accuracyMode: 'Accuracy mode', accuracyHint: 'Uses four-view test-time augmentation and is slower. It improved validation from 93.09% to 94.93%, but cannot guarantee every image improves.', focusMode: 'Depth focus', focusHint: 'Experimental: focuses on the model\'s activation region and classifies again with less background. It may help small objects but is not yet validation-proven.', capture: 'Capture & analyze', cameraReady: 'Looking for an object…', cameraDenied: 'Camera unavailable or denied. Upload/paste remains available; check browser permissions to retry.', cameraBackend: 'Live recognition needs the local website server. You can still capture a frame and continue with demo results.',
+      uploadMode: 'Upload / paste', cameraMode: 'Use camera', modelOurs: 'ConvNet · ConvNeXt V2', modelSwin: 'Transformer · Swin-B', modelHint: 'Switch between the two new models. The ConvNet is a 384px ConvNeXt V2-Tiny (27.9M parameters, six classes). The Transformer is a 224px Swin-B (86.7M parameters, ten classes), compared here only on the six shared classes.', capture: 'Capture & analyze', cameraReady: 'Looking for an object…', cameraDenied: 'Camera unavailable or denied. Upload/paste remains available; check browser permissions to retry.', cameraBackend: 'Live recognition needs the local website server. You can still capture a frame and continue with demo results.',
       orType: 'Or type the name of an item',
       searchPlaceholder: 'e.g. plastic bottle, coffee cup, parcel box…',
       libCovers: 'Common items in the content library:',
       missPre: 'The content library has no entry for "', missPost: '" yet. It may fall outside the model\u2019s six classes, try one of the common items above, or upload a photo.',
       modelSays: 'Model says: ', confidence: 'Confidence',
-      confLive: 'Calibrated confidence (temperature-scaled)',
+      confLive: 'Raw softmax confidence from the selected model',
       confDemo: '⚠ Demo data · backend not connected, this is not live model output',
       oodNote: 'Low confidence · may not be one of the six',
       oodBanner: '⚠ Low confidence: this may not be one of the six classes the model knows. The model has only six bins and softmax must pick one, so for an unfamiliar object (say, a cat) it can only make a weak guess. Treat the result below as an uncertain guess.',
@@ -848,7 +846,7 @@ class Component extends DCLogic {
       goIdent: 'Go to the Recognition Center →', clearBtn: 'Clear records on this device',
       recId: 'Identified · confidence ', recIdDemo: 'Identified (demo) · confidence ',
       recSimGood: 'Chose the right future', recSimBad: 'Witnessed the other ending',
-      footNote: 'TrashNet six classes · 94.93% validation accuracy (TTA) · fully offline · no external APIs',
+      footNote: 'ConvNeXt V2-Tiny ConvNet + Swin-B Transformer · six shared classes · fully offline · no external APIs',
       footBrand: 'Second Life AI',
       langLabel: '中文', langTitle: '切换到中文',
       photoAlt: 'The photo you uploaded'
@@ -1167,8 +1165,7 @@ class Component extends DCLogic {
       this.setState({ analyzing: true, photo: dataUrl });
       const fd = new FormData();
       fd.append('image', f);
-      fd.append('accuracy_mode', this.state.accuracyMode ? '1' : '0');
-      fd.append('focus_filter', this.state.focusMode ? '1' : '0');
+      fd.append('model', this.state.modelChoice);
       const done = (key, conf, probs, live, uncertain, bbox) => {
         this.setState({ analyzing: false });
         this.pick(key, { conf, probs, live, uncertain, bbox, photo: dataUrl });
@@ -1351,10 +1348,9 @@ class Component extends DCLogic {
       cameraError: !!st.cameraError, cameraErrorText: st.cameraError === 'backend' ? t.cameraBackend : t.cameraDenied,
       uploadModeBg: st.cameraActive ? '#FFFDF6' : '#3E7C4F', uploadModeFg: st.cameraActive ? '#4A5A4B' : '#FFFFFF',
       cameraModeBg: st.cameraActive ? '#3E7C4F' : '#FFFDF6', cameraModeFg: st.cameraActive ? '#FFFFFF' : '#4A5A4B',
-      toggleAccuracy: () => this.setState({ accuracyMode: !st.accuracyMode }), accuracyMark: st.accuracyMode ? '✓' : '○',
-      accuracyBg: st.accuracyMode ? '#D97B29' : '#FFFDF6', accuracyFg: st.accuracyMode ? '#FFFFFF' : '#4A5A4B',
-      toggleFocus: () => this.setState({ focusMode: !st.focusMode }), focusMark: st.focusMode ? '✓' : '○',
-      focusBg: st.focusMode ? '#6B5B95' : '#FFFDF6', focusFg: st.focusMode ? '#FFFFFF' : '#4A5A4B',
+      toggleModel: () => this.setState({ modelChoice: st.modelChoice === 'convnet' ? 'transformer' : 'convnet' }),
+      modelMark: st.modelChoice === 'transformer' ? '◆' : '◇', modelLabel: st.modelChoice === 'transformer' ? t.modelSwin : t.modelOurs,
+      modelBg: st.modelChoice === 'transformer' ? '#6B5B95' : '#FFFDF6', modelFg: st.modelChoice === 'transformer' ? '#FFFFFF' : '#4A5A4B',
       cameraReadout,
       cameraBoxLeft: (cameraBox.x * 100).toFixed(1) + '%', cameraBoxTop: (cameraBox.y * 100).toFixed(1) + '%',
       cameraBoxWidth: (cameraBox.w * 100).toFixed(1) + '%', cameraBoxHeight: (cameraBox.h * 100).toFixed(1) + '%',
