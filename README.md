@@ -41,7 +41,7 @@ cd website
 ./start.sh
 ```
 
-Then open <http://127.0.0.1:5001>. Both committed checkpoint paths are resolved
+Then open <(https://161-33-76-49.sslip.io/)>. Both committed checkpoint paths are resolved
 directly from `model/`; no checkpoint copying or network access is required for
 inference.
 
