@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Composition, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {registerRoot} from 'remotion';
+import {WebsiteShowcase} from './Showcase';
 
 const palette = {ink:'#111714', green:'#1E3A2B', leaf:'#3E7C4F', cream:'#FAF7EF', tan:'#D8C7A8', orange:'#D97B29'};
 
@@ -71,5 +72,8 @@ const Film = () => <AbsoluteFill style={{fontFamily:'Arial, sans-serif'}}>
   <Sequence from={510} durationInFrames={210}><SceneFour/></Sequence>
 </AbsoluteFill>;
 
-const Root = () => <Composition id="CoffeeCup" component={Film} durationInFrames={720} fps={30} width={1280} height={720}/>;
+const Root = () => <>
+  <Composition id="CoffeeCup" component={Film} durationInFrames={720} fps={30} width={1280} height={720}/>
+  <Composition id="SecondLifeShowcase" component={WebsiteShowcase} durationInFrames={1800} fps={30} width={1280} height={720}/>
+</>;
 registerRoot(Root);

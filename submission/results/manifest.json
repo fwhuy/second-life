@@ -1,0 +1,17 @@
+{
+  "generated": "2026-07-23",
+  "models": {
+    "convnextv2_tiny": {
+      "architecture": "convnextv2_tiny.fcmae_ft_in22k_in1k_384",
+      "checkpoint": "convnextv2_tiny/best_convnextv2.pt",
+      "sha256": "8d49670ce8d7a8f94cf912f420d09a8f10cfd2df2f96bb13fd1805fcb3eed01b",
+      "metrics": "convnextv2_tiny/metrics.json"
+    },
+    "swin_b": {
+      "architecture": "torchvision.models.swin_b",
+      "checkpoint": "swin_b/best_swin_b.pt",
+      "sha256": "3c7d722e7abb655e374c117e858677a13bae8861c1bbcad9d30ecad7e7ba5a89",
+      "metrics": "swin_b/metrics.json"
+    }
+  }
+}

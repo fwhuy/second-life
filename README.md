@@ -17,17 +17,19 @@ the comparison answers the same question.
 ```text
 model/
   convnextv2_tiny_cnn/
-    train_and_upload .py       ConvNet training program
+    train_and_upload.py        ConvNet training program
     results/                   ConvNet checkpoint + metadata
-  Swing B Transformer/
+  Swin B Transformer/
     train_swin_b.py            Transformer training program
     best_swin_b.pt             Transformer checkpoint
     swin_b_results.json        Transformer metrics
+    garbage_vs_nongarbage.py   OOD-guard research source
 website/
   app.py                       one inference API for both models
   index.html                   bilingual comparison UI
 submission/                    frozen paper/poster/course-submission material
 video/                         presentation video source
+website/remotion/              website documentary video source
 ```
 
 The old ResNet experiment pipeline is no longer the active runtime. Historical

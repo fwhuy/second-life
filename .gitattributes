@@ -1,0 +1,2 @@
+submission/results/convnextv2_tiny/best_convnextv2.pt filter=lfs diff=lfs merge=lfs -text
+submission/results/swin_b/best_swin_b.pt filter=lfs diff=lfs merge=lfs -text

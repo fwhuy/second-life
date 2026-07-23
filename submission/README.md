@@ -1,107 +1,59 @@
-# Second Life AI — Final Submission
+# Second Life AI — Current Submission
 
-**Track 1: Image Classification** · NYU Shanghai, Introduction to Artificial Intelligence
-Six-class waste classifier (cardboard, glass, metal, paper, plastic, trash).
+NYU Shanghai · Introduction to Artificial Intelligence · Image Classification
+
+**🔗 Live demo: [bit.ly/second-life-ai](https://bit.ly/second-life-ai)** — upload a
+photo and classify it live with either model, side by side.
+
+This package reflects the two models used by the current project and website:
+
+| Track | Model | Input | Labels | Parameters | Recorded result |
+|---|---|---:|---:|---:|---:|
+| Cap-compliant ConvNet | TrashNeXt (ConvNeXt V2-Tiny) | 384×384 | 6 | 27,871,110 | 98.30% validation |
+| Transformer comparison | Swin-B | 224×224 | 10 trained | 86,753,474 | 97.61% test; 97.82% TTA |
+
+The models were trained on different datasets and splits, so their scores are
+reported as separate design points rather than a head-to-head ranking.
 
 ## Contents
 
-```
+```text
 submission/
-├── README.md      this file — what is where, and how it maps to the rubric
-├── GUIDE.md       step-by-step: environment → data → train → evaluate → demo
-├── paper/         Second-Life-AI-paper.pdf (+ paper.html source)
-├── poster/        posterv1.pdf
-├── code/          src/, scripts/, configs/, tests/, data/splits, requirements, experiments.csv
-├── figures/       the six figures, all regenerated from committed data
-└── results/       per-run reports: confusion matrices, per-class metrics, curves
+├── README.md
+├── GUIDE.md
+├── code/
+│   ├── README.md
+│   ├── train_convnextv2.py             training — ConvNeXt V2-Tiny
+│   ├── train_swin_b.py                 training — Swin-B
+│   ├── evaluate.py                     testing — deterministic, both models
+│   ├── verify_artifacts.py             checkpoint + metrics integrity check
+│   ├── tests/                          16 tests (pytest tests -q)
+│   ├── requirements.txt
+│   └── requirements.lock.txt           exact tested versions
+├── results/
+│   ├── manifest.json
+│   ├── convnextv2_tiny/
+│   │   ├── best_convnextv2.pt          trained weights (106 MB)
+│   │   └── metrics.json
+│   └── swin_b/
+│       ├── best_swin_b.pt              trained weights (331 MB)
+│       └── metrics.json
+├── figures/                    figures referenced by the paper
+├── paper/
+│   ├── Second-Life-AI-paper.pdf
+│   └── paper.html
+└── poster/
+    ├── Second-Life-AI-poster.pdf
+    ├── poster.html
+    └── OFFICIAL-TEMPLATE-reference.pptx
 ```
 
-## Where each rubric band is answered
+The trained checkpoints ship inside `results/`, one per model, so the package is
+self-contained. Each is identified by SHA-256 in `results/manifest.json`; run
+`python code/verify_artifacts.py` to confirm the weights and metrics match.
 
-### Technical Work — 60 pts
+The paper retains the ResNet-50 phase as historical motivation and comparison,
+but the obsolete ResNet training pipeline, checkpoints, predictions, and
+duplicate result exports are no longer part of the submitted code package.
 
-**Project design & rationale (15).** Paper §1 states the problem and §2.2 the
-pre-declared acceptance gate. Alternatives with reasoning: `code/configs/` holds
-one YAML per experiment, and paper Table 4 compares four candidate backbones with
-the reason each was or wasn't chosen. Five tuning experiments were run and four
-were **rejected** — paper §2.2 and Figure 5 give the reasoning for each rejection.
-Limitations are §7.
-
-**Code standard & completeness (12).** `code/` runs end to end; `GUIDE.md` is the
-step-by-step. Training and evaluation are **separate entry points**:
-
-- train — `python -m src.train --config configs/baseline.yaml`
-- evaluate — `python -m src.evaluate --checkpoint <path> --tta`
-- large-corpus training — `python scripts/kaggle_train.py` (self-contained)
-
-Every module carries a docstring explaining intent, not just mechanics. Parameter
-cap violations, missing checkpoints, and absent data files all raise with an
-actionable message rather than failing late.
-
-**Experiments & analysis (23).**
-
-- *train/val/test splits* — `code/data/splits/` (TrashNet) and
-  `code/data/splits_unified/` (pooled corpus) hold committed, seeded, group-aware
-  fold indices; Table 1 in the paper gives the arithmetic. Verify with
-  `cd code && python -m pytest tests/ -q` — 11 tests, including split disjointness.
-- *data augmentation* — paper §2.2 (rejected "modern augmentation" ablation) and
-  `scripts/kaggle_train.py` (TrivialAugment, Mixup/CutMix, random erasing).
-- *hyperparameter tuning* — `scripts/autotune.py`; ablations logged in
-  `code/experiments.csv`, one row per run with a config hash.
-- *visualised confusion matrix* — `figures/fig9_confusion_matrix.png`, plus
-  per-run matrices in `results/`.
-- *misclassified samples with actionable fixes* — `figures/fig6_per_class_recall.png`
-  shows the failure concentrated in *trash*; the actionable fix is documented and
-  taken: expanding that class from 137 to 1,033 images (paper §3, Figure 2).
-
-**Limitations & future extensions (10).** Paper §7 — seven named limitations,
-each specific (image-level metric resolution, thresholded duplicate detection,
-unaudited cross-source overlap, OOD threshold from a single example).
-
-### Poster & Defense — 40 pts
-
-**Poster compliance (10).** `poster/Second-Life-AI-poster.pdf` — five sections
-Problem → Data → Method → Result → Takeaways, portrait, 846.7 x 1074.3 mm
-(prints to A0 scaled on width). `poster/poster.html` is the editable source.
-
-**Information & visualisation (10).** All figures in `figures/` are labelled with
-axis titles and captions and were generated at print resolution.
-
-**Live defense (12) / Q&A (8).** Every number on the poster traces to a config
-hash in `code/experiments.csv`. See "Defending the number" below.
-
-### Tie-breaker bonuses
-
-- **Multi-model comparison** — the web app compares a ConvNeXt V2-Tiny ConvNet
-  and a Swin-B Transformer side-by-side on one photo.
-- **Expanded dataset** — five public sources pooled to ~19,500 images from a
-  2,527-image starting point.
-- **Live demo of visualised model outputs** — the offline web app, below.
-
-## Running the demo
-
-```bash
-cd website && .venv/bin/python app.py     # http://127.0.0.1:5001
-```
-
-Upload or use the camera. Fully offline — no network needed during the defense.
-The model toggle switches between the ConvNet and Transformer. The live project
-loads their canonical checkpoints directly from `model/`; no checkpoint copy is
-needed.
-
-## Defending the number
-
-Ranking is on raw test accuracy, and our reported test figure is a **single,
-never-repeated measurement of 89.20%** taken before any tuning. Two things worth
-saying plainly if asked:
-
-1. It is a snapshot, not the score of the final model. It was measured early and
-   never used to select anything, which is why it is lower than our validation
-   accuracy of 94.93%.
-2. Our splits are group-aware — near-duplicate photographs of the same object are
-   kept on one side of the split. Public waste datasets overlap heavily, and a
-   random image-level split across them puts the same photograph in both training
-   and evaluation. Our number is measured with that path closed.
-
-If a number looks implausibly high for this task, the split is the first thing to
-check, not the model.
+See `GUIDE.md` for setup, training, verification, and website commands.

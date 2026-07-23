@@ -1,137 +1,99 @@
-# Training Guide (start here)
+# Current-model reproduction guide
 
-You got this as a zip. It's a complete, reproducible pipeline for the TrashNet
-6-class garbage dataset. The dataset (2527 images) and the frozen train/test
-splits are **already inside the zip** — you don't need Kaggle or any account.
-You just need a machine with Python 3.10+ and ideally an NVIDIA GPU.
+Run commands from `submission/code` unless stated otherwise.
 
-## 0. One-time setup (~5 min + downloads)
+## 1. Environment
+
+Python 3.10+ and an NVIDIA GPU are recommended.
 
 ```bash
-unzip trash-classification.zip && cd trash-classification
-bash scripts/setup_env.sh
+python -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-The script creates `.venv`, installs everything, prints your GPU name, and
-checks the model names. If it prints `WARNING: CPU only`, training will be very
-slow — find a GPU machine.
+## 2. Verify the recorded artifacts
 
-Then verify the data + splits that shipped in the zip:
+From the repository root:
 
 ```bash
-python scripts/download_data.py   # sees data already there, re-runs leak checks
-pytest tests/ -q                  # split/leakage unit tests
+python submission/code/verify_artifacts.py
 ```
 
-## 1. Sanity gate (do NOT skip)
+This validates the metrics schemas, expected model identities, class orders,
+parameter counts, checkpoint locations, and SHA-256 hashes without loading the
+models into GPU memory.
+
+## 3. Train ConvNeXt V2-Tiny
 
 ```bash
-python -m src.train --config configs/baseline.yaml --overfit-batch
+python train_convnextv2.py --no-upload
 ```
 
-This trains on a single batch and must drive the loss to ~0 ("PASS"). If it
-fails, the pipeline is broken — stop and debug before real training.
+The trainer downloads the OMA waste-management dataset and official UCI
+RealWaste archive, maps them to six shared classes, removes perceptual
+duplicates, creates a group-disjoint fold, and trains the 384px
+`convnextv2_tiny.fcmae_ft_in22k_in1k_384` model.
 
-## 2. Baseline (the reference number, ~1-2 h on a decent GPU)
+Outputs:
+
+- `best_convnextv2.pt`
+- `best_convnextv2_metadata.json`
+
+The recorded run reached 98.30% validation accuracy at epoch 37. It has no
+separate held-out test result; do not describe the validation score as test
+accuracy.
+
+## 4. Train Swin-B
+
+Place the ten-class dataset at:
+
+```text
+submission/code/standardized_256/
+  battery/
+  biological/
+  cardboard/
+  clothes/
+  glass/
+  metal/
+  paper/
+  plastic/
+  shoes/
+  trash/
+```
+
+Then run:
 
 ```bash
-python -m src.train --config configs/baseline.yaml
+python train_swin_b.py
 ```
 
-Expect **~90–95% val accuracy**. Everything later is measured against this.
-If it crashes mid-run, re-run with `--resume`. Curves and confusion data land
-in `reports/baseline_resnet50/`, and every run appends a row to
-`experiments.csv` — never edit that file, it's the audit trail.
+Outputs:
+
+- `best_swin_b.pt`
+- `swin_b_results.json`
+
+The recorded run reached 97.01% validation, 97.61% held-out test, and 97.82%
+test accuracy with TTA. Swin-B exceeds the course's 30M-parameter cap and is
+included explicitly as the transformer comparison model.
+
+## 5. Run the current website
+
+From the repository root:
 
 ```bash
-python -m src.evaluate --checkpoint checkpoints/baseline_resnet50/fold0/best.pth
+cd website
+./start.sh
 ```
 
-## 3. Improvements (in order; keep a change only if val gain > ~1.5%)
+The website loads the canonical checkpoints directly from:
 
-```bash
-# 3a. backbone bake-off on one fold each (pick the winner by val acc)
-python -m src.train --config configs/convnextv2_224.yaml --fold 0
-python -m src.train --config configs/effnetv2_s_224.yaml --fold 0
-# (copy a config to try eva02 / swinv2 / effnetv2_m — names are pre-verified)
-
-# 3b. progressive resizing: edit configs/convnextv2_384.yaml so
-#     init_checkpoint points at the 224 winner's best.pth, then:
-python -m src.train --config configs/convnextv2_384.yaml --fold 0
-
-# 3c. the final model: 5-fold ensemble of the winner (overnight job, resumable)
-python -m src.kfold --config configs/<winner>.yaml
-python -m src.evaluate --checkpoint checkpoints/<winner>/ensemble.json --tta
+```text
+model/convnextv2_tiny_cnn/results/best_convnextv2.pt
+model/Swin B Transformer/best_swin_b.pt
 ```
 
-## 4. The large-corpus run (the current model)
-
-`scripts/kaggle_train.py` is self-contained and built for an overnight Kaggle
-session. It pools five public waste datasets, deduplicates by pixel hash, builds a
-group-aware split, and trains ConvNeXt V2-Tiny (27.9M) under the 30M cap.
-
-```
-Kaggle > Settings > Accelerator: GPU T4 x2 · Internet: ON
-!pip install -q timm datasets
-!python kaggle_train.py                     # writes best_convnextv2.pt
-```
-
-Expect 20–40 minutes of dataset download before the first epoch line appears.
-`TIME_BUDGET_H` stops the run cleanly before Kaggle's session limit, so there is
-always a usable checkpoint at the end.
-
-## 5. Poster findings
-
-```bash
-python -m src.analysis --audit    --checkpoint checkpoints/<winner>/ensemble.json
-python -m src.analysis --gradcam  --checkpoint checkpoints/<winner>/fold0/best.pth
-```
-
-## 6. THE TEST SET — read this twice
-
-The test set is held out. **Nothing touches it until the very end.** Choose the
-final model on validation numbers only, then run **exactly once**, after code
-freeze:
-
-```bash
-python -m src.evaluate --final-eval --checkpoint checkpoints/<winner>/ensemble.json --tta
-```
-
-That writes `reports/<winner>/final_test_report.md`. That's the number for the
-poster. A test set consulted repeatedly to pick a better result stops being a
-test set, and the number stops meaning anything.
-
-## 7. Demo
-
-```bash
-cd ../website && .venv/bin/python app.py
-```
-
-Opens http://127.0.0.1:5001 — upload or use the camera, get class + confidence.
-A toggle switches between the ConvNeXt V2-Tiny ConvNet and Swin-B Transformer.
-The live project loads both canonical checkpoints directly from `model/`.
-Fully offline, safe in front of judges.
-
-## Sanity expectations
-
-| Result | Meaning |
-|---|---|
-| ~90–95% baseline val | healthy |
-| 95–97% ensemble val | great, near the honest ceiling |
-| >97% | suspect a bug/leak before celebrating |
-| 100% | not real |
-
-Differences under ~1.5% (≈5 images) are noise — don't chase them.
-
-## Troubleshooting
-
-- **CUDA OOM** → halve `batch_size` in the yaml (384 configs are the usual culprits).
-- **Crashed overnight kfold** → same command again; it resumes per fold.
-- **`data/raw` missing** (zip stripped it) → `python scripts/download_data.py`
-  re-downloads; the committed `data/splits/*.csv` keep the splits identical.
-- **Val accuracy collapses after unfreeze** → your `lr_backbone` is too high; the
-  configs' values are safe, don't raise them.
-
-Background reading in the repo: `../papers/research/model-paper/outline.md` for the story the numbers
-feed into.
+The public interface always displays the six shared waste labels. For Swin-B,
+the four non-shared logits are omitted and the six retained logits are
+renormalized.

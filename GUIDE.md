@@ -32,7 +32,7 @@ to the current directory.
 
 ```bash
 cd "model/convnextv2_tiny_cnn"
-python "train_and_upload .py" --no-upload
+python train_and_upload.py --no-upload
 ```
 
 Place the two outputs in `results/` if training wrote them beside the script:
@@ -46,7 +46,7 @@ parameter count, and validation accuracy.
 ## 3. Train the Transformer
 
 ```bash
-cd "model/Swing B Transformer"
+cd "model/Swin B Transformer"
 python train_swin_b.py
 ```
 
@@ -61,8 +61,8 @@ Do not duplicate checkpoints into `website/`. The canonical paths are:
 ```text
 model/convnextv2_tiny_cnn/results/best_convnextv2.pt
 model/convnextv2_tiny_cnn/results/best_convnextv2_metadata.json
-model/Swing B Transformer/best_swin_b.pt
-model/Swing B Transformer/swin_b_results.json
+model/Swin B Transformer/best_swin_b.pt
+model/Swin B Transformer/swin_b_results.json
 ```
 
 If a model, class order, transform, or checkpoint name changes, update its

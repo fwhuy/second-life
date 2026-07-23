@@ -2,7 +2,7 @@
 
 Offline bilingual UI and Flask inference API for the project's two models:
 
-- `convnet`: ConvNeXt V2-Tiny, 384px, six output classes (default)
+- `convnet`: TrashNeXt (ConvNeXt V2-Tiny architecture), 384px, six output classes (default)
 - `transformer`: Swin-B, 224px, restricted to the same six displayed classes
 
 ## Run
@@ -26,6 +26,13 @@ status. `probs` always uses the shared order: cardboard, glass, metal, paper,
 plastic, trash.
 
 The displayed confidence is the selected model's raw softmax output. No
-temperature scaling is applied. The bundled feature bank belongs to an older
-architecture, so the current model loaders correctly report the open-set guard
-as off rather than mixing incompatible embeddings.
+temperature scaling is applied.
+
+The optional Swin-based five-signal OOD guard is calibrated by
+`ood_guard_calib.npz`. Send `guard=on` with an identify request to enable it;
+ordinary requests leave it off. The retired ResNet feature-bank experiment has
+been removed from the active website.
+
+The two Remotion projects also have separate roles: `website/remotion/` produces
+the short website documentary, while the repository-level `video/` directory
+produces the presentation video.

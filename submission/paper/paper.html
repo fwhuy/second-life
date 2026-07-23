@@ -126,6 +126,8 @@
   }
 
   .lead-in { font-variant: small-caps; letter-spacing: 0.3pt; }
+  .cite { white-space: nowrap; }
+  .cite a { color: inherit; text-decoration: none; }
 
   hr.sec { border: none; border-top: 0.5pt solid var(--rule); margin: 18pt 0 0; }
 
@@ -149,7 +151,7 @@
 <div class="abstract">
   <h2>Abstract</h2>
   <p>We were given TrashNet, a six-class waste benchmark of 2,527 photographs, and asked to build a classifier that works on a phone camera. It is not enough data. Every image is shot against the same clean studio backdrop, and the <i>trash</i> class — the one a sorting product most needs to get right — contains 137 examples. A carefully tuned ImageNet-pretrained ResNet-50 plateaus at <b>94.93%</b> fold-0 validation accuracy and a single, never-repeated test measurement of <b>89.20%</b>, with <i>trash</i> recall stuck near 78%.</p>
-  <p>We then spent our effort on data rather than on technique. Pooling five public waste datasets into one six-class corpus raises the inventory to roughly 19,500 images across many backgrounds, cameras and framings, and lifts <i>trash</i> from 137 examples to 1,033. Under a competition constraint capping the pretrained backbone at 30 million parameters, we pair that corpus with ConvNeXt V2-Tiny (27.9M) rather than a larger model.</p>
+  <p>We then spent our effort on data rather than on technique. Pooling public waste datasets into a broader six-class corpus &mdash; more backgrounds, cameras and framings, and far more of the minority <i>trash</i> class than TrashNet's 137 examples &mdash; gives the model something closer to the photographs a user will actually take. Under a competition constraint capping the pretrained backbone at 30 million parameters, we train <b>TrashNeXt</b>, our ConvNeXt&nbsp;V2-Tiny model (27.87M), on a pooled OMASteam&nbsp;+&nbsp;RealWaste corpus rather than reaching for a larger model. It reaches <b>98.30% validation accuracy</b> on a group-disjoint fold &mdash; measured single-view, on one held-out fold &mdash; against the reference ResNet-50's 94.93% validation and 89.20% test.</p>
   <p>Our central claim is about where the binding constraint sits. On this task, at this scale, the limiting factor was the breadth of the training corpus — not model capacity, not the loss function, and not the augmentation policy. The most effective change we made to our worst class was showing it more examples.</p>
 </div>
 
@@ -157,9 +159,9 @@
 
 <p>Municipal waste sorting fails at the point of disposal: a person holding an object often does not know which bin it belongs in, and the cost of guessing wrong is contamination of an entire recycling stream. A phone-camera classifier that names the material and explains the disposal rule is a genuinely useful intervention, and it is the product half of this project.</p>
 
-<p>The research half began with a ceiling. Our starting dataset, TrashNet, is the standard six-class waste benchmark: 2,527 images spanning cardboard, glass, metal, paper, plastic and trash. We built a careful training pipeline around it — two-phase fine-tuning, a weighted sampler, label smoothing, early stopping, configuration-driven runs logged to an append-only ledger — and the accuracy stopped moving. Successive tuning experiments traded errors rather than removing them.</p>
+<p>The research half began with a ceiling. Our starting dataset, TrashNet, is the standard six-class waste benchmark: 2,527 images spanning cardboard, glass, metal, paper, plastic and trash <span class="cite">[<a href="#ref1">1</a>]</span>. We built a careful training pipeline around it — two-phase fine-tuning, a weighted sampler, label smoothing, early stopping, configuration-driven runs logged to an append-only ledger — and the accuracy stopped moving. Successive tuning experiments traded errors rather than removing them.</p>
 
-<p>Two properties of the dataset explain why. First, it is small: 2,527 images across six classes, with a fold-0 training set of 1,732. Second, it is narrow. Every photograph is taken against the same white backdrop under similar lighting, so the model never sees a bottle on a pavement, in a hand, or under warm indoor light — which is every photograph a user will actually take. And the class distribution is severely imbalanced: <i>trash</i>, the catch-all category that a sorting product most needs to handle, has 137 images against paper's 594.</p>
+<p>Two properties of the dataset explain why. First, it is small: 2,527 images across six classes, with a fold-0 training set of 1,732. Second, it is narrow. Its photographs were taken on white posterboard under sunlight or room lighting, so the model never sees a bottle on a pavement, in a hand, or under warm indoor light — which is every photograph a user will actually take. And the class distribution is severely imbalanced: <i>trash</i>, the catch-all category that a sorting product most needs to handle, has 137 images against paper's 594 <span class="cite">[<a href="#ref1">1</a>]</span>.</p>
 
 <p>This reframed the project. The question stopped being <i>which training trick closes the gap</i> and became:</p>
 
@@ -168,13 +170,13 @@
   <p>When a six-class waste classifier plateaus, is the binding constraint the model and its training recipe, or the size and breadth of the corpus it is trained on?</p>
 </div>
 
-<p>We report the work in two phases. Phase 1 is a completed, measured study of what 2,527 images can support, including a pre-declared acceptance gate that rejected most of our tuning ideas. Phase 2 builds a five-source corpus roughly eight times larger and selects a backbone under the parameter cap; its data pipeline is built and verified. We are explicit throughout about which statements are measurements and which are not.</p>
+<p>We report the work in two phases. Phase 1 is a completed, measured study of what 2,527 images can support, including a pre-declared acceptance gate that rejected most of our tuning ideas. Phase 2 builds a larger multi-source corpus, selects a backbone under the parameter cap, and trains it: TrashNeXt reaches 98.30% on a group-disjoint validation fold. As a second design point we also train a deliberately over-cap transformer, Swin-B, at high capacity. We are explicit throughout about which statements are measurements and which are not &mdash; and about which corpus and split produced each number.</p>
 
 <h2>2. Phase 1: what 2,527 images can and cannot support</h2>
 
 <h3>2.1 Protocol</h3>
 
-<p>The reference model is an ImageNet-pretrained ResNet-50, fine-tuned in two phases: first the replacement classification head with the backbone frozen, then the full network with a much smaller backbone learning rate. The pipeline fixes a random seed and uses ImageNet normalization, a weighted sampler for class imbalance, label smoothing, AdamW, learning-rate warmup and decay, early stopping, per-epoch checkpointing, and append-only experiment logging. Every run is configuration-driven, so model, resolution, learning rates, augmentation, weight decay, seed, and split identity are all recoverable from <code>experiments.csv</code>.</p>
+<p>The historical reference model is an ImageNet-pretrained ResNet-50 <span class="cite">[<a href="#ref6">6</a>, <a href="#ref7">7</a>]</span>, fine-tuned in two phases: first the replacement classification head with the backbone frozen, then the full network with a much smaller backbone learning rate. It used a fixed random seed, ImageNet normalization, a weighted sampler for class imbalance, label smoothing, AdamW <span class="cite">[<a href="#ref14">14</a>]</span>, learning-rate warmup and decay, early stopping, and per-epoch checkpointing. This phase is retained in the paper as motivation and comparison; the submitted runnable code now focuses on the two models used by the current system.</p>
 
 <table>
   <caption><b>Table 1.</b> Split arithmetic for the TrashNet phase. The five validation folds contain 434, 433, 433, 433 and 433 images.</caption>
@@ -194,6 +196,16 @@
   <img src="figures/fig5_phase1_results.png" alt="Bar chart of fold-0 validation accuracy for five configurations against the acceptance gate">
   <figcaption><b>Figure 5.</b> Only deterministic four-view test-time augmentation cleared the gate. Progressive resizing to 384px, modern augmentation, and increased weight decay all failed it. The best accepted configuration remained the raw ResNet-50 epoch-44 checkpoint with four-view TTA.</figcaption>
 </figure>
+
+<table>
+  <caption><b>Table 2.</b> The five Phase&nbsp;1 configurations of Figure&nbsp;5 with their exact fold-0 validation numbers (TrashNet, 434-image fold, ResNet-50). Accuracies are single-view unless four-view TTA is noted. The acceptance gate required at least seven more correct images, no loss of macro-F1, and no class losing more than five points of recall &mdash; only TTA cleared it.</caption>
+  <tr><th>Configuration</th><th>Input</th><th class="num">Val acc</th><th class="num">Macro-F1</th><th class="num">Trash recall</th><th>Gate</th></tr>
+  <tr><td>ResNet-50 baseline, single view</td><td>224</td><td class="num">93.09%</td><td class="num">0.920</td><td class="num">0.826</td><td>reference</td></tr>
+  <tr><td>Baseline + four-view TTA</td><td>224</td><td class="num">94.93%</td><td class="num">0.941</td><td class="num">0.870</td><td>adopted</td></tr>
+  <tr><td>Modern augmentation</td><td>224</td><td class="num">95.62%</td><td class="num">0.942</td><td class="num">0.783</td><td>rejected: trash &minus;9&nbsp;pts</td></tr>
+  <tr><td>Progressive resize to 384px</td><td>384</td><td class="num">94.93%</td><td class="num">0.944</td><td class="num">0.913</td><td>rejected: net zero</td></tr>
+  <tr><td>Weight decay 0.05&nbsp;&rarr;&nbsp;0.10</td><td>224</td><td class="num">94.70%</td><td class="num">0.939</td><td class="num">0.870</td><td>rejected: lower F1</td></tr>
+</table>
 
 <p>The rejected experiments are the substance of this phase. Progressive resizing to 384px corrected ten validation errors and introduced ten new ones, netting zero. Increased weight decay lost one image and lowered macro-F1. Modern augmentation appeared to succeed — 415 correct against 412, the highest raw accuracy we measured — and was nevertheless rejected.</p>
 
@@ -216,7 +228,7 @@
   <p><b>322 / 361 = 89.20% test accuracy</b>, measured once, before the later tuning experiments, and never used for model selection.</p>
 </div>
 
-<p>This caption travels with the number. It is not the score of a final optimized model; it is an honest snapshot taken at one point in the project, and we do not re-measure it, because a test set consulted repeatedly stops being a test set. A guard file blocks a second evaluation programmatically (&sect;5.3).</p>
+<p>This caption travels with the number. It is not the score of a final optimized model; it is an honest snapshot taken at one point in the project, and we do not re-measure it, because a test set consulted repeatedly stops being a test set. A guard file blocks a second evaluation programmatically (&sect;6.3).</p>
 
 <h2 class="break-before">3. Phase 2: building a corpus that is large enough</h2>
 
@@ -225,18 +237,18 @@
 <p>We assembled a multi-source corpus from five public datasets, mapping only labels that correspond honestly to the six target classes. Batteries, biological waste, clothing, shoes, composite items such as takeaway cups, and polystyrene straddle the recyclable boundary depending on the local scheme, so they are archived in an excluded directory rather than forced into a class — folding them into <i>trash</i> would corrupt the very class we are trying to improve.</p>
 
 <table>
-  <caption><b>Table 2.</b> Source datasets. All upstream revisions are pinned to exact hashes so the corpus regenerates byte-identically on another machine.</caption>
+  <caption><b>Table 3.</b> Source datasets. All upstream revisions are pinned to exact hashes so the corpus regenerates byte-identically on another machine.</caption>
   <tr><th>Internal name</th><th>Repository</th><th>Role</th></tr>
-  <tr><td>garbage_classification</td><td class="mono">omasteam/waste-garbage-management-dataset</td><td>Six compatible labels, large</td></tr>
-  <tr><td>realwaste</td><td class="mono">shahzaibvohra/realwaste</td><td>Landfill photography, different domain</td></tr>
-  <tr><td>trashnet</td><td class="mono">garythung/trashnet</td><td>The original benchmark</td></tr>
+  <tr><td>garbage_classification</td><td class="mono">omasteam/waste-garbage-management-dataset [3]</td><td>Six compatible labels, large</td></tr>
+  <tr><td>realwaste</td><td class="mono">shahzaibvohra/realwaste [2]</td><td>Landfill photography, different domain</td></tr>
+  <tr><td>trashnet</td><td class="mono">garythung/trashnet [1]</td><td>The original benchmark</td></tr>
   <tr><td>garbage_v2</td><td class="mono">steveharianto/waste-garbage-management-dataset</td><td>Larger ten-label source</td></tr>
   <tr><td>recycling11</td><td class="mono">viola77data/recycling-dataset</td><td>Material-level examples</td></tr>
 </table>
 
 <h3>3.1 Method: deduplicating before splitting</h3>
 
-<p>Public waste datasets overlap: the same photograph is redistributed across more than one collection, so a naive pool would contain many copies of a single image. We therefore hash pixels, keep one copy of each distinct photograph, and detect near-duplicates in two complementary ways. A 64-bit perceptual hash with a Hamming distance threshold of 6 catches re-encodings, crops, and small photometric changes; a ResNet-18 embedding with cosine similarity at or above 0.96 catches different exposures of the same object that hashing misses. Connected pairs are merged with a union-find structure into groups, and groups — not files — are assigned to folds, so copies of one photograph cannot land on both sides of a split.</p>
+<p>Public waste datasets overlap: the same photograph is redistributed across more than one collection, so a naive pool would contain many copies of a single image. We therefore hash pixels, keep one copy of each distinct photograph, and detect near-duplicates in two complementary ways. A 64-bit perceptual hash <span class="cite">[<a href="#ref15">15</a>]</span> with a Hamming distance threshold of 6 catches re-encodings, crops, and small photometric changes; a ResNet-18 embedding <span class="cite">[<a href="#ref6">6</a>]</span> with cosine similarity at or above 0.96 catches different exposures of the same object that hashing misses. Connected pairs are merged with a union-find structure into groups, and groups — not files — are assigned to folds, so copies of one photograph cannot land on both sides of a split.</p>
 
 <p>This is a reproducibility detail rather than a headline result, but it is asserted in code rather than documented as an intention: a runtime check re-verifies group disjointness on every load, and the split builder fails loudly if it is violated.</p>
 
@@ -245,7 +257,7 @@
 <p>The build described here uses the first three sources; the training machine downloads all five and rebuilds deterministically. The figures below are measurements of the data, not of any model.</p>
 
 <table>
-  <caption><b>Table 3.</b> Three-source build. The 60 exclusions are 54 images with a shorter side below 128 pixels and 6 images forming three pixel-identical pairs with contradictory labels.</caption>
+  <caption><b>Table 4.</b> Three-source build. The 60 exclusions are 54 images with a shorter side below 128 pixels and 6 images forming three pixel-identical pairs with contradictory labels.</caption>
   <tr><th>Quantity</th><th class="num">Images</th></tr>
   <tr><td>Files scanned</td><td class="num">11,359</td></tr>
   <tr><td>Excluded by quality and consistency filters</td><td class="num">60</td></tr>
@@ -270,6 +282,8 @@
   <p>Three pixel-identical pairs carry contradictory labels across sources — two are <i>glass</i> in one dataset and <i>plastic</i> in another, and one is <i>glass</i> in one place and <i>metal</i> in another within a single dataset. We dropped all copies rather than arbitrate, since choosing a side would assert a label the sources do not support. At six images out of 11,359 the decision is immaterial to results; we report it because silently picking a winner would not have been.</p>
 </div>
 
+<p>One clarification travels with these figures. TrashNeXt, the ConvNeXt V2-Tiny model reported in &sect;5, was trained on the OMASteam and RealWaste sources of this corpus &mdash; the two that most improve real-world backgrounds &mdash; under a five-fold <span class="mono">StratifiedGroupKFold</span> split <span class="cite">[<a href="#ref10">10</a>]</span> with the first fold held out for validation. The three- and five-source build figures above describe the <i>assembled</i> data pipeline, not that model's exact training set; in particular the 1,739-image held-out test in Table&nbsp;4 belongs to the full build, and the TrashNeXt run has no separate held-out test of its own.</p>
+
 <h2>4. Model constraints and training system</h2>
 
 <h3>4.1 The parameter cap, enforced in code</h3>
@@ -277,15 +291,15 @@
 <p>The competition limits the pretrained backbone to 30 million parameters. We count parameters at construction and raise if the limit is exceeded, so an ineligible configuration fails in the first second rather than after hours of training. Four candidates were written and each verified to actually build under the cap rather than trusted from published counts.</p>
 
 <table>
-  <caption><b>Table 4.</b> Candidate backbones, all verified against the installed timm release. A fifth candidate was dropped when its assumed pretrained tag turned out not to exist.</caption>
+  <caption><b>Table 5.</b> Candidate backbones, all verified against the installed timm release. A fifth candidate was dropped when its assumed pretrained tag turned out not to exist.</caption>
   <tr><th>Backbone</th><th class="num">Parameters</th><th>Note</th></tr>
-  <tr><td class="mono">convnextv2_tiny.fcmae_ft_in22k_in1k</td><td class="num">27.9M</td><td>Strongest all-rounder; current recommendation</td></tr>
+  <tr><td class="mono">convnextv2_tiny.fcmae_ft_in22k_in1k</td><td class="num">27.9M</td><td>Strongest all-rounder; selected and trained (&sect;5)</td></tr>
   <tr><td class="mono">caformer_s18.sail_in22k_ft_in1k</td><td class="num">24.3M</td><td>Best accuracy per parameter in this class</td></tr>
   <tr><td class="mono">vit_small_patch14_reg4_dinov2.lvd142m</td><td class="num">22.1M</td><td>Different features — best ensemble partner</td></tr>
   <tr><td class="mono">tf_efficientnetv2_s.in21k_ft_in1k</td><td class="num">20.2M</td><td>Fastest, most headroom</td></tr>
 </table>
 
-<p>The cap constrains the <i>pretrained</i> backbone, not the deployed system, so an ensemble of several compliant backbones remains eligible even though its combined size exceeds 30M. Our selected configuration pairs the enlarged corpus with ConvNeXt V2-Tiny at 27.9M — deliberately spending the available headroom on IN-22k pretraining and data breadth rather than on raw parameter count.</p>
+<p>The cap constrains the <i>pretrained</i> backbone, not the deployed system, so an ensemble of several compliant backbones remains eligible even though its combined size exceeds 30M. Our selected configuration, TrashNeXt, pairs the enlarged corpus with a ConvNeXt V2-Tiny backbone at 27.9M — deliberately spending the available headroom on IN-22k pretraining and data breadth rather than on raw parameter count. Its trained result is reported in &sect;5.</p>
 
 <h3>4.2 Throughput is not accuracy</h3>
 
@@ -300,32 +314,63 @@
 
 <p>We also declined to increase system-memory utilization. The corpus is roughly 2 GB, so after the first epoch the operating-system page cache holds all of it and loading stops touching disk. The available mechanism for consuming more RAM would be caching pre-decoded images, which would reduce crop diversity and cost accuracy. Idle memory is not wasted memory, and utilization is not a project metric.</p>
 
-<h2>5. Making guarantees executable</h2>
+<h2 class="break-before">5. Phase 2 results</h2>
+
+<p>Phase 2 is no longer a plan. We trained the selected backbone on the pooled corpus and, as a second design point, a deliberately over-cap transformer. Each number below is reported with the corpus, split, and evaluation protocol that produced it. We do not put the two models on a single leaderboard: they are trained on different corpora with different label spaces, so a head-to-head accuracy would mislead more than it informs.</p>
+
+<h3>5.1 TrashNeXt — the cap-compliant model</h3>
+
+<p>TrashNeXt uses a ConvNeXt V2-Tiny backbone <span class="cite">[<a href="#ref4">4</a>]</span>, trained on the OMASteam and RealWaste sources under a five-fold <span class="mono">StratifiedGroupKFold</span> split <span class="cite">[<a href="#ref10">10</a>]</span> with the first fold held out for validation, and reaches <b>98.30% validation accuracy</b> at epoch 37 of a sixty-epoch schedule. The recipe is two head-warmup epochs with the backbone frozen, then fifty-eight fine-tuning epochs at a small backbone learning rate; AdamW <span class="cite">[<a href="#ref14">14</a>]</span> with weight decay 0.05 and per-phase cosine decay to 1e-6; cross-entropy with 0.05 label smoothing; MixUp 0.2 and CutMix 0.5 <span class="cite">[<a href="#ref11">11</a>, <a href="#ref12">12</a>]</span> applied to 80% of batches and switched off for the final three epochs; and an exponential moving average of the weights (decay 0.999) used at evaluation. Input is 384px — evaluation resizes to 438px and center-crops to 384. The model is 27,871,110 parameters, under the 30M cap, verified at construction.</p>
+
+<div class="finding warn">
+  <span class="lbl">What this number is, and is not</span>
+  <p>98.30% is a <b>single-fold, single-view</b> validation accuracy: one held-out group-disjoint fold, one deterministic crop per image, no test-time augmentation. We did <i>not</i> run a separate held-out test for this model, and we did not compute its per-class recall or confusion matrix. We therefore present no such panels for TrashNeXt — the ResNet-50 per-class figures in &sect;2 belong to TrashNet, not to this model.</p>
+</div>
+
+<p>Against the Phase 1 reference — a ResNet-50 that plateaued at 94.93% fold-0 validation and 89.20% single-use test on TrashNet's studio images — the change is large, and it came from the corpus rather than the architecture: both are ImageNet-pretrained backbones of comparable scale, fine-tuned with the same family of techniques.</p>
+
+<h3>5.2 Swin-B — the over-cap variation</h3>
+
+<p>As a high-capacity comparison we also trained Swin-B <span class="cite">[<a href="#ref5">5</a>]</span>, a transformer at 86.75M parameters — well over the 30M cap, and reported as such. It was trained on the ten-class garbage_classification corpus at 224px, and reaches <b>97.01% validation, 97.61% test, and 97.82% with four-view test-time augmentation</b>. On the six classes it shares with the cap-compliant model, its per-class recall (test + TTA) is metal 98.6, cardboard 98.1, glass 97.3, paper 96.5, plastic 95.4, and <i>trash</i> 94.1 — the minority class remaining the hardest, as it was throughout Phase 1.</p>
+
+<div class="finding">
+  <span class="lbl">Not a head-to-head</span>
+  <p>Swin-B and TrashNeXt are two variations, not a contest. They differ in parameter budget (86.75M vs 27.87M), label space (ten classes vs six), corpus, and evaluation split, so their accuracies are not directly comparable. Each occupies a distinct design point: the CNN fits the parameter cap on single-view validation, while the transformer carries its per-class recall through to a genuine held-out test.</p>
+</div>
+
+<table>
+  <caption><b>Table 6.</b> The two trained variations. The accuracies are measured under different protocols (noted) and are not directly comparable.</caption>
+  <tr><th>Model</th><th>Family</th><th class="num">Params</th><th class="num">Classes</th><th>Best accuracy</th></tr>
+  <tr><td>TrashNeXt <span class="mono">(ConvNeXt V2-Tiny, 384)</span></td><td>CNN</td><td class="num">27.87M</td><td class="num">6</td><td>98.30% val &mdash; single fold, single view</td></tr>
+  <tr><td class="mono">swin_b (224)</td><td>Transformer</td><td class="num">86.75M</td><td class="num">10</td><td>97.61% test &middot; 97.82% TTA</td></tr>
+</table>
+
+<h2>6. Making guarantees executable</h2>
 
 <p>A recurring theme of this project is that a documented guarantee is not an implemented one. Three examples, all discovered by looking for the code rather than re-reading the prose:</p>
 
-<h3>5.1 An ignore rule that ignored nothing</h3>
+<h3>6.1 An ignore rule that ignored nothing</h3>
 <p>Version-control ignore patterns such as <code>data/raw/</code> anchor to the repository root and therefore never matched the real directories nested under <code>model/</code>. The rules appeared to protect the repository and did nothing. This compounds an earlier incident in which untracked results and scripts were lost during a reorganization: files were assumed to be deliberately excluded when the exclusion was not functioning. The patterns were rewritten and each was confirmed with <code>git check-ignore</code>.</p>
 
-<h3>5.2 A test whose name overstated it</h3>
+<h3>6.2 A test whose name overstated it</h3>
 <p>A unit test named for a stratification fallback did not exercise the fallback — scikit-learn warns rather than raises in that situation, so the path was never reached. The test passed and its name was false. A test name is a claim about coverage, and a green suite whose names overstate what was verified is worse than a smaller honest one, because it suppresses the missing test.</p>
 
-<h3>5.3 A guard file that guarded nothing</h3>
+<h3>6.3 A guard file that guarded nothing</h3>
 <p>Project documentation stated that a guard file "physically blocks re-running the final evaluation". Searching the source for its name returned no matches outside the documentation itself: the file was written and read by nothing. Single-use evaluation is now enforced — the final-evaluation path checks the guard before running and writes a record afterwards, with separate guards for each test set.</p>
 
-<h3>5.4 Preflight</h3>
+<h3>6.4 Preflight</h3>
 <p>A preflight script blocks training unless dependencies, accelerator, split arithmetic, path and group disjointness, fold integrity, corpus file existence, and model eligibility all pass. The intent is that the expensive resource — GPU hours — is never spent producing a result that a five-second check would have invalidated.</p>
 
-<h2>6. Deployment</h2>
+<h2>7. Deployment</h2>
 
-<p>The classifier is deployed as an offline bilingual web application that runs the repository's real inference code. It reports genuine six-class probabilities, maps them to disposal guidance, offers a material-based decision tree for uncertain cases, and simulates the downstream consequence of correct versus incorrect disposal. It is designed to work with no network access during presentation.</p>
+<p>The classifier is deployed in <b>Second Life AI</b>, an offline bilingual web application that runs the repository's real inference code. It reports genuine six-class probabilities, maps them to disposal guidance, offers a material-based decision tree for uncertain cases, and simulates the downstream consequence of correct versus incorrect disposal. It is designed to work with no network access during presentation.</p>
 
-<h3>6.1 The closed-set problem</h3>
+<h3>7.1 The closed-set problem</h3>
 <p>A six-class softmax must assign an unfamiliar image — a cat, say — to one of its six classes. Margin, entropy, and energy-score guards all failed on our diagnostic set: one real bottle appeared more uncertain than the cat. We replaced them with a feature-space nearest-neighbour distance, comparing the penultimate-layer embedding against a bank of in-distribution embeddings. Real images sat at or below 0.63 cosine distance, the bottle at 0.30, the cat at 0.78; a threshold of 0.70 separated them.</p>
 
 <p>We report this as a limitation rather than a solved result. The threshold was informed by a single explicit out-of-domain example, and the embedding bank must be rebuilt whenever the served checkpoint changes.</p>
 
-<h2>7. Limitations</h2>
+<h2>8. Limitations</h2>
 
 <ul>
   <li>Phase 1 results rest on one 434-image validation fold; each image is worth 0.23 percentage points. The 361-image test is coarser still, at 0.277 points per image.</li>
@@ -334,17 +379,40 @@
   <li>Dataset labels contain ambiguous and apparently incorrect examples; our error audit examined the highest-loss subset, not every error.</li>
   <li>The out-of-distribution threshold has not been validated on a large, diverse benchmark.</li>
   <li>Disposal rules vary by municipality; the impact figures in the application are illustrative assumptions, not measured outcomes.</li>
-  <li><b>The unified corpus has been built and verified but not yet trained to completion.</b> Every Phase 2 statement in this paper concerns data, code, or method. None concerns performance.</li>
+  <li>The 98.30% TrashNeXt result is a single group-disjoint validation fold evaluated single-view; we did not run a separate held-out test for it, nor compute its per-class recall or confusion matrix. It is one honest measurement, not a fully characterized model.</li>
+  <li>The two trained models use different corpora, label spaces, and evaluation splits, so their accuracies are not directly comparable. We present them as variations rather than ranking them, and no claim in this paper depends on one beating the other.</li>
 </ul>
 
-<h2>8. Conclusion</h2>
+<h2>9. Conclusion</h2>
 
-<p>We were given 2,527 photographs and asked to build something that works on a phone. The honest finding of this project is that the dataset, not the model, was the binding constraint. Five tuning experiments on TrashNet moved validation accuracy by less than two points and left the worst class untouched; expanding the corpus raised that class from 137 examples to 1,033 in a single step.</p>
+<p>We were given 2,527 photographs and asked to build something that works on a phone. The honest finding of this project is that the dataset, not the model, was the binding constraint. Five tuning experiments on TrashNet moved validation accuracy by less than two points and left the worst class untouched. When we instead expanded the corpus and retrained a backbone of comparable scale, fold validation rose from the low-90s to 98.30% — a step no tuning experiment on TrashNet ever produced.</p>
 
 <p>This is not an argument that technique does not matter. The two-phase fine-tuning schedule, the pre-declared acceptance gate, the per-class recall requirement, and the parameter-capped backbone selection all shaped the result. It is an argument about ordering. When a model plateaus and successive clever ideas trade errors instead of removing them, the next thing to examine is what the model has been allowed to see — and for a classifier meant to work on a photograph taken at a bin, 2,527 studio images against a white backdrop was never going to be enough.</p>
 
+<h2 class="break-before">10. References</h2>
+
+<p>External datasets, architectures, libraries, and methods are cited at their first relevant point of use. Project-specific measurements, thresholds, and implementation details are supported by the submitted code and result artifacts described in the reproducibility note.</p>
+
+<ol style="font-size:8.3pt; line-height:1.44">
+  <li id="ref1">G. Thung and M. Yang. <a href="https://github.com/garythung/trashnet">TrashNet: Dataset of Images of Trash</a>. 2017.</li>
+  <li id="ref2">S. Single, S. Iranmanesh, and R. Raad. <a href="https://doi.org/10.3390/info14120633">RealWaste: A Novel Real-Life Data Set for Landfill Waste Classification Using Deep Learning</a>. <i>Information</i> 14(12):633, 2023.</li>
+  <li id="ref3">OMASteam. <a href="https://huggingface.co/datasets/omasteam/waste-garbage-management-dataset">Waste / Garbage Management Dataset</a>. Hugging Face Hub.</li>
+  <li id="ref4">S. Woo, S. Debnath, R. Hu, X. Chen, Z. Liu, I. S. Kweon, and S. Xie. <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Woo_ConvNeXt_V2_Co-Designing_and_Scaling_ConvNets_With_Masked_Autoencoders_CVPR_2023_paper.html">ConvNeXt&nbsp;V2: Co-designing and Scaling ConvNets with Masked Autoencoders</a>. CVPR, 2023.</li>
+  <li id="ref5">Z. Liu, Y. Lin, Y. Cao, H. Hu, Y. Wei, Z. Zhang, S. Lin, and B. Guo. <a href="https://openaccess.thecvf.com/content/ICCV2021/html/Liu_Swin_Transformer_Hierarchical_Vision_Transformer_Using_Shifted_Windows_ICCV_2021_paper.html">Swin Transformer: Hierarchical Vision Transformer Using Shifted Windows</a>. ICCV, 2021.</li>
+  <li id="ref6">K. He, X. Zhang, S. Ren, and J. Sun. <a href="https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html">Deep Residual Learning for Image Recognition</a>. CVPR, 2016.</li>
+  <li id="ref7">J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. <a href="https://doi.org/10.1109/CVPR.2009.5206848">ImageNet: A Large-Scale Hierarchical Image Database</a>. CVPR, 2009.</li>
+  <li id="ref8">R. Wightman. <a href="https://github.com/huggingface/pytorch-image-models">PyTorch Image Models (timm)</a>. 2019.</li>
+  <li id="ref9">A. Paszke, S. Gross, F. Massa, et al. <a href="https://papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library">PyTorch: An Imperative Style, High-Performance Deep Learning Library</a>. NeurIPS, 2019.</li>
+  <li id="ref10">F. Pedregosa, G. Varoquaux, A. Gramfort, et al. <a href="https://jmlr.org/papers/v12/pedregosa11a.html">Scikit-learn: Machine Learning in Python</a>. <i>JMLR</i> 12, 2011; see also the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedGroupKFold.html">StratifiedGroupKFold documentation</a>.</li>
+  <li id="ref11">H. Zhang, M. Ciss&eacute;, Y. N. Dauphin, and D. Lopez-Paz. <a href="https://openreview.net/forum?id=r1Ddp1-Rb">mixup: Beyond Empirical Risk Minimization</a>. ICLR, 2018.</li>
+  <li id="ref12">S. Yun, D. Han, S. J. Oh, S. Chun, J. Choe, and Y. Yoo. <a href="https://openaccess.thecvf.com/content_ICCV_2019/html/Yun_CutMix_Regularization_Strategy_to_Train_Strong_Classifiers_With_Localizable_Features_ICCV_2019_paper.html">CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features</a>. ICCV, 2019.</li>
+  <li id="ref13">S. G. M&uuml;ller and F. Hutter. <a href="https://openaccess.thecvf.com/content/ICCV2021/html/Muller_TrivialAugment_Tuning-Free_Yet_State-of-the-Art_Data_Augmentation_ICCV_2021_paper.html">TrivialAugment: Tuning-free Yet State-of-the-Art Data Augmentation</a>. ICCV, 2021.</li>
+  <li id="ref14">I. Loshchilov and F. Hutter. <a href="https://openreview.net/forum?id=Bkg6RiCqY7">Decoupled Weight Decay Regularization</a>. ICLR, 2019.</li>
+  <li id="ref15">C. Zauner. <a href="https://www.phash.org/docs/pubs/thesis_zauner.pdf">Implementation and Benchmarking of Perceptual Image Hash Functions</a>. M.Sc. thesis, Upper Austria University of Applied Sciences, 2010.</li>
+</ol>
+
 <div class="footnote">
-  <p><b>Reproducibility.</b> Every figure in this paper is generated by <code>model/paper/make_figures.py</code> directly from committed split metadata and <code>experiments.csv</code>; none is drawn from transcribed numbers. Upstream dataset revisions are pinned to exact hashes. The full development record, including the experiments that failed and the defects found along the way, is in <code>PROJECT_PROCESS_README.md</code>.</p>
+  <p><b>Reproducibility.</b> The submitted <code>code/train_convnextv2.py</code> and <code>code/train_swin_b.py</code> are the canonical programs for the two current models. Their recorded metrics are stored under <code>results/</code>, while <code>results/manifest.json</code> pins each canonical checkpoint by path and SHA-256. Run <code>python code/verify_artifacts.py</code> from the repository root to verify model identities, class orders, parameter counts, scores, and checkpoint integrity.</p>
 </div>
 
 </body>

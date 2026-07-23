@@ -1,0 +1,65 @@
+{
+  "model": "convnet",
+  "checkpoint": "/Users/huy/Desktop/NYU Shanghai AI Course/Image Classifcation/model/convnextv2_tiny_cnn/results/best_convnextv2.pt",
+  "checkpoint_sha256": "8d49670ce8d7a8f94cf912f420d09a8f10cfd2df2f96bb13fd1805fcb3eed01b",
+  "class_mode": "six",
+  "classes": [
+    "cardboard",
+    "glass",
+    "metal",
+    "paper",
+    "plastic",
+    "trash"
+  ],
+  "image_size": 384,
+  "device": "cpu",
+  "seed": 42,
+  "deterministic": true,
+  "n_images": 60,
+  "n_skipped": 0,
+  "n_errors": 0,
+  "accuracy": 1.0,
+  "macro_f1": 1.0,
+  "mean_loss": 0.05356801301240921,
+  "per_class": {
+    "cardboard": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "glass": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "metal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "paper": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "plastic": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "trash": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    }
+  },
+  "split_manifest": "tmp/convnext_trashnet_baseline.csv",
+  "torch_version": "2.13.0",
+  "timestamp_utc": "2026-07-23T08:45:53+00:00"
+}

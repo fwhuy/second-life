@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 270">
+  <defs>
+    <linearGradient id="phoenixGrad" x1="0" y1="258" x2="0" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2DD4BF"/>
+      <stop offset="48%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+  <polygon points="140,90 170,50 232,30 200,75 160,110" fill="url(#phoenixGrad)"/>
+  <polygon points="100,90 70,50 8,30 40,75 80,110" fill="url(#phoenixGrad)"/>
+  <polygon points="120,38 140,90 130,178 110,178 100,90" fill="url(#phoenixGrad)"/>
+  <polygon points="110,178 55,245 118,178" fill="url(#phoenixGrad)"/>
+  <polygon points="114,178 120,258 126,178" fill="url(#phoenixGrad)"/>
+  <polygon points="122,178 185,245 130,178" fill="url(#phoenixGrad)"/>
+  <polygon points="120,14 130,40 110,40" fill="url(#phoenixGrad)"/>
+  <circle cx="122" cy="34" r="3.4" fill="#2DD4BF" stroke="#0B0C0F" stroke-width="1"/>
+</svg>

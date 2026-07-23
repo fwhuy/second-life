@@ -1,0 +1,15 @@
+{
+  "model": "convnextv2_tiny.fcmae_ft_in22k_in1k_384",
+  "classes": [
+    "cardboard",
+    "glass",
+    "metal",
+    "paper",
+    "plastic",
+    "trash"
+  ],
+  "image_size": 384,
+  "validation_accuracy": 0.9829605963791267,
+  "epoch": 37,
+  "parameter_count": 27871110
+}

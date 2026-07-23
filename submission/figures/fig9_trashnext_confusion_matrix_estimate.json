@@ -1,0 +1,116 @@
+{
+  "status": "scaled estimate, not full-set measurement",
+  "model": "TrashNeXt (ConvNeXt V2-Tiny architecture)",
+  "application": "Second Life AI",
+  "dataset": "TrashNet",
+  "baseline_sample_size": 60,
+  "sample_per_class": 10,
+  "sample_confusion_matrix": [
+    [
+      10,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      10,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      10,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      10,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      10,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      10
+    ]
+  ],
+  "full_class_sizes": [
+    403,
+    501,
+    410,
+    594,
+    482,
+    137
+  ],
+  "estimated_confusion_matrix": [
+    [
+      403,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      501,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      410,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      594,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      482,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      137
+    ]
+  ]
+}

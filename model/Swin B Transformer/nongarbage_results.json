@@ -1,0 +1,738 @@
+[
+  {
+    "name": "picsum_0",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.6967,
+    "confidence": 0.8883,
+    "energy": -4.095,
+    "mahalanobis": 9087.78,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.4789,
+      "msp": 0.4986,
+      "imagenet": 0.5148
+    },
+    "top_garbage": [
+      [
+        "biological",
+        0.8883
+      ],
+      [
+        "glass",
+        0.0174
+      ],
+      [
+        "trash",
+        0.0171
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "valley",
+        0.5197
+      ],
+      [
+        "alp",
+        0.3212
+      ],
+      [
+        "cliff",
+        0.0166
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_1",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.684,
+    "confidence": 0.9101,
+    "energy": -4.2212,
+    "mahalanobis": 8028.89,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.4475,
+      "msp": 0.4714,
+      "imagenet": 0.5187
+    },
+    "top_garbage": [
+      [
+        "biological",
+        0.9101
+      ],
+      [
+        "paper",
+        0.0122
+      ],
+      [
+        "trash",
+        0.012
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "cliff",
+        0.5249
+      ],
+      [
+        "valley",
+        0.1675
+      ],
+      [
+        "promontory",
+        0.1156
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_2",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.6639,
+    "confidence": 0.886,
+    "energy": -4.0878,
+    "mahalanobis": 769.22,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 0.9551,
+      "energy": 0.4807,
+      "msp": 0.5014,
+      "imagenet": 0.3349
+    },
+    "top_garbage": [
+      [
+        "paper",
+        0.886
+      ],
+      [
+        "glass",
+        0.0222
+      ],
+      [
+        "biological",
+        0.0132
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "restaurant",
+        0.2713
+      ],
+      [
+        "coffee mug",
+        0.0483
+      ],
+      [
+        "coffeepot",
+        0.0414
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_3",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.837,
+    "confidence": 0.4703,
+    "energy": -3.1719,
+    "mahalanobis": 16331.2,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.6982,
+      "msp": 0.8893,
+      "imagenet": 0.5638
+    },
+    "top_garbage": [
+      [
+        "paper",
+        0.4703
+      ],
+      [
+        "cardboard",
+        0.2459
+      ],
+      [
+        "glass",
+        0.1322
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "freight car",
+        0.5856
+      ],
+      [
+        "passenger car",
+        0.1512
+      ],
+      [
+        "electric locomotive",
+        0.0828
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_4",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.66,
+    "confidence": 0.9204,
+    "energy": -4.335,
+    "mahalanobis": 7784.35,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.4196,
+      "msp": 0.4585,
+      "imagenet": 0.4226
+    },
+    "top_garbage": [
+      [
+        "biological",
+        0.9204
+      ],
+      [
+        "cardboard",
+        0.012
+      ],
+      [
+        "clothes",
+        0.0092
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "earthstar",
+        0.396
+      ],
+      [
+        "pot",
+        0.3156
+      ],
+      [
+        "daisy",
+        0.0643
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_5",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.6536,
+    "confidence": 0.89,
+    "energy": -4.1093,
+    "mahalanobis": 3530.9,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.4753,
+      "msp": 0.4965,
+      "imagenet": 0.2364
+    },
+    "top_garbage": [
+      [
+        "trash",
+        0.89
+      ],
+      [
+        "plastic",
+        0.0362
+      ],
+      [
+        "glass",
+        0.0143
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "sunglasses",
+        0.1092
+      ],
+      [
+        "balloon",
+        0.0671
+      ],
+      [
+        "sunglass",
+        0.0605
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_6",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.837,
+    "confidence": 0.6206,
+    "energy": -3.2366,
+    "mahalanobis": 13184.52,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.6844,
+      "msp": 0.7913,
+      "imagenet": 0.7175
+    },
+    "top_garbage": [
+      [
+        "paper",
+        0.6206
+      ],
+      [
+        "clothes",
+        0.1106
+      ],
+      [
+        "biological",
+        0.0597
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "lion",
+        0.8107
+      ],
+      [
+        "leopard",
+        0.0127
+      ],
+      [
+        "snow leopard",
+        0.0051
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_7",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.7492,
+    "confidence": 0.8481,
+    "energy": -3.9603,
+    "mahalanobis": 10549.75,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.5126,
+      "msp": 0.5486,
+      "imagenet": 0.7425
+    },
+    "top_garbage": [
+      [
+        "biological",
+        0.8481
+      ],
+      [
+        "trash",
+        0.048
+      ],
+      [
+        "glass",
+        0.0402
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "lakeside",
+        0.853
+      ],
+      [
+        "seashore",
+        0.0408
+      ],
+      [
+        "promontory",
+        0.0288
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_8",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.7818,
+    "confidence": 0.4676,
+    "energy": -3.5176,
+    "mahalanobis": 6410.92,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.6208,
+      "msp": 0.8907,
+      "imagenet": 0.3228
+    },
+    "top_garbage": [
+      [
+        "paper",
+        0.4676
+      ],
+      [
+        "trash",
+        0.3825
+      ],
+      [
+        "shoes",
+        0.0422
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "cellular telephone",
+        0.2531
+      ],
+      [
+        "cliff",
+        0.086
+      ],
+      [
+        "stretcher",
+        0.0463
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "picsum_9",
+    "true_label": "nongarbage",
+    "is_garbage": false,
+    "garbage_class": null,
+    "score": 0.8627,
+    "confidence": 0.359,
+    "energy": -2.8291,
+    "mahalanobis": 14830.65,
+    "individual_scores": {
+      "mahalanobis": 1.0,
+      "prototype": 1.0,
+      "energy": 0.7652,
+      "msp": 0.9335,
+      "imagenet": 0.5647
+    },
+    "top_garbage": [
+      [
+        "biological",
+        0.359
+      ],
+      [
+        "glass",
+        0.2245
+      ],
+      [
+        "trash",
+        0.1655
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "lakeside",
+        0.5867
+      ],
+      [
+        "seashore",
+        0.1769
+      ],
+      [
+        "sandbar",
+        0.0635
+      ]
+    ],
+    "method": "feature_space_ood_quorum"
+  },
+  {
+    "name": "paper/paper283.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "paper",
+    "score": 0.5075,
+    "confidence": 0.9236,
+    "energy": -4.4069,
+    "mahalanobis": 92.58,
+    "individual_scores": {
+      "mahalanobis": 0.8353,
+      "prototype": 0.0217,
+      "energy": 0.4022,
+      "msp": 0.4545,
+      "imagenet": 0.693
+    },
+    "top_garbage": [
+      [
+        "paper",
+        0.9236
+      ],
+      [
+        "clothes",
+        0.0092
+      ],
+      [
+        "glass",
+        0.0087
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "bath towel",
+        0.7714
+      ],
+      [
+        "handkerchief",
+        0.0127
+      ],
+      [
+        "velvet",
+        0.009
+      ]
+    ],
+    "method": "borderline_garbage_model"
+  },
+  {
+    "name": "trash/trash118.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "trash",
+    "score": 0.5211,
+    "confidence": 0.9086,
+    "energy": -4.1284,
+    "mahalanobis": 84.05,
+    "individual_scores": {
+      "mahalanobis": 0.768,
+      "prototype": 0.02,
+      "energy": 0.4706,
+      "msp": 0.4732,
+      "imagenet": 0.7586
+    },
+    "top_garbage": [
+      [
+        "trash",
+        0.9086
+      ],
+      [
+        "clothes",
+        0.0116
+      ],
+      [
+        "battery",
+        0.0109
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "shower cap",
+        0.8816
+      ],
+      [
+        "plastic bag",
+        0.0096
+      ],
+      [
+        "diaper",
+        0.0011
+      ]
+    ],
+    "method": "borderline_garbage_model"
+  },
+  {
+    "name": "metal/metal296.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "metal",
+    "score": 0.3891,
+    "confidence": 0.9246,
+    "energy": -4.3962,
+    "mahalanobis": 51.02,
+    "individual_scores": {
+      "mahalanobis": 0.3889,
+      "prototype": 0.0134,
+      "energy": 0.4048,
+      "msp": 0.4534,
+      "imagenet": 0.653
+    },
+    "top_garbage": [
+      [
+        "metal",
+        0.9246
+      ],
+      [
+        "glass",
+        0.0092
+      ],
+      [
+        "biological",
+        0.0092
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "thimble",
+        0.7108
+      ],
+      [
+        "lotion",
+        0.038
+      ],
+      [
+        "pill bottle",
+        0.0362
+      ]
+    ],
+    "method": "fused"
+  },
+  {
+    "name": "plastic/plastic391.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "plastic",
+    "score": 0.347,
+    "confidence": 0.9126,
+    "energy": -4.1854,
+    "mahalanobis": 48.59,
+    "individual_scores": {
+      "mahalanobis": 0.3605,
+      "prototype": 0.0383,
+      "energy": 0.4564,
+      "msp": 0.4683,
+      "imagenet": 0.2896
+    },
+    "top_garbage": [
+      [
+        "plastic",
+        0.9126
+      ],
+      [
+        "trash",
+        0.0106
+      ],
+      [
+        "metal",
+        0.0106
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "plastic bag",
+        0.2008
+      ],
+      [
+        "poncho",
+        0.1545
+      ],
+      [
+        "packet",
+        0.1188
+      ]
+    ],
+    "method": "fused"
+  },
+  {
+    "name": "glass/glass239.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "glass",
+    "score": 0.3616,
+    "confidence": 0.9118,
+    "energy": -4.1556,
+    "mahalanobis": 24.27,
+    "individual_scores": {
+      "mahalanobis": 0.1433,
+      "prototype": 0.0067,
+      "energy": 0.4638,
+      "msp": 0.4692,
+      "imagenet": 0.7665
+    },
+    "top_garbage": [
+      [
+        "glass",
+        0.9118
+      ],
+      [
+        "paper",
+        0.0111
+      ],
+      [
+        "cardboard",
+        0.0101
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "beer bottle",
+        0.8962
+      ],
+      [
+        "pop bottle",
+        0.0176
+      ],
+      [
+        "beer glass",
+        0.0039
+      ]
+    ],
+    "method": "feature_space_id_quorum"
+  },
+  {
+    "name": "cardboard/cardboard233.jpg",
+    "true_label": "garbage",
+    "is_garbage": true,
+    "garbage_class": "cardboard",
+    "score": 0.3363,
+    "confidence": 0.9095,
+    "energy": -4.222,
+    "mahalanobis": 41.91,
+    "individual_scores": {
+      "mahalanobis": 0.2876,
+      "prototype": 0.0067,
+      "energy": 0.4473,
+      "msp": 0.472,
+      "imagenet": 0.3808
+    },
+    "top_garbage": [
+      [
+        "cardboard",
+        0.9095
+      ],
+      [
+        "plastic",
+        0.0119
+      ],
+      [
+        "trash",
+        0.0104
+      ]
+    ],
+    "top_imagenet": [
+      [
+        "mailbag",
+        0.3379
+      ],
+      [
+        "carton",
+        0.2177
+      ],
+      [
+        "photocopier",
+        0.0697
+      ]
+    ],
+    "method": "feature_space_id_quorum"
+  }
+]

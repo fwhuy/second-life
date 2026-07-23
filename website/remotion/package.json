@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "render": "remotion render src/index.jsx CoffeeCup ../documentary.mp4 --codec=h264 --crf=20 --browser-executable='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --port=3210 --concurrency=1"
+    "render": "remotion render src/index.jsx CoffeeCup ../documentary.mp4 --codec=h264 --crf=20 --browser-executable='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --port=3210 --concurrency=1",
+    "studio": "remotion studio src/index.jsx",
+    "render:showcase": "remotion render src/index.jsx SecondLifeShowcase ../../video/out/second-life-website-showcase.mp4 --codec=h264 --crf=18 --browser-executable='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --concurrency=1"
   },
   "dependencies": {
     "@remotion/cli": "4.0.340",
