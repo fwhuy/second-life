@@ -1,0 +1,22 @@
+run_name: baseline_resnet18
+model: resnet18
+seed: 42
+classes: [cardboard, glass, metal, paper, plastic, trash]
+
+splits_csv: submission/code/data/splits/folds.csv
+data_root: submission/code
+val_fold: 0
+
+epochs: 40
+batch_size: 64
+num_workers: auto
+img_size: 224
+
+lr: 3.0e-4
+weight_decay: 1.0e-4
+label_smoothing: 0.05
+pretrained: true
+amp: true
+
+wandb_project: second-life-baselines
+wandb_group: baselines-40ep-bs64
